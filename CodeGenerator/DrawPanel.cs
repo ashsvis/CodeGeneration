@@ -7,19 +7,15 @@ namespace CodeGenerator
 {
     public partial class DrawPanel : UserControl
     {
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public float ZoomSensitivity { get; set; } = 0.1f; /// Controls how much zoom per zoom mouse scroll
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public float MaxZoom { get; set; } = 100f;
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public float MinZoom { get; set; } = 0.01f;
+        private float ZoomSensitivity { get; set; } = 0.1f; /// Controls how much zoom per zoom mouse scroll
+        private float MaxZoom { get; set; } = 100f;
+        private float MinZoom { get; set; } = 0.01f;
 
         public event EventHandler<DrawEventArgs>? OnDraw; 
         public event EventHandler<PanOrZoomEventArgs>? OnPanOrZoom;
 
-        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public double ZoomScale { get; set; } = 1; /// Current Zoom value
-        public PointF Origin = new(0, 0); /// Origin is the left most point of a viewport
+        private double zoomScale { get; set; } = 1; /// Current Zoom value
+        private PointF origin = new(0, 0); /// Origin is the left most point of a viewport
 
         private PointF LastMousePosition = new(-1, -1);
         private MouseWheelEvent? MouseWheelData { get; set; }
@@ -27,6 +23,8 @@ namespace CodeGenerator
         private Matrix? transformation; /// Keeps track of zoom transformations
 
         public Matrix? Transformation => transformation;
+        public Point Origin => Point.Ceiling(origin);
+        public Double Zoom => zoomScale;
 
         public DrawPanel()
         {
@@ -51,8 +49,8 @@ namespace CodeGenerator
                 Reset();
                 OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                 {
-                    Zoom = ZoomScale,
-                    ViewPort = Origin
+                    Zoom = zoomScale,
+                    ViewPort = origin
                 });
                 return;
             }
@@ -63,17 +61,17 @@ namespace CodeGenerator
         /// </summary>
         public void Reset()
         {
-            Origin = new PointF(0, 0);
-            ZoomScale = 1;
+            origin = new PointF(0, 0);
+            zoomScale = 1;
             transformation = new Matrix();
             Invalidate();
         }
 
-        public void RestoreWheelData(float tk0, float tk1, float tk2, float tk3, float tk4, float tk5)
+        public void RestoreWheelData(float m11, float m12, float m21, float m22, float dx, float dy, Point point, double zoom)
         {
-            transformation = new Matrix(tk0, tk1, tk2, tk3, tk4, tk5);
-            Origin = new PointF(tk4, tk5);
-            ZoomScale = tk0;
+            transformation = new Matrix(m11, m12, m21, m22, dx, dy);
+            origin = point;
+            zoomScale = zoom;
             Invalidate();
         }
 
@@ -112,17 +110,17 @@ namespace CodeGenerator
                 var mouseY = MouseWheelData.Position.Y;
                 var zoom = (float)MouseWheelData.Zoom;
 
-                var newZoom = zoom * ZoomScale;
+                var newZoom = zoom * zoomScale;
                 if (MinZoom <= newZoom && newZoom <= MaxZoom)
                 {
-                    g.TranslateTransform(Origin.X, Origin.Y);
-                    Origin.X -= (float)(mouseX / (ZoomScale * zoom) - mouseX / ZoomScale);
-                    Origin.Y -= (float)(mouseY / (ZoomScale * zoom) - mouseY / ZoomScale);
+                    g.TranslateTransform(origin.X, origin.Y);
+                    origin.X -= (float)(mouseX / (zoomScale * zoom) - mouseX / zoomScale);
+                    origin.Y -= (float)(mouseY / (zoomScale * zoom) - mouseY / zoomScale);
 
                     g.ScaleTransform(zoom, zoom);
-                    g.TranslateTransform(-Origin.X, -Origin.Y);
+                    g.TranslateTransform(-origin.X, -origin.Y);
 
-                    ZoomScale *= zoom;
+                    zoomScale *= zoom;
                 }
 
                 // Nullify to prevent unecessary calculations
@@ -132,11 +130,11 @@ namespace CodeGenerator
             {
                 var mouseX = MouseMoveData.Position.X;
                 var mouseY = MouseMoveData.Position.Y;
-                var dx = (float)((mouseX - LastMousePosition.X) / ZoomScale);
-                var dy = (float)((mouseY - LastMousePosition.Y) / ZoomScale);
+                var dx = (float)((mouseX - LastMousePosition.X) / zoomScale);
+                var dy = (float)((mouseY - LastMousePosition.Y) / zoomScale);
                 g.TranslateTransform(dx, dy);
-                Origin.X -= dx;
-                Origin.Y -= dy;
+                origin.X -= dx;
+                origin.Y -= dy;
 
                 LastMousePosition = MouseMoveData.Position;
                 MouseMoveData = null;
@@ -148,8 +146,8 @@ namespace CodeGenerator
             OnDraw?.Invoke(this, new DrawEventArgs()
             {
                 Graphics = g,
-                Zoom = ZoomScale,
-                ViewPort = Origin
+                Zoom = zoomScale,
+                ViewPort = origin
             });
         }
 
@@ -183,8 +181,8 @@ namespace CodeGenerator
                 };
                 OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                 {
-                    Zoom = ZoomScale,
-                    ViewPort = Origin
+                    Zoom = zoomScale,
+                    ViewPort = origin
                 });
                 Invalidate();
             }
@@ -209,8 +207,8 @@ namespace CodeGenerator
                     };
                     OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                     {
-                        Zoom = ZoomScale,
-                        ViewPort = Origin
+                        Zoom = zoomScale,
+                        ViewPort = origin
                     });
                 }
                 Invalidate();

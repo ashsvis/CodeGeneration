@@ -25,73 +25,97 @@ namespace CodeGenerator.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk0 {
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public float m11 {
             get {
-                return ((float)(this["tk0"]));
+                return ((float)(this["m11"]));
             }
             set {
-                this["tk0"] = value;
+                this["m11"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk1 {
+        public float m12 {
             get {
-                return ((float)(this["tk1"]));
+                return ((float)(this["m12"]));
             }
             set {
-                this["tk1"] = value;
+                this["m12"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk2 {
+        public float m21 {
             get {
-                return ((float)(this["tk2"]));
+                return ((float)(this["m21"]));
             }
             set {
-                this["tk2"] = value;
+                this["m21"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public float m22 {
+            get {
+                return ((float)(this["m22"]));
+            }
+            set {
+                this["m22"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk3 {
+        public float dx {
             get {
-                return ((float)(this["tk3"]));
+                return ((float)(this["dx"]));
             }
             set {
-                this["tk3"] = value;
+                this["dx"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk4 {
+        public float dy {
             get {
-                return ((float)(this["tk4"]));
+                return ((float)(this["dy"]));
             }
             set {
-                this["tk4"] = value;
+                this["dy"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public float tk5 {
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point origin {
             get {
-                return ((float)(this["tk5"]));
+                return ((global::System.Drawing.Point)(this["origin"]));
             }
             set {
-                this["tk5"] = value;
+                this["origin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public double zoom {
+            get {
+                return ((double)(this["zoom"]));
+            }
+            set {
+                this["zoom"] = value;
             }
         }
     }

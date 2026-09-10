@@ -2,23 +2,29 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="CodeGenerator.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="tk0" Type="System.Single" Scope="User">
+    <Setting Name="m11" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="m12" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="tk1" Type="System.Single" Scope="User">
+    <Setting Name="m21" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="tk2" Type="System.Single" Scope="User">
+    <Setting Name="m22" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="dx" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="tk3" Type="System.Single" Scope="User">
+    <Setting Name="dy" Type="System.Single" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="tk4" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0</Value>
+    <Setting Name="origin" Type="System.Drawing.Point" Scope="User">
+      <Value Profile="(Default)">0, 0</Value>
     </Setting>
-    <Setting Name="tk5" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">0</Value>
+    <Setting Name="zoom" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

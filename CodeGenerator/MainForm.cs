@@ -29,12 +29,14 @@ namespace CodeGenerator
         {
             this.CenterToScreen();
             drawPanel.RestoreWheelData(
-                Properties.Settings.Default.tk0, 
-                Properties.Settings.Default.tk1,
-                Properties.Settings.Default.tk2,
-                Properties.Settings.Default.tk3,
-                Properties.Settings.Default.tk4,
-                Properties.Settings.Default.tk5);
+                Properties.Settings.Default.m11, 
+                Properties.Settings.Default.m12,
+                Properties.Settings.Default.m21,
+                Properties.Settings.Default.m22,
+                Properties.Settings.Default.dx,
+                Properties.Settings.Default.dy,
+                Properties.Settings.Default.origin,
+                Properties.Settings.Default.zoom);
         }
 
         private void tsmiExit_Click(object sender, EventArgs e)
@@ -46,12 +48,14 @@ namespace CodeGenerator
         {
             if (drawPanel.Transformation == null) return;
             var el = drawPanel.Transformation.Elements;
-            Properties.Settings.Default.tk0 = el[0];
-            Properties.Settings.Default.tk1 = el[1];
-            Properties.Settings.Default.tk2 = el[2];
-            Properties.Settings.Default.tk3 = el[3];
-            Properties.Settings.Default.tk4 = el[4];
-            Properties.Settings.Default.tk5 = el[5];
+            Properties.Settings.Default.m11 = el[0];
+            Properties.Settings.Default.m12 = el[1];
+            Properties.Settings.Default.m21 = el[2];
+            Properties.Settings.Default.m22 = el[3];
+            Properties.Settings.Default.dx = el[4];
+            Properties.Settings.Default.dy = el[5];
+            Properties.Settings.Default.origin = drawPanel.Origin;
+            Properties.Settings.Default.zoom = drawPanel.Zoom;
             Properties.Settings.Default.Save();
         }
     }
