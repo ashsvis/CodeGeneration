@@ -34,6 +34,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Margin = new Padding(0);
             Name = "DrawPanel";
             Size = new Size(891, 552);
             ResumeLayout(false);

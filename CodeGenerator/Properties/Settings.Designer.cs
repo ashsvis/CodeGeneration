@@ -118,5 +118,29 @@ namespace CodeGenerator.Properties {
                 this["zoom"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int leftpan {
+            get {
+                return ((int)(this["leftpan"]));
+            }
+            set {
+                this["leftpan"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int rightpan {
+            get {
+                return ((int)(this["rightpan"]));
+            }
+            set {
+                this["rightpan"] = value;
+            }
+        }
     }
 }

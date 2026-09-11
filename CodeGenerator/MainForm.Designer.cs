@@ -71,8 +71,21 @@
             toolStripSeparator7 = new ToolStripSeparator();
             справкаToolStripButton = new ToolStripButton();
             statusStrip1 = new StatusStrip();
+            panLeft = new Panel();
+            tcUtilites = new TabControl();
+            tpLibrary = new TabPage();
+            tvLibrary = new TreeView();
+            tpProperties = new TabPage();
+            pgProperties = new PropertyGrid();
+            panRight = new Panel();
+            splitterLeft = new Splitter();
+            splitterRight = new Splitter();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
+            panLeft.SuspendLayout();
+            tcUtilites.SuspendLayout();
+            tpLibrary.SuspendLayout();
+            tpProperties.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -382,11 +395,106 @@
             statusStrip1.TabIndex = 2;
             statusStrip1.Text = "statusStrip1";
             // 
+            // panLeft
+            // 
+            panLeft.Controls.Add(tcUtilites);
+            panLeft.Dock = DockStyle.Left;
+            panLeft.Location = new Point(0, 49);
+            panLeft.Name = "panLeft";
+            panLeft.Size = new Size(300, 379);
+            panLeft.TabIndex = 3;
+            // 
+            // tcUtilites
+            // 
+            tcUtilites.Controls.Add(tpLibrary);
+            tcUtilites.Controls.Add(tpProperties);
+            tcUtilites.Dock = DockStyle.Fill;
+            tcUtilites.Location = new Point(0, 0);
+            tcUtilites.Margin = new Padding(0);
+            tcUtilites.Name = "tcUtilites";
+            tcUtilites.Padding = new Point(0, 0);
+            tcUtilites.SelectedIndex = 0;
+            tcUtilites.Size = new Size(300, 379);
+            tcUtilites.SizeMode = TabSizeMode.FillToRight;
+            tcUtilites.TabIndex = 0;
+            // 
+            // tpLibrary
+            // 
+            tpLibrary.Controls.Add(tvLibrary);
+            tpLibrary.Location = new Point(4, 24);
+            tpLibrary.Margin = new Padding(0);
+            tpLibrary.Name = "tpLibrary";
+            tpLibrary.Padding = new Padding(3);
+            tpLibrary.Size = new Size(292, 351);
+            tpLibrary.TabIndex = 0;
+            tpLibrary.Text = "Библиотека";
+            // 
+            // tvLibrary
+            // 
+            tvLibrary.Dock = DockStyle.Fill;
+            tvLibrary.Location = new Point(3, 3);
+            tvLibrary.Margin = new Padding(0);
+            tvLibrary.Name = "tvLibrary";
+            tvLibrary.Size = new Size(286, 345);
+            tvLibrary.TabIndex = 0;
+            // 
+            // tpProperties
+            // 
+            tpProperties.Controls.Add(pgProperties);
+            tpProperties.Location = new Point(4, 24);
+            tpProperties.Margin = new Padding(0);
+            tpProperties.Name = "tpProperties";
+            tpProperties.Padding = new Padding(3);
+            tpProperties.Size = new Size(292, 351);
+            tpProperties.TabIndex = 1;
+            tpProperties.Text = "Свойства";
+            // 
+            // pgProperties
+            // 
+            pgProperties.BackColor = SystemColors.Control;
+            pgProperties.Dock = DockStyle.Fill;
+            pgProperties.Location = new Point(3, 3);
+            pgProperties.Margin = new Padding(0);
+            pgProperties.Name = "pgProperties";
+            pgProperties.Size = new Size(286, 345);
+            pgProperties.TabIndex = 0;
+            // 
+            // panRight
+            // 
+            panRight.Dock = DockStyle.Right;
+            panRight.Location = new Point(800, 49);
+            panRight.Name = "panRight";
+            panRight.Size = new Size(0, 379);
+            panRight.TabIndex = 4;
+            // 
+            // splitterLeft
+            // 
+            splitterLeft.Location = new Point(300, 49);
+            splitterLeft.MinSize = 0;
+            splitterLeft.Name = "splitterLeft";
+            splitterLeft.Size = new Size(3, 379);
+            splitterLeft.TabIndex = 5;
+            splitterLeft.TabStop = false;
+            // 
+            // splitterRight
+            // 
+            splitterRight.Dock = DockStyle.Right;
+            splitterRight.Location = new Point(797, 49);
+            splitterRight.MinSize = 0;
+            splitterRight.Name = "splitterRight";
+            splitterRight.Size = new Size(3, 379);
+            splitterRight.TabIndex = 6;
+            splitterRight.TabStop = false;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(splitterRight);
+            Controls.Add(splitterLeft);
+            Controls.Add(panRight);
+            Controls.Add(panLeft);
             Controls.Add(statusStrip1);
             Controls.Add(toolStrip1);
             Controls.Add(menuStrip1);
@@ -400,6 +508,10 @@
             menuStrip1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            panLeft.ResumeLayout(false);
+            tcUtilites.ResumeLayout(false);
+            tpLibrary.ResumeLayout(false);
+            tpProperties.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -448,5 +560,14 @@
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripButton справкаToolStripButton;
         private StatusStrip statusStrip1;
+        private Panel panLeft;
+        private Panel panRight;
+        private Splitter splitterLeft;
+        private Splitter splitterRight;
+        private TabControl tcUtilites;
+        private TabPage tpLibrary;
+        private TabPage tpProperties;
+        private TreeView tvLibrary;
+        private PropertyGrid pgProperties;
     }
 }

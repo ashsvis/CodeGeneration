@@ -21,13 +21,16 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawPanel.DrawEventArgs e)
         {
-            var rect = new Rectangle(100, 100, 150, 150);
-            e.Graphics?.DrawEllipse(Pens.White, rect);
+            // пример круга
+            //var rect = new Rectangle(100, 100, 150, 150);
+            //e.Graphics?.DrawEllipse(Pens.White, rect);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
         {
             this.CenterToScreen();
+            panLeft.Width = Properties.Settings.Default.leftpan;
+            panRight.Width = Properties.Settings.Default.rightpan;
             drawPanel.RestoreWheelData(
                 Properties.Settings.Default.m11, 
                 Properties.Settings.Default.m12,
@@ -56,6 +59,8 @@ namespace CodeGenerator
             Properties.Settings.Default.dy = el[5];
             Properties.Settings.Default.origin = drawPanel.Origin;
             Properties.Settings.Default.zoom = drawPanel.Zoom;
+            Properties.Settings.Default.leftpan = panLeft.Width;
+            Properties.Settings.Default.rightpan = panRight.Width;
             Properties.Settings.Default.Save();
         }
     }
