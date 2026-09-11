@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37628.2 d17.14
+VisualStudioVersion = 17.14.37628.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenerator\CodeGenerator.csproj", "{B3E27F00-B788-40EA-8870-20E706DB1185}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginSupport", "PluginSupport\PluginSupport.csproj", "{230410A2-C316-4CF6-A4FA-38EC7538AC2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOne", "PluginOne\PluginOne.csproj", "{2BAD53CA-8859-437D-99A3-62F2C13AF07F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{B3E27F00-B788-40EA-8870-20E706DB1185}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3E27F00-B788-40EA-8870-20E706DB1185}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3E27F00-B788-40EA-8870-20E706DB1185}.Release|Any CPU.Build.0 = Release|Any CPU
+		{230410A2-C316-4CF6-A4FA-38EC7538AC2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{230410A2-C316-4CF6-A4FA-38EC7538AC2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{230410A2-C316-4CF6-A4FA-38EC7538AC2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{230410A2-C316-4CF6-A4FA-38EC7538AC2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BAD53CA-8859-437D-99A3-62F2C13AF07F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BAD53CA-8859-437D-99A3-62F2C13AF07F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BAD53CA-8859-437D-99A3-62F2C13AF07F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BAD53CA-8859-437D-99A3-62F2C13AF07F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

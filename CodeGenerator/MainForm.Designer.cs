@@ -80,6 +80,7 @@
             panRight = new Panel();
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
+            tsmiPlugins = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             panLeft.SuspendLayout();
@@ -90,7 +91,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, изменитьToolStripMenuItem, инструментыToolStripMenuItem, справкаToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, изменитьToolStripMenuItem, инструментыToolStripMenuItem, tsmiPlugins, справкаToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -486,6 +487,12 @@
             splitterRight.TabIndex = 6;
             splitterRight.TabStop = false;
             // 
+            // tsmiPlugins
+            // 
+            tsmiPlugins.Name = "tsmiPlugins";
+            tsmiPlugins.Size = new Size(89, 20);
+            tsmiPlugins.Text = "Р&асширения";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -569,5 +576,6 @@
         private TabPage tpProperties;
         private TreeView tvLibrary;
         private PropertyGrid pgProperties;
+        private ToolStripMenuItem tsmiPlugins;
     }
 }

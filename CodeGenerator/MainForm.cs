@@ -1,17 +1,37 @@
+using PluginSupport;
+
 namespace CodeGenerator
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IHost
     {
-        private DrawPanel drawPanel;
+        private readonly DrawPanel drawPanel;
+        private readonly PluginManager pm = new();
 
         public MainForm()
         {
             InitializeComponent();
+
+            //сканируем плагины в папке Plugins
+            pm.ScanPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
+
+            //перебираем плагины, создаем пункт меню для каждого
+            foreach (var plugin in pm.Plugins)
+            {
+                var item = tsmiPlugins.DropDownItems.Add(plugin.Name);
+                item.Click += delegate { plugin.Run(this); }; // при клике на меню, запускаем плагин на выполнение
+            }
+
             drawPanel = new DrawPanel { Dock = DockStyle.Fill, };
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
             Controls.Add(drawPanel);
+        }
+
+        public void AddControlToMainForm(Control control)
+        {
+            this.Controls.Remove(drawPanel);
+            this.Controls.Add(control);
         }
 
         private void DrawPanel_OnPanOrZoom(object? sender, DrawPanel.PanOrZoomEventArgs e)
