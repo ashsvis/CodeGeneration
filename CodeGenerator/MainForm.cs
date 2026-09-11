@@ -30,20 +30,20 @@ namespace CodeGenerator
 
         public void AddControlToMainForm(Control control)
         {
-            this.Controls.Remove(drawPanel);
+            //this.Controls.Remove(drawPanel);
             this.Controls.Add(control);
         }
 
-        private void DrawPanel_OnPanOrZoom(object? sender, DrawPanel.PanOrZoomEventArgs e)
+        private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
         {
 
         }
 
-        private void DrawPanel_OnDraw(object? sender, DrawPanel.DrawEventArgs e)
+        private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
             // пример круга
-            //var rect = new Rectangle(100, 100, 150, 150);
-            //e.Graphics?.DrawEllipse(Pens.White, rect);
+            var rect = new Rectangle(100, 100, 150, 150);
+            e.Graphics?.DrawEllipse(Pens.White, rect);
         }
 
         private void MainForm_Load(object sender, EventArgs e)

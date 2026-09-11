@@ -8,7 +8,7 @@ namespace PluginOne
 
         public void Run(IHost host)
         {
-            var control = new UserControl1();
+            var control = new UserControl1() { Dock = DockStyle.Fill };
             host.AddControlToMainForm(control);
         }
     }

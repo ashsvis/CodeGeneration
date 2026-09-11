@@ -34,7 +34,6 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.PaleTurquoise;
             Name = "UserControl1";
             Size = new Size(800, 450);
             ResumeLayout(false);

@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualBasic.Devices;
-using System.ComponentModel;
+﻿using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.Threading;
 
 namespace CodeGenerator
 {
@@ -14,7 +12,7 @@ namespace CodeGenerator
         public event EventHandler<DrawEventArgs>? OnDraw; 
         public event EventHandler<PanOrZoomEventArgs>? OnPanOrZoom;
 
-        private double zoomScale { get; set; } = 1; /// Current Zoom value
+        private double zoomScale = 1; /// Current Zoom value
         private PointF origin = new(0, 0); /// Origin is the left most point of a viewport
 
         private PointF LastMousePosition = new(-1, -1);
@@ -213,19 +211,6 @@ namespace CodeGenerator
                 }
                 Invalidate();
             }
-        }
-
-        public class DrawEventArgs : EventArgs
-        {
-            public Graphics? Graphics { get; set; }
-            public double Zoom { get; set; }
-            public PointF ViewPort { get; set; }
-        }
-
-        public class PanOrZoomEventArgs : EventArgs
-        {
-            public double Zoom { get; set; }
-            public PointF ViewPort { get; set; }
         }
 
     }
