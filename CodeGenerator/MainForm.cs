@@ -30,7 +30,7 @@ namespace CodeGenerator
 
         public void AddControlToMainForm(Control control)
         {
-            //this.Controls.Remove(drawPanel);
+            this.Controls.Remove(drawPanel);
             this.Controls.Add(control);
         }
 

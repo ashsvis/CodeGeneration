@@ -5,11 +5,25 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <BaseOutputPath>C:\MyWork\CodeGeneration\CodeGenerator\bin\Debug\net9.0-windows\Plugins</BaseOutputPath>
+    <BaseOutputPath></BaseOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="postcopy.bat" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="postcopy.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PluginSupport\PluginSupport.csproj" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call postcopy.bat" />
+  </Target>
 
 </Project>
