@@ -11,27 +11,28 @@ namespace CodeGenerator
         {
             InitializeComponent();
 
+            drawPanel = new DrawPanel { Dock = DockStyle.Fill, };
+            drawPanel.OnDraw += DrawPanel_OnDraw;
+            drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
+
             //сканируем плагины в папке Plugins
             pm.ScanPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
 
             //перебираем плагины, создаем пункт меню для каждого
             foreach (var plugin in pm.Plugins)
             {
+                plugin.ConnectEvents(drawPanel);
                 var item = tsmiPlugins.DropDownItems.Add(plugin.Name);
-                item.Click += delegate { plugin.Run(this); }; // при клике на меню, запускаем плагин на выполнение
+                //item.Click += delegate { plugin.Run(this); }; // при клике на меню, запускаем плагин на выполнение
             }
 
-            drawPanel = new DrawPanel { Dock = DockStyle.Fill, };
-            drawPanel.OnDraw += DrawPanel_OnDraw;
-            drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
-
-            Controls.Add(drawPanel);
+            panCenter.Controls.Add(drawPanel);
         }
 
         public void AddControlToMainForm(Control control)
         {
-            this.Controls.Remove(drawPanel);
-            this.Controls.Add(control);
+            panCenter.Controls.Clear();
+            panCenter.Controls.Add(control);
         }
 
         private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
@@ -62,7 +63,7 @@ namespace CodeGenerator
                 Properties.Settings.Default.zoom);
         }
 
-        private void tsmiExit_Click(object sender, EventArgs e)
+        private void TsmiExit_Click(object sender, EventArgs e)
         {
             this.Close();
         }

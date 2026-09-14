@@ -53,6 +53,7 @@
             инструментыToolStripMenuItem = new ToolStripMenuItem();
             настройкиToolStripMenuItem = new ToolStripMenuItem();
             параметрыToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPlugins = new ToolStripMenuItem();
             справкаToolStripMenuItem = new ToolStripMenuItem();
             содержимоеToolStripMenuItem = new ToolStripMenuItem();
             индексToolStripMenuItem = new ToolStripMenuItem();
@@ -80,7 +81,7 @@
             panRight = new Panel();
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
-            tsmiPlugins = new ToolStripMenuItem();
+            panCenter = new Panel();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             panLeft.SuspendLayout();
@@ -175,7 +176,7 @@
             tsmiExit.Name = "tsmiExit";
             tsmiExit.Size = new Size(233, 22);
             tsmiExit.Text = "Вы&ход";
-            tsmiExit.Click += tsmiExit_Click;
+            tsmiExit.Click += TsmiExit_Click;
             // 
             // изменитьToolStripMenuItem
             // 
@@ -259,6 +260,12 @@
             параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
             параметрыToolStripMenuItem.Size = new Size(138, 22);
             параметрыToolStripMenuItem.Text = "&Параметры";
+            // 
+            // tsmiPlugins
+            // 
+            tsmiPlugins.Name = "tsmiPlugins";
+            tsmiPlugins.Size = new Size(89, 20);
+            tsmiPlugins.Text = "Р&асширения";
             // 
             // справкаToolStripMenuItem
             // 
@@ -487,17 +494,20 @@
             splitterRight.TabIndex = 6;
             splitterRight.TabStop = false;
             // 
-            // tsmiPlugins
+            // panCenter
             // 
-            tsmiPlugins.Name = "tsmiPlugins";
-            tsmiPlugins.Size = new Size(89, 20);
-            tsmiPlugins.Text = "Р&асширения";
+            panCenter.Dock = DockStyle.Fill;
+            panCenter.Location = new Point(303, 49);
+            panCenter.Name = "panCenter";
+            panCenter.Size = new Size(494, 379);
+            panCenter.TabIndex = 7;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(panCenter);
             Controls.Add(splitterRight);
             Controls.Add(splitterLeft);
             Controls.Add(panRight);
@@ -577,5 +587,6 @@
         private TreeView tvLibrary;
         private PropertyGrid pgProperties;
         private ToolStripMenuItem tsmiPlugins;
+        private Panel panCenter;
     }
 }

@@ -1,7 +1,6 @@
-﻿using PluginSupport;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 
-namespace CodeGenerator
+namespace PluginSupport
 {
     public partial class DrawPanel : UserControl
     {
