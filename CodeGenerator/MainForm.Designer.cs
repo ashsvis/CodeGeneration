@@ -457,7 +457,7 @@
             tvLibrary.Name = "tvLibrary";
             tvLibrary.Size = new Size(286, 345);
             tvLibrary.TabIndex = 0;
-            tvLibrary.MouseDown += tvLibrary_MouseDown;
+            tvLibrary.MouseDown += TvLibrary_MouseDown;
             // 
             // tpProperties
             // 

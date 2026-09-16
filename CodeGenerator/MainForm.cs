@@ -23,6 +23,9 @@ namespace CodeGenerator
             drawPanel.DragOver += DrawPanel_DragOver;
             drawPanel.DragDrop += DrawPanel_DragDrop;
             drawPanel.QueryContinueDrag += DrawPanel_QueryContinueDrag;
+            drawPanel.MouseDown += DrawPanel_MouseDown;
+            drawPanel.MouseMove += DrawPanel_MouseMove;
+            drawPanel.MouseUp += DrawPanel_MouseUp;
 
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
@@ -44,6 +47,87 @@ namespace CodeGenerator
             tvLibrary.Nodes.Clear();
             tvLibrary.Nodes.Add(new TreeNode("Круг") { Tag = typeof(Circle) });
             tvLibrary.Nodes.Add(new TreeNode("Прямоугольник") { Tag = typeof(Rect) });
+        }
+
+        private PointF firstPoint = PointF.Empty;
+        private bool leftPressed = false;
+        private Figure? pressedFigure = null;
+
+        private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                firstPoint = e.Location;
+                leftPressed = true;
+                pressedFigure = null;
+                // выбор или невыбор фигур мышью путём нажатия на фигуру
+                var modify = false;
+                foreach (var figure in figures.Select(x => x).Reverse())
+                {
+                    if (figure.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
+                    {
+                        if (!ModifierKeys.HasFlag(Keys.Control))
+                        {
+                            pressedFigure = figure;
+                            if (!figure.Selected)
+                            {
+                                figure.Selected = true;
+                                modify = true;
+                            }
+                        }
+                        else if (ModifierKeys.HasFlag(Keys.Control) && figure.Selected)
+                        {
+                            figure.Selected = false;
+                            modify = true;
+                        }
+                        drawPanel.Invalidate();
+                        break;
+                    }
+                }
+                // если выбор был сделан, то выходим
+                if (modify) return;
+            }
+        }
+
+        private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
+        {
+            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
+            foreach (var figure in figures)
+                figure.Hover = false;
+            foreach (var figure in figures.Select(x => x).Reverse())
+            {
+                if (figure.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
+                {
+                    figure.Hover = true;
+                    break;
+                }
+            }
+            if (leftPressed)
+            {
+                var dx = e.X - firstPoint.X;
+                var dy = e.Y - firstPoint.Y;
+
+                if (pressedFigure != null)
+                {
+                    pressedFigure.Location = PointF.Add(pressedFigure.Location, new SizeF(dx, dy));
+                }
+
+                firstPoint = e.Location;
+            }
+            drawPanel.Invalidate();
+        }
+
+        private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                if (leftPressed)
+                {
+                    leftPressed = false;
+
+                    drawPanel.Invalidate();
+                }
+            }
         }
 
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)
@@ -80,7 +164,7 @@ namespace CodeGenerator
                 {
                     foreach (var figure in items.Cast<Figure>())
                     {
-                        figure.Location = PrepareMousePosition(drawPanel.PointToClient(new Point(e.X, e.Y)));
+                        figure.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
                         figures.Add(figure);
                         drawPanel.Invalidate();
                     }
@@ -107,9 +191,28 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
+            using var hoverpen = new Pen(Color.FromArgb(255, 255, 255), 1f);
+            using var selectpen = new Pen(Color.DarkMagenta, 1f);
+            using var selecthoverpen = new Pen(Color.Magenta, 1f);
             foreach (var figure in figures)
             {
-                figure.Draw(e.Graphics);
+                if (figure.Hover && figure.Selected)
+                {
+                    using var brush = new SolidBrush(figure.Background);
+                    figure.Draw(e.Graphics, selecthoverpen, brush);
+                }
+                else if (figure.Hover)
+                {
+                    using var brush = new SolidBrush(figure.Background);
+                    figure.Draw(e.Graphics, hoverpen, brush);
+                }
+                else if (figure.Selected)
+                {
+                    using var brush = new SolidBrush(figure.Background);
+                    figure.Draw(e.Graphics, selectpen, brush);
+                }
+                else
+                    figure.Draw(e.Graphics);
             }
         }
 
@@ -153,12 +256,12 @@ namespace CodeGenerator
             Properties.Settings.Default.Save();
         }
 
-        private void tvLibrary_MouseDown(object sender, MouseEventArgs e)
+        private void TvLibrary_MouseDown(object sender, MouseEventArgs e)
         {
             var node = tvLibrary.GetNodeAt(e.X, e.Y);
+            tvLibrary.SelectedNode = null;
             if (node != null && e.Button == MouseButtons.Left)
             {
-                tvLibrary.SelectedNode = null;
                 if (node.Tag is Type type)
                 {
                     try
@@ -182,44 +285,65 @@ namespace CodeGenerator
             }
         }
 
-        private PointF PrepareMousePosition(PointF point)
-        {
-            PointF[] arr = [point];
-            Matrix matrix = new();
-
-            var zoom = (float)drawPanel.Zoom;
-            var origin = drawPanel.Origin;
-
-            matrix.Translate(origin.X, origin.Y);
-            matrix.Scale(1 / zoom, 1 / zoom);
-            matrix.TransformPoints(arr);
-            matrix.Dispose();
-            return new PointF(arr[0].X, arr[0].Y);
-        }
-
     }
 
     public abstract class Figure
     {
         public PointF Location { get; set; }
-        public Color Foreground { get; set; } = SystemColors.ControlText;
-        public Color Background { get; set; } = SystemColors.Window;
-        public abstract void Draw(Graphics? g);
+        public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
+        public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
+
+        public bool Selected { get; set; }
+        public bool Hover { get; set; }
+
+        public abstract GraphicsPath GetGraphicsPath();
+
+        public virtual void Draw(Graphics? g)
+        {
+            using var path = GetGraphicsPath();
+            using var brush = new SolidBrush(Background);
+            g?.FillPath(brush, path);
+            using var pen = new Pen(Foreground, 1);
+            g?.DrawPath(pen, path);
+        }
+
+        public virtual void Draw(Graphics? g, Pen pen, Brush brush)
+        {
+            using var path = GetGraphicsPath();
+            g?.FillPath(brush, path);
+            g?.DrawPath(pen, path);
+        }
+
+        public bool ContainsPoint(PointF point)
+        {
+            using var pen = new Pen(Foreground, 1);
+            using var path = GetGraphicsPath();
+            return path.IsOutlineVisible(point, pen) || path.IsVisible(point);
+        }
     }
 
     public class Circle: Figure
     {
         public float Radius { get; set; } = 50f;
 
-        public override void Draw(Graphics? g)
+        public override GraphicsPath GetGraphicsPath()
         {
-            // пример круга
             var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
-            using var brush = new SolidBrush(Background);
-            g?.FillEllipse(brush, rect);
-            using var pen = new Pen(Foreground, 1);
-            g?.DrawEllipse(pen, rect);
+            var path = new GraphicsPath();
+            path.AddEllipse(rect);
+            return path;
         }
+
+        //public override void Draw(Graphics? g)
+        //{
+        //    if (g == null) return;
+        //    base.Draw(g);
+        //    var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
+        //    using var sf = new StringFormat();
+        //    sf.Alignment = StringAlignment.Center;
+        //    sf.LineAlignment = StringAlignment.Center;
+        //    g.DrawString(Location.ToString(), SystemFonts.DefaultFont, SystemBrushes.ControlText, rect, sf);
+        //}
     }
 
     public class Rect : Figure
@@ -227,14 +351,23 @@ namespace CodeGenerator
         public float Width { get; set; } = 100f;
         public float Height { get; set; } = 80f;
 
-        public override void Draw(Graphics? g)
+        public override GraphicsPath GetGraphicsPath()
         {
-            // пример круга
             var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
-            using var brush = new SolidBrush(Background);
-            g?.FillRectangle(brush, rect);
-            using var pen = new Pen(Foreground, 1);
-            g?.DrawRectangle(pen, rect);
+            var path = new GraphicsPath();
+            path.AddRectangle(rect);
+            return path;
         }
+
+        //public override void Draw(Graphics? g)
+        //{
+        //    if (g == null) return;
+        //    base.Draw(g);
+        //    var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
+        //    using var sf = new StringFormat();
+        //    sf.Alignment = StringAlignment.Center;
+        //    sf.LineAlignment = StringAlignment.Center;
+        //    g.DrawString(Location.ToString(), SystemFonts.DefaultFont, SystemBrushes.ControlText, rect, sf);
+        //}
     }
 }

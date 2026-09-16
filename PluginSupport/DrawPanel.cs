@@ -211,5 +211,27 @@ namespace PluginSupport
                 Invalidate();
             }
         }
+
+        /// <summary>
+        /// Получение координат точки с учётом смещения, зума
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public PointF GetLocation(PointF point)
+        {
+            return PrepareMousePosition(PointToClient(Point.Ceiling(point)));
+        }
+
+        private PointF PrepareMousePosition(PointF point)
+        {
+            PointF[] arr = [point];
+            Matrix matrix = new();
+
+            matrix.Translate(Origin.X, Origin.Y);
+            matrix.Scale(1f / (float)Zoom, 1f / (float)Zoom);
+            matrix.TransformPoints(arr);
+            matrix.Dispose();
+            return new PointF(arr[0].X, arr[0].Y);
+        }
     }
 }
