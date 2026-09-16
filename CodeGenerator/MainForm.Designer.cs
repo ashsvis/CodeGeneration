@@ -82,8 +82,10 @@
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
             panCenter = new Panel();
+            tsslStatus = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
+            statusStrip1.SuspendLayout();
             panLeft.SuspendLayout();
             tcUtilites.SuspendLayout();
             tpLibrary.SuspendLayout();
@@ -396,6 +398,7 @@
             // 
             // statusStrip1
             // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsslStatus });
             statusStrip1.Location = new Point(0, 428);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.RenderMode = ToolStripRenderMode.ManagerRenderMode;
@@ -502,6 +505,12 @@
             panCenter.Size = new Size(494, 379);
             panCenter.TabIndex = 7;
             // 
+            // tsslStatus
+            // 
+            tsslStatus.Name = "tsslStatus";
+            tsslStatus.Size = new Size(48, 17);
+            tsslStatus.Text = "Готово.";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -525,6 +534,8 @@
             menuStrip1.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             panLeft.ResumeLayout(false);
             tcUtilites.ResumeLayout(false);
             tpLibrary.ResumeLayout(false);
@@ -588,5 +599,6 @@
         private PropertyGrid pgProperties;
         private ToolStripMenuItem tsmiPlugins;
         private Panel panCenter;
+        private ToolStripStatusLabel tsslStatus;
     }
 }

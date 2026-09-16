@@ -15,6 +15,7 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
+            /*
             //сканируем плагины в папке Plugins
             pm.ScanPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
 
@@ -25,7 +26,7 @@ namespace CodeGenerator
                 var item = tsmiPlugins.DropDownItems.Add(plugin.Name);
                 //item.Click += delegate { plugin.Run(this); }; // при клике на меню, запускаем плагин на выполнение
             }
-
+            */
             panCenter.Controls.Add(drawPanel);
         }
 
@@ -35,9 +36,15 @@ namespace CodeGenerator
             panCenter.Controls.Add(control);
         }
 
+        /// <summary>
+        /// Обработка перемещений и зуммирования видового экрана,
+        /// получаем точку origin и коэффициент зуммирования
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
         {
-
+            tsslStatus.Text = $"Смещение базовой точки: {e.Origin}, зум: {e.Zoom}";
         }
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
@@ -61,6 +68,7 @@ namespace CodeGenerator
                 Properties.Settings.Default.dy,
                 Properties.Settings.Default.origin,
                 Properties.Settings.Default.zoom);
+            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
         }
 
         private void TsmiExit_Click(object sender, EventArgs e)

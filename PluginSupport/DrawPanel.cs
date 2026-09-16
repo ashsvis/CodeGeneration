@@ -47,7 +47,7 @@ namespace PluginSupport
                 OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                 {
                     Zoom = zoomScale,
-                    ViewPort = origin
+                    Origin = origin
                 });
                 return;
             }
@@ -179,7 +179,7 @@ namespace PluginSupport
                 OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                 {
                     Zoom = zoomScale,
-                    ViewPort = origin
+                    Origin = origin
                 });
                 Invalidate();
             }
@@ -205,7 +205,7 @@ namespace PluginSupport
                     OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                     {
                         Zoom = zoomScale,
-                        ViewPort = origin
+                        Origin = origin
                     });
                 }
                 Invalidate();
