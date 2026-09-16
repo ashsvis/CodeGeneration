@@ -72,6 +72,7 @@
             toolStripSeparator7 = new ToolStripSeparator();
             справкаToolStripButton = new ToolStripButton();
             statusStrip1 = new StatusStrip();
+            tsslStatus = new ToolStripStatusLabel();
             panLeft = new Panel();
             tcUtilites = new TabControl();
             tpLibrary = new TabPage();
@@ -82,7 +83,6 @@
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
             panCenter = new Panel();
-            tsslStatus = new ToolStripStatusLabel();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -406,6 +406,12 @@
             statusStrip1.TabIndex = 2;
             statusStrip1.Text = "statusStrip1";
             // 
+            // tsslStatus
+            // 
+            tsslStatus.Name = "tsslStatus";
+            tsslStatus.Size = new Size(48, 17);
+            tsslStatus.Text = "Готово.";
+            // 
             // panLeft
             // 
             panLeft.Controls.Add(tcUtilites);
@@ -442,12 +448,16 @@
             // 
             // tvLibrary
             // 
+            tvLibrary.BorderStyle = BorderStyle.None;
             tvLibrary.Dock = DockStyle.Fill;
+            tvLibrary.FullRowSelect = true;
+            tvLibrary.HideSelection = false;
             tvLibrary.Location = new Point(3, 3);
             tvLibrary.Margin = new Padding(0);
             tvLibrary.Name = "tvLibrary";
             tvLibrary.Size = new Size(286, 345);
             tvLibrary.TabIndex = 0;
+            tvLibrary.MouseDown += tvLibrary_MouseDown;
             // 
             // tpProperties
             // 
@@ -499,17 +509,12 @@
             // 
             // panCenter
             // 
+            panCenter.AllowDrop = true;
             panCenter.Dock = DockStyle.Fill;
             panCenter.Location = new Point(303, 49);
             panCenter.Name = "panCenter";
             panCenter.Size = new Size(494, 379);
             panCenter.TabIndex = 7;
-            // 
-            // tsslStatus
-            // 
-            tsslStatus.Name = "tsslStatus";
-            tsslStatus.Size = new Size(48, 17);
-            tsslStatus.Text = "Готово.";
             // 
             // MainForm
             // 

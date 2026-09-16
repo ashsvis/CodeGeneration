@@ -8,7 +8,7 @@ namespace PluginSupport
         private float MaxZoom { get; set; } = 100f;
         private float MinZoom { get; set; } = 0.01f;
 
-        public event EventHandler<DrawEventArgs>? OnDraw; 
+        public event EventHandler<DrawEventArgs>? OnDraw;
         public event EventHandler<PanOrZoomEventArgs>? OnPanOrZoom;
 
         private double zoomScale = 1; /// Current Zoom value
@@ -211,6 +211,5 @@ namespace PluginSupport
                 Invalidate();
             }
         }
-
     }
 }
