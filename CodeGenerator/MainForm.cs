@@ -49,9 +49,10 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
-            // пример круга
-            var rect = new Rectangle(100, 100, 150, 150);
-            e.Graphics?.DrawEllipse(Pens.White, rect);
+            var rect = new Rect() { Location = new PointF(80f, 110f), Width = 100f, Height = 80f };
+            rect.Draw(e.Graphics);
+            var circle = new Circle() { Location = new PointF(100f, 100f), Radius = 50f, Background = Color.FromArgb(200, SystemColors.Window) };
+            circle.Draw(e.Graphics);
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -91,6 +92,45 @@ namespace CodeGenerator
             Properties.Settings.Default.leftpan = panLeft.Width;
             Properties.Settings.Default.rightpan = panRight.Width;
             Properties.Settings.Default.Save();
+        }
+    }
+
+    public abstract class Figure
+    {
+        public PointF Location { get; set; }
+        public Color Foreground { get; set; } = SystemColors.ControlText;
+        public Color Background { get; set; } = SystemColors.Window;
+        public abstract void Draw(Graphics? g);
+    }
+
+    public class Circle: Figure
+    {
+        public float Radius { get; set; }
+
+        public override void Draw(Graphics? g)
+        {
+            // пример круга
+            var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
+            using var brush = new SolidBrush(Background);
+            g?.FillEllipse(brush, rect);
+            using var pen = new Pen(Foreground, 1);
+            g?.DrawEllipse(pen, rect);
+        }
+    }
+
+    public class Rect : Figure
+    {
+        public float Width { get; set; }
+        public float Height { get; set; }
+
+        public override void Draw(Graphics? g)
+        {
+            // пример круга
+            var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height - 2f, Width, Height);
+            using var brush = new SolidBrush(Background);
+            g?.FillRectangle(brush, rect);
+            using var pen = new Pen(Foreground, 1);
+            g?.DrawRectangle(pen, rect);
         }
     }
 }
