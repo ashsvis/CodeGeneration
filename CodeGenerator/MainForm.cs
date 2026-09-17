@@ -40,6 +40,7 @@ namespace CodeGenerator
                 tvLibrary.Nodes.Add(rootNode);
                 rootNode.Nodes.AddRange(plugin.TreeNodeItems());
             }
+            tvLibrary.ExpandAll();
         }
 
         private PointF firstPoint = PointF.Empty;

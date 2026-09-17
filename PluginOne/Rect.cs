@@ -8,12 +8,12 @@ namespace PluginOne
         public float Width { get; set; } = 100f;
         public float Height { get; set; } = 80f;
 
-        public override GraphicsPath GetGraphicsPath()
+        public override GraphicsPath[] GetGraphicsPath()
         {
             var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
             var path = new GraphicsPath();
             path.AddRectangle(rect);
-            return path;
+            return [path];
         }
 
         public override ToolStripItem[] GetContextMenuItems(bool several)
@@ -24,20 +24,9 @@ namespace PluginOne
                 items.Add(item);
             var baseItems = base.GetContextMenuItems(several);
             if (!several && baseItems.Length > 0)
-                items.Add((ToolStripItem)new ToolStripSeparator());
+                items.Add(new ToolStripSeparator());
             items.AddRange(baseItems);
             return [.. items];
         }
-
-        //public override void Draw(Graphics? g)
-        //{
-        //    if (g == null) return;
-        //    base.Draw(g);
-        //    var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
-        //    using var sf = new StringFormat();
-        //    sf.Alignment = StringAlignment.Center;
-        //    sf.LineAlignment = StringAlignment.Center;
-        //    g.DrawString(Location.ToString(), SystemFonts.DefaultFont, SystemBrushes.ControlText, rect, sf);
-        //}
     }
 }

@@ -7,12 +7,12 @@ namespace PluginOne
     {
         public float Radius { get; set; } = 50f;
 
-        public override GraphicsPath GetGraphicsPath()
+        public override GraphicsPath[] GetGraphicsPath()
         {
             var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
             var path = new GraphicsPath();
             path.AddEllipse(rect);
-            return path;
+            return [path];
         }
 
         public override ToolStripItem[] GetContextMenuItems(bool several)
@@ -23,7 +23,7 @@ namespace PluginOne
                 items.Add(item);
             var baseItems = base.GetContextMenuItems(several);
             if (!several && baseItems.Length > 0)
-                items.Add((ToolStripItem)new ToolStripSeparator());
+                items.Add(new ToolStripSeparator());
             items.AddRange(baseItems);
             return [.. items];
         }
