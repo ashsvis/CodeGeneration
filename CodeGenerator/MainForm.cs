@@ -8,7 +8,7 @@ namespace CodeGenerator
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
 
-        private readonly List<Figure> figures = [];
+        private readonly List<Shape> shapes = [];
 
         public MainForm()
         {
@@ -51,54 +51,56 @@ namespace CodeGenerator
 
         private PointF firstPoint = PointF.Empty;
         private bool leftPressed = false;
-        private Figure? pressedFigure = null;
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
+            firstPoint = e.Location;
+            leftPressed = e.Button == MouseButtons.Left;
+            if (e.Button == MouseButtons.Right)
+                contextMenu.Items.Clear();
+            var shapeFound = false;
+            var ctrl = ModifierKeys.HasFlag(Keys.Control);
+            shapes.ForEach(shape => shape.Hover = false);
+            if (!ctrl && shapes.Count(x => x.Selected) == 1)
+                shapes.ForEach(shape => shape.Selected = false);
+            foreach (var shape in shapes.Select(x => x).Reverse())
             {
-                firstPoint = e.Location;
-                leftPressed = true;
-                pressedFigure = null;
-                // выбор или невыбор фигур мышью путём нажатия на фигуру
-                var modify = false;
-                foreach (var figure in figures.Select(x => x).Reverse())
+                if (shape.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
                 {
-                    if (figure.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
-                    {
-                        if (!ModifierKeys.HasFlag(Keys.Control))
-                        {
-                            pressedFigure = figure;
-                            if (!figure.Selected)
-                            {
-                                figure.Selected = true;
-                                modify = true;
-                            }
-                        }
-                        else if (ModifierKeys.HasFlag(Keys.Control) && figure.Selected)
-                        {
-                            figure.Selected = false;
-                            modify = true;
-                        }
-                        drawPanel.Invalidate();
-                        break;
-                    }
+                    var other = shapes.Where(x => x.Selected).Contains(shape);
+                    if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
+                        shapes.ForEach(shape => shape.Selected = false);
+                    shape.Selected = true;
+                    shape.Hover = true;
+                    shapeFound = true;
+                    if (e.Button == MouseButtons.Right)
+                        contextMenu.Items.AddRange(shape.GetContextMenuItems(shapes.Count(x => x.Selected) > 1));
+                    break;
                 }
-                // если выбор был сделан, то выходим
-                if (modify) return;
             }
+            if (!shapeFound)
+            {
+                shapes.ForEach(shape =>
+                {
+                    shape.Selected = false;
+                    shape.Hover = false;
+                });
+            }
+            drawPanel.Invalidate();
+            if (e.Button == MouseButtons.Right)
+                contextMenu.Show(drawPanel, e.Location);
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
-            foreach (var figure in figures)
-                figure.Hover = false;
-            foreach (var figure in figures.Select(x => x).Reverse())
+            foreach (var shape in shapes)
+                shape.Hover = false;
+            foreach (var shape in shapes.Select(x => x).Reverse())
             {
-                if (figure.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
+                if (shape.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
                 {
-                    figure.Hover = true;
+                    shape.Hover = true;
                     break;
                 }
             }
@@ -106,12 +108,12 @@ namespace CodeGenerator
             {
                 var dx = e.X - firstPoint.X;
                 var dy = e.Y - firstPoint.Y;
-
-                if (pressedFigure != null)
+                // перемещаем только выбранные фигуры
+                foreach (var shape in shapes)
                 {
-                    pressedFigure.Location = PointF.Add(pressedFigure.Location, new SizeF(dx, dy));
+                    if (shape is ILocation loc && loc.Selected)
+                        loc.Location = PointF.Add(loc.Location, new SizeF(dx / (float)drawPanel.Zoom, dy / (float)drawPanel.Zoom));
                 }
-
                 firstPoint = e.Location;
             }
             drawPanel.Invalidate();
@@ -162,10 +164,12 @@ namespace CodeGenerator
             {
                 if (e.Data.GetData(typeof(object[])) is object[] items)
                 {
-                    foreach (var figure in items.Cast<Figure>())
+                    shapes.ForEach(shape => shape.Selected = false);
+                    foreach (var shape in items.Cast<Shape>())
                     {
-                        figure.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
-                        figures.Add(figure);
+                        shape.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
+                        shape.Selected = true;
+                        shapes.Add(shape);
                         drawPanel.Invalidate();
                     }
                 }
@@ -194,25 +198,25 @@ namespace CodeGenerator
             using var hoverpen = new Pen(Color.FromArgb(255, 255, 255), 1f);
             using var selectpen = new Pen(Color.DarkMagenta, 1f);
             using var selecthoverpen = new Pen(Color.Magenta, 1f);
-            foreach (var figure in figures)
+            foreach (var shape in shapes)
             {
-                if (figure.Hover && figure.Selected)
+                if (shape.Hover && shape.Selected)
                 {
-                    using var brush = new SolidBrush(figure.Background);
-                    figure.Draw(e.Graphics, selecthoverpen, brush);
+                    using var brush = new SolidBrush(shape.Background);
+                    shape.Draw(e.Graphics, selecthoverpen, brush);
                 }
-                else if (figure.Hover)
+                else if (shape.Hover)
                 {
-                    using var brush = new SolidBrush(figure.Background);
-                    figure.Draw(e.Graphics, hoverpen, brush);
+                    using var brush = new SolidBrush(shape.Background);
+                    shape.Draw(e.Graphics, hoverpen, brush);
                 }
-                else if (figure.Selected)
+                else if (shape.Selected)
                 {
-                    using var brush = new SolidBrush(figure.Background);
-                    figure.Draw(e.Graphics, selectpen, brush);
+                    using var brush = new SolidBrush(shape.Background);
+                    shape.Draw(e.Graphics, selectpen, brush);
                 }
                 else
-                    figure.Draw(e.Graphics);
+                    shape.Draw(e.Graphics);
             }
         }
 
@@ -266,7 +270,7 @@ namespace CodeGenerator
                 {
                     try
                     {
-                        var module = (Figure?)Activator.CreateInstance(type);
+                        var module = (Shape?)Activator.CreateInstance(type);
                         if (module != null)
                         {
                             tvLibrary.SelectedNode = node;
@@ -287,42 +291,7 @@ namespace CodeGenerator
 
     }
 
-    public abstract class Figure
-    {
-        public PointF Location { get; set; }
-        public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
-        public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
-
-        public bool Selected { get; set; }
-        public bool Hover { get; set; }
-
-        public abstract GraphicsPath GetGraphicsPath();
-
-        public virtual void Draw(Graphics? g)
-        {
-            using var path = GetGraphicsPath();
-            using var brush = new SolidBrush(Background);
-            g?.FillPath(brush, path);
-            using var pen = new Pen(Foreground, 1);
-            g?.DrawPath(pen, path);
-        }
-
-        public virtual void Draw(Graphics? g, Pen pen, Brush brush)
-        {
-            using var path = GetGraphicsPath();
-            g?.FillPath(brush, path);
-            g?.DrawPath(pen, path);
-        }
-
-        public bool ContainsPoint(PointF point)
-        {
-            using var pen = new Pen(Foreground, 1);
-            using var path = GetGraphicsPath();
-            return path.IsOutlineVisible(point, pen) || path.IsVisible(point);
-        }
-    }
-
-    public class Circle: Figure
+    public class Circle: Shape
     {
         public float Radius { get; set; } = 50f;
 
@@ -334,19 +303,21 @@ namespace CodeGenerator
             return path;
         }
 
-        //public override void Draw(Graphics? g)
-        //{
-        //    if (g == null) return;
-        //    base.Draw(g);
-        //    var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
-        //    using var sf = new StringFormat();
-        //    sf.Alignment = StringAlignment.Center;
-        //    sf.LineAlignment = StringAlignment.Center;
-        //    g.DrawString(Location.ToString(), SystemFonts.DefaultFont, SystemBrushes.ControlText, rect, sf);
-        //}
+        public override ToolStripItem[] GetContextMenuItems(bool several)
+        {
+            List<ToolStripItem> items = [];
+            var item = new ToolStripMenuItem() { Text = "Круг", Enabled = false };
+            if (!several)
+                items.Add(item);
+            var baseItems = base.GetContextMenuItems(several);
+            if (!several && baseItems.Length > 0)
+                items.Add((ToolStripItem)new ToolStripSeparator());
+            items.AddRange(baseItems);
+            return [.. items];
+        }
     }
 
-    public class Rect : Figure
+    public class Rect : Shape
     {
         public float Width { get; set; } = 100f;
         public float Height { get; set; } = 80f;
@@ -357,6 +328,19 @@ namespace CodeGenerator
             var path = new GraphicsPath();
             path.AddRectangle(rect);
             return path;
+        }
+
+        public override ToolStripItem[] GetContextMenuItems(bool several)
+        {
+            List<ToolStripItem> items = [];
+            var item = new ToolStripMenuItem() { Text = "Прямоугольник", Enabled = false };
+            if (!several)
+                items.Add(item);
+            var baseItems = base.GetContextMenuItems(several);
+            if (!several && baseItems.Length > 0)
+                items.Add((ToolStripItem)new ToolStripSeparator());
+            items.AddRange(baseItems);
+            return [.. items];
         }
 
         //public override void Draw(Graphics? g)

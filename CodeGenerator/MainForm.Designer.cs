@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             menuStrip1 = new MenuStrip();
             tsmiFile = new ToolStripMenuItem();
@@ -83,6 +84,8 @@
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
             panCenter = new Panel();
+            contextMenu = new ContextMenuStrip(components);
+            testToolStripMenuItem = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -90,6 +93,7 @@
             tcUtilites.SuspendLayout();
             tpLibrary.SuspendLayout();
             tpProperties.SuspendLayout();
+            contextMenu.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -516,6 +520,18 @@
             panCenter.Size = new Size(494, 379);
             panCenter.TabIndex = 7;
             // 
+            // contextMenu
+            // 
+            contextMenu.Items.AddRange(new ToolStripItem[] { testToolStripMenuItem });
+            contextMenu.Name = "contextMenu";
+            contextMenu.Size = new Size(94, 26);
+            // 
+            // testToolStripMenuItem
+            // 
+            testToolStripMenuItem.Name = "testToolStripMenuItem";
+            testToolStripMenuItem.Size = new Size(93, 22);
+            testToolStripMenuItem.Text = "test";
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -545,6 +561,7 @@
             tcUtilites.ResumeLayout(false);
             tpLibrary.ResumeLayout(false);
             tpProperties.ResumeLayout(false);
+            contextMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -605,5 +622,7 @@
         private ToolStripMenuItem tsmiPlugins;
         private Panel panCenter;
         private ToolStripStatusLabel tsslStatus;
+        private ContextMenuStrip contextMenu;
+        private ToolStripMenuItem testToolStripMenuItem;
     }
 }

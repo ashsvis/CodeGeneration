@@ -189,7 +189,7 @@ namespace PluginSupport
         {
             if (e.Button == MouseButtons.None)
             {
-                if (ModifierKeys == Keys.None)
+                if (ModifierKeys == Keys.None || ModifierKeys.HasFlag(Keys.Control))
                 {
                     var mouseX = e.Location.X;
                     var mouseY = e.Location.Y;
