@@ -54,7 +54,6 @@
             инструментыToolStripMenuItem = new ToolStripMenuItem();
             настройкиToolStripMenuItem = new ToolStripMenuItem();
             параметрыToolStripMenuItem = new ToolStripMenuItem();
-            tsmiPlugins = new ToolStripMenuItem();
             справкаToolStripMenuItem = new ToolStripMenuItem();
             содержимоеToolStripMenuItem = new ToolStripMenuItem();
             индексToolStripMenuItem = new ToolStripMenuItem();
@@ -98,7 +97,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, изменитьToolStripMenuItem, инструментыToolStripMenuItem, tsmiPlugins, справкаToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, изменитьToolStripMenuItem, инструментыToolStripMenuItem, справкаToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -267,12 +266,6 @@
             параметрыToolStripMenuItem.Size = new Size(138, 22);
             параметрыToolStripMenuItem.Text = "&Параметры";
             // 
-            // tsmiPlugins
-            // 
-            tsmiPlugins.Name = "tsmiPlugins";
-            tsmiPlugins.Size = new Size(89, 20);
-            tsmiPlugins.Text = "Р&асширения";
-            // 
             // справкаToolStripMenuItem
             // 
             справкаToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { содержимоеToolStripMenuItem, индексToolStripMenuItem, поискToolStripMenuItem, toolStripSeparator5, опрограммеToolStripMenuItem });
@@ -283,30 +276,30 @@
             // содержимоеToolStripMenuItem
             // 
             содержимоеToolStripMenuItem.Name = "содержимоеToolStripMenuItem";
-            содержимоеToolStripMenuItem.Size = new Size(158, 22);
+            содержимоеToolStripMenuItem.Size = new Size(180, 22);
             содержимоеToolStripMenuItem.Text = "&Содержимое";
             // 
             // индексToolStripMenuItem
             // 
             индексToolStripMenuItem.Name = "индексToolStripMenuItem";
-            индексToolStripMenuItem.Size = new Size(158, 22);
+            индексToolStripMenuItem.Size = new Size(180, 22);
             индексToolStripMenuItem.Text = "&Индекс";
             // 
             // поискToolStripMenuItem
             // 
             поискToolStripMenuItem.Name = "поискToolStripMenuItem";
-            поискToolStripMenuItem.Size = new Size(158, 22);
+            поискToolStripMenuItem.Size = new Size(180, 22);
             поискToolStripMenuItem.Text = "&Поиск";
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(155, 6);
+            toolStripSeparator5.Size = new Size(177, 6);
             // 
             // опрограммеToolStripMenuItem
             // 
             опрограммеToolStripMenuItem.Name = "опрограммеToolStripMenuItem";
-            опрограммеToolStripMenuItem.Size = new Size(158, 22);
+            опрограммеToolStripMenuItem.Size = new Size(180, 22);
             опрограммеToolStripMenuItem.Text = "&О программе…";
             // 
             // toolStrip1
@@ -619,7 +612,6 @@
         private TabPage tpProperties;
         private TreeView tvLibrary;
         private PropertyGrid pgProperties;
-        private ToolStripMenuItem tsmiPlugins;
         private Panel panCenter;
         private ToolStripStatusLabel tsslStatus;
         private ContextMenuStrip contextMenu;

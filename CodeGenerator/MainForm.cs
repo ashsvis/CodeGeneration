@@ -1,5 +1,4 @@
 using PluginSupport;
-using System.Drawing.Drawing2D;
 
 namespace CodeGenerator
 {
@@ -31,22 +30,16 @@ namespace CodeGenerator
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
             panCenter.Controls.Add(drawPanel);
 
-            /*
+            tvLibrary.Nodes.Clear();
             //сканируем плагины в папке Plugins
             pm.ScanPlugins(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"));
-
-            //перебираем плагины, создаем пункт меню для каждого
+            //перебираем плагины
             foreach (var plugin in pm.Plugins)
             {
-                plugin.ConnectEvents(drawPanel);
-                var item = tsmiPlugins.DropDownItems.Add(plugin.Name);
-                //item.Click += delegate { plugin.Run(this); }; // при клике на меню, запускаем плагин на выполнение
+                var rootNode = new TreeNode(plugin.Name);
+                tvLibrary.Nodes.Add(rootNode);
+                rootNode.Nodes.AddRange(plugin.TreeNodeItems());
             }
-            */
-
-            tvLibrary.Nodes.Clear();
-            tvLibrary.Nodes.Add(new TreeNode("Круг") { Tag = typeof(Circle) });
-            tvLibrary.Nodes.Add(new TreeNode("Прямоугольник") { Tag = typeof(Rect) });
         }
 
         private PointF firstPoint = PointF.Empty;
@@ -235,7 +228,6 @@ namespace CodeGenerator
                 Properties.Settings.Default.origin,
                 Properties.Settings.Default.zoom);
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
-            tvLibrary.SelectedNode = tvLibrary.Nodes[0];
         }
 
         private void TsmiExit_Click(object sender, EventArgs e)
@@ -289,69 +281,5 @@ namespace CodeGenerator
             }
         }
 
-    }
-
-    public class Circle: Shape
-    {
-        public float Radius { get; set; } = 50f;
-
-        public override GraphicsPath GetGraphicsPath()
-        {
-            var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
-            var path = new GraphicsPath();
-            path.AddEllipse(rect);
-            return path;
-        }
-
-        public override ToolStripItem[] GetContextMenuItems(bool several)
-        {
-            List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = "Круг", Enabled = false };
-            if (!several)
-                items.Add(item);
-            var baseItems = base.GetContextMenuItems(several);
-            if (!several && baseItems.Length > 0)
-                items.Add((ToolStripItem)new ToolStripSeparator());
-            items.AddRange(baseItems);
-            return [.. items];
-        }
-    }
-
-    public class Rect : Shape
-    {
-        public float Width { get; set; } = 100f;
-        public float Height { get; set; } = 80f;
-
-        public override GraphicsPath GetGraphicsPath()
-        {
-            var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
-            var path = new GraphicsPath();
-            path.AddRectangle(rect);
-            return path;
-        }
-
-        public override ToolStripItem[] GetContextMenuItems(bool several)
-        {
-            List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = "Прямоугольник", Enabled = false };
-            if (!several)
-                items.Add(item);
-            var baseItems = base.GetContextMenuItems(several);
-            if (!several && baseItems.Length > 0)
-                items.Add((ToolStripItem)new ToolStripSeparator());
-            items.AddRange(baseItems);
-            return [.. items];
-        }
-
-        //public override void Draw(Graphics? g)
-        //{
-        //    if (g == null) return;
-        //    base.Draw(g);
-        //    var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
-        //    using var sf = new StringFormat();
-        //    sf.Alignment = StringAlignment.Center;
-        //    sf.LineAlignment = StringAlignment.Center;
-        //    g.DrawString(Location.ToString(), SystemFonts.DefaultFont, SystemBrushes.ControlText, rect, sf);
-        //}
     }
 }

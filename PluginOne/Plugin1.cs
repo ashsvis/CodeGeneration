@@ -4,24 +4,14 @@ namespace PluginOne
 {
     public class Plugin1 : IPlugin
     {
-        public string Name => "Plugin 1";
+        public string Name => "Геометрические фигуры";
 
-        private void OnDraw(object? sender, DrawEventArgs e)
+        public TreeNode[] TreeNodeItems()
         {
-            // пример круга
-            var rect = new Rectangle(110, 110, 150, 150);
-            e.Graphics?.DrawEllipse(Pens.Yellow, rect);
-        }
-
-        public void Run(IHost host)
-        {
-            var control = new UserControl1() { Dock = DockStyle.Fill };
-            host.AddControlToMainForm(control);
-        }
-
-        public void ConnectEvents(DrawPanel panel)
-        {
-            panel.OnDraw += OnDraw;
+            List<TreeNode> items = [];
+            items.Add(new TreeNode("Круг") { Tag = typeof(Circle) });
+            items.Add(new TreeNode("Прямоугольник") { Tag = typeof(Rect) });
+            return [..items];
         }
     }
 }
