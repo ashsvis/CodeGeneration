@@ -46,16 +46,26 @@ namespace PluginSupport
         /// <returns></returns>
         public bool ContainsPoint(PointF point)
         {
-            foreach (var r in GetTargets())
-            {
-                if (r.Item3.Contains(point))
-                    return true;
-            }
             using var pen = new Pen(Foreground, 1);
             foreach (var p in GetGraphicsPaths())
             {
                 using var path = p;
                 if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Указанная точка попадает в таргет
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public bool TargetsPoint(PointF point)
+        {
+            foreach (var r in GetTargets())
+            {
+                if (r.Item3.Contains(point))
                     return true;
             }
             return false;
@@ -84,5 +94,7 @@ namespace PluginSupport
             //items.Add(item);
             return [.. items];
         }
+
+        public abstract void Click(PointF point);
     }
 }

@@ -60,7 +60,15 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape.ContainsPoint(point))
+                if (shape.TargetsPoint(point))
+                {
+                    if (e.Button == MouseButtons.Left)
+                        shape.Click(point);
+                    else if (e.Button == MouseButtons.Right)
+                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                    break;
+                }
+                else if (shape.ContainsPoint(point))
                 {
                     var other = shapes.Where(x => x.Selected).Contains(shape);
                     if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
@@ -89,11 +97,15 @@ namespace CodeGenerator
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
+            Cursor = Cursors.Default;
             foreach (var shape in shapes)
                 shape.Hover = false;
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
-                if (shape.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
+                var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
+                if (shape.TargetsPoint(point))
+                    Cursor = Cursors.Hand;
+                else if (shape.ContainsPoint(point))
                 {
                     shape.Hover = true;
                     break;

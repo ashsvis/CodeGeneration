@@ -6,6 +6,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Инверсия";
+            InvertInputs = [false];
+            InvertOutputs = [true];
             Inputs = [false];
             Outputs = [true];
         }

@@ -42,6 +42,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false];
+            InvertOutputs = [false];
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -53,6 +55,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -64,6 +68,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -75,6 +81,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -86,6 +94,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -97,6 +107,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -108,6 +120,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
+            InvertInputs = [false, false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -119,6 +133,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false];
+            InvertOutputs = [false];
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -130,6 +146,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -141,6 +159,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -152,6 +172,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -163,6 +185,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -174,6 +198,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -185,6 +211,8 @@ namespace PluginOne
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
+            InvertInputs = [false, false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -196,6 +224,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false];
+            InvertOutputs = [false];
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -207,6 +237,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -218,6 +250,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -229,6 +263,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -240,6 +276,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -251,6 +289,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -262,6 +302,8 @@ namespace PluginOne
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false, false, false, false, false, false, false];
+            InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }

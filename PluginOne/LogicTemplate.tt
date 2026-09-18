@@ -46,6 +46,8 @@ namespace PluginOne
         {
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
+            InvertInputs = [<#= string.Join(", ", holder) #>];
+            InvertOutputs = [false];
             Inputs = [<#= string.Join(", ", holder) #>];
             Outputs = [false];
         }

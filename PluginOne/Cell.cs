@@ -1,7 +1,5 @@
 using PluginSupport;
-using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.IO;
 
 namespace PluginOne
 {
@@ -9,6 +7,8 @@ namespace PluginOne
     {
         public float Width { get; set; } = 50f;
         public float Height { get; set; } = 50f;
+        protected bool[] InvertInputs = [];
+        protected bool[] InvertOutputs = [];
         protected bool[] Inputs = [];
         protected bool[] Outputs = [];
         public string? FuncName { get; set; }
@@ -17,7 +17,7 @@ namespace PluginOne
         public override GraphicsPath[] GetGraphicsPaths()
         {
             var step = Height / 2f;
-            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
+            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
@@ -25,16 +25,16 @@ namespace PluginOne
             var path = new GraphicsPath();
             path.AddRectangle(rect);
             // вывод входов
-            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertInputs.Length; i++)
             {
                 path.AddLine(rect.Left, rect.Top + hi, rect.Left - Width / 4f, rect.Top + hi);
                 path.CloseFigure();
                 hi += step;
             }
             // вывод выходов
-            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
+            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertOutputs.Length; i++)
             {    
                 path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4f, rect.Top + ho);
                 path.CloseFigure();
@@ -43,10 +43,10 @@ namespace PluginOne
             paths.Add(path);
             var sizeInvertRing = Width / 6f;
             // вывод инверсий входов
-            hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertInputs.Length; i++)
             {
-                if (Inputs[i])
+                if (InvertInputs[i])
                 {
                     path = new GraphicsPath();
                     var r = new RectangleF(rect.Left - sizeInvertRing / 2f, rect.Top + hi - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
@@ -56,10 +56,10 @@ namespace PluginOne
                 hi += step;
             }
             // вывод инверсий выходов
-            ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
+            ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertOutputs.Length; i++)
             {
-                if (Outputs[i])
+                if (InvertOutputs[i])
                 {
                     path = new GraphicsPath();
                     var r = new RectangleF(rect.Right - sizeInvertRing / 2f, rect.Top + ho - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
@@ -90,9 +90,9 @@ namespace PluginOne
                     item.Click += (s, e) => 
                     {
                         if (target.Item1)
-                            Outputs[target.Item2] = !Outputs[target.Item2];
+                            InvertOutputs[target.Item2] = !InvertOutputs[target.Item2];
                         else
-                            Inputs[target.Item2] = !Inputs[target.Item2];
+                            InvertInputs[target.Item2] = !InvertInputs[target.Item2];
                     };
                     items.Add(item);
                     return [.. items];
@@ -123,27 +123,49 @@ namespace PluginOne
         {
             List<Tuple<bool, int, RectangleF>> items = [];
             var step = Height / 2f;
-            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
+            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = Width / 4f;
             // вывод таргетов входов
-            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertInputs.Length; i++)
             {
                 var r = new RectangleF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f, sizeTarget, sizeTarget);
                 items.Add(new Tuple<bool, int, RectangleF>(false, i, r));
                 hi += step;
             }
             // вывод таргетов выходов
-            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
+            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertOutputs.Length; i++)
             {
                 var r = new RectangleF(rect.Right, rect.Top + ho - sizeTarget / 2f, sizeTarget, sizeTarget);
                 items.Add(new Tuple<bool, int, RectangleF>(true, i, r));
                 ho += step;
             }
             return [.. items];
+        }
+
+        public override void Click(PointF point)
+        {
+            var targets = GetTargets();
+            foreach (var target in targets)
+            {
+                if (target.Item3.Contains(point))
+                {
+                    var pin = target.Item2;
+                    if (target.Item1)
+                    {
+                        // выходы
+                        Outputs[target.Item2] = !Outputs[target.Item2];
+                    }
+                    else
+                    {
+                        // входы
+                        Inputs[target.Item2] = !Inputs[target.Item2];
+                    }
+                }
+            }
         }
     }
 }
