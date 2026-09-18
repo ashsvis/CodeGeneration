@@ -95,6 +95,6 @@ namespace PluginSupport
             return [.. items];
         }
 
-        public abstract void Click(PointF point);
+        public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
     }
 }

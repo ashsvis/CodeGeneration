@@ -108,7 +108,7 @@ namespace PluginOne
             // вывод обозначения логической функции
             var path = new GraphicsPath();
             var fname = FuncName ?? "";
-            using var font = new Font("Arial", 16f);
+            using var font = new Font("Segoe UI", 12f);
             var sz = TextRenderer.MeasureText(fname, font);
             var trect = new RectangleF(Location, new SizeF(Width, sz.Height));
             using var sf = new StringFormat();
@@ -124,7 +124,7 @@ namespace PluginOne
                 var value = target.Item1 ? Outputs[target.Item2] ^ InvertOutputs[target.Item2] : Inputs[target.Item2];
                 var r = target.Item3;
                 r.Offset(0f, -r.Height / 2f);
-                p.AddString(value.ToString(), font.FontFamily, 0, 10f, r, sf);
+                p.AddString(value.ToString()[..1], font.FontFamily, 0, 10f, r, sf);
                 paths.Add(p);
             }
             return [.. paths];
@@ -167,7 +167,7 @@ namespace PluginOne
         /// Обработка клика по цели
         /// </summary>
         /// <param name="point">Точка нажатия</param>
-        public override void Click(PointF point)
+        public override void Click(PointF point, Action<bool, int, RectangleF>? action = null)
         {
             var targets = GetTargets();
             foreach (var target in targets)
@@ -179,6 +179,7 @@ namespace PluginOne
                     {
                         // выходы
                         //Outputs[target.Item2] = !Outputs[target.Item2];
+                        action?.Invoke(true, target.Item2, target.Item3);
                     }
                     else
                     {

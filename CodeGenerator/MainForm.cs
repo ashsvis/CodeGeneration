@@ -63,7 +63,17 @@ namespace CodeGenerator
                 if (shape.TargetsPoint(point))
                 {
                     if (e.Button == MouseButtons.Left)
-                        shape.Click(point);
+                    {
+                        shape.Click(point, (a, b, c) => 
+                        {
+                            var ret = drawPanel.DoDragDrop(new object[] { shape }, DragDropEffects.Link);
+                            if (ret == DragDropEffects.None)
+                            {
+                                Cursor = Cursors.Default;
+                            }
+                        });
+
+                    }
                     else if (e.Button == MouseButtons.Right)
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                     break;
@@ -159,6 +169,23 @@ namespace CodeGenerator
             if (e.Data == null) return;
             if (e.Data.GetData(typeof(object[])) != null)
             {
+                if (e.AllowedEffect == DragDropEffects.Copy)
+                    e.Effect = DragDropEffects.Copy;
+                else if (e.AllowedEffect == DragDropEffects.Link)
+                {
+                    var point = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    e.Effect = DragDropEffects.None;
+                    foreach (var shape in shapes)
+                    {
+                        if (shape.TargetsPoint(point))
+                        {
+                            e.Effect = DragDropEffects.Link;
+                            break;
+                        }
+                    }
+                }
+                else
+                    e.Effect = DragDropEffects.None;
                 drawPanel.Invalidate();
             }
         }
@@ -178,6 +205,14 @@ namespace CodeGenerator
                         shapes.Add(shape);
                         drawPanel.Invalidate();
                     }
+                }
+            }
+            else if (e.Effect == DragDropEffects.Link)
+            {
+                if (e.Data.GetData(typeof(object[])) is object[] items)
+                {
+                    var point = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    e.Effect = DragDropEffects.None;
                 }
             }
         }

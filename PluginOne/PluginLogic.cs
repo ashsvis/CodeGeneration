@@ -12,6 +12,8 @@ namespace PluginOne
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
+            items.Add(new TreeNode("RS-триггер") { Tag = typeof(Rs) });
+            items.Add(new TreeNode("SR-триггер") { Tag = typeof(Sr) });
             return [.. items];
         }
 
