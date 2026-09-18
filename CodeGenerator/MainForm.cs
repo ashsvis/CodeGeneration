@@ -133,7 +133,6 @@ namespace CodeGenerator
                 if (leftPressed)
                 {
                     leftPressed = false;
-
                     drawPanel.Invalidate();
                 }
             }

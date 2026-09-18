@@ -93,6 +93,7 @@ namespace PluginOne
                             InvertOutputs[target.Item2] = !InvertOutputs[target.Item2];
                         else
                             InvertInputs[target.Item2] = !InvertInputs[target.Item2];
+                        Calculate(Inputs, InvertInputs);
                     };
                     items.Add(item);
                     return [.. items];
@@ -107,18 +108,32 @@ namespace PluginOne
             // вывод обозначения логической функции
             var path = new GraphicsPath();
             var fname = FuncName ?? "";
-            using var font = new Font("Arial", 18f);
+            using var font = new Font("Arial", 16f);
             var sz = TextRenderer.MeasureText(fname, font);
             var trect = new RectangleF(Location, new SizeF(Width, sz.Height));
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             path.AddString(fname, font.FontFamily, 0, font.Size, trect, sf);
-            path.CloseFigure();
             paths.Add(path);
+            // значения входов или выходов
+            var targets = GetTargets();
+            foreach (var target in targets)
+            {
+                var p = new GraphicsPath();
+                var value = target.Item1 ? Outputs[target.Item2] ^ InvertOutputs[target.Item2] : Inputs[target.Item2];
+                var r = target.Item3;
+                r.Offset(0f, -r.Height / 2f);
+                p.AddString(value.ToString(), font.FontFamily, 0, 10f, r, sf);
+                paths.Add(p);
+            }
             return [.. paths];
         }
 
+        /// <summary>
+        /// Получение массива целей
+        /// </summary>
+        /// <returns>Кортеж bool - (true: выход, false: вход; индекс входа или выхода; прямоугольник цели)</returns>
         public override Tuple<bool, int, RectangleF>[] GetTargets()
         {
             List<Tuple<bool, int, RectangleF>> items = [];
@@ -127,7 +142,7 @@ namespace PluginOne
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = Width / 4f;
-            // вывод таргетов входов
+            // вывод целей входов
             var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
             for (int i = 0; i < InvertInputs.Length; i++)
             {
@@ -135,7 +150,7 @@ namespace PluginOne
                 items.Add(new Tuple<bool, int, RectangleF>(false, i, r));
                 hi += step;
             }
-            // вывод таргетов выходов
+            // вывод целей выходов
             var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
             for (int i = 0; i < InvertOutputs.Length; i++)
             {
@@ -146,6 +161,12 @@ namespace PluginOne
             return [.. items];
         }
 
+        public virtual void Calculate(bool[] values, bool[] inverts) { }
+
+        /// <summary>
+        /// Обработка клика по цели
+        /// </summary>
+        /// <param name="point">Точка нажатия</param>
         public override void Click(PointF point)
         {
             var targets = GetTargets();
@@ -157,12 +178,13 @@ namespace PluginOne
                     if (target.Item1)
                     {
                         // выходы
-                        Outputs[target.Item2] = !Outputs[target.Item2];
+                        //Outputs[target.Item2] = !Outputs[target.Item2];
                     }
                     else
                     {
                         // входы
                         Inputs[target.Item2] = !Inputs[target.Item2];
+                        Calculate(Inputs, InvertInputs);
                     }
                 }
             }

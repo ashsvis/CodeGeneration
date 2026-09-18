@@ -11,6 +11,7 @@ namespace PluginOne
             List<TreeNode> items = [];
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
+            items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
             return [.. items];
         }
 

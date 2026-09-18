@@ -24,15 +24,6 @@ namespace PluginOne
             nodesGroup.Nodes.Add(new TreeNode("AND6") { Tag = typeof(And6) });
             nodesGroup.Nodes.Add(new TreeNode("AND7") { Tag = typeof(And7) });
             nodesGroup.Nodes.Add(new TreeNode("AND8") { Tag = typeof(And8) });
-            nodesGroup = new TreeNode("Исключающее ИЛИ");
-            items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("XOR2") { Tag = typeof(Xor2) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR3") { Tag = typeof(Xor3) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR4") { Tag = typeof(Xor4) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR5") { Tag = typeof(Xor5) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR6") { Tag = typeof(Xor6) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR7") { Tag = typeof(Xor7) });
-            nodesGroup.Nodes.Add(new TreeNode("XOR8") { Tag = typeof(Xor8) });
         }
     }
 
@@ -47,6 +38,18 @@ namespace PluginOne
             Inputs = [false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class Or3 : Cell
@@ -59,6 +62,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -73,6 +88,18 @@ namespace PluginOne
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class Or5 : Cell
@@ -85,6 +112,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -99,6 +138,18 @@ namespace PluginOne
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class Or7 : Cell
@@ -111,6 +162,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -125,6 +188,18 @@ namespace PluginOne
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result || (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class And2 : Cell
@@ -137,6 +212,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -151,6 +238,18 @@ namespace PluginOne
             Inputs = [false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class And4 : Cell
@@ -163,6 +262,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false, false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -177,6 +288,18 @@ namespace PluginOne
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class And6 : Cell
@@ -189,6 +312,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 
@@ -203,6 +338,18 @@ namespace PluginOne
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
+        }
     }
 
     public class And8 : Cell
@@ -216,96 +363,17 @@ namespace PluginOne
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
-    }
 
-    public class Xor2 : Cell
-    {
-        public Xor2()
+        public override void Calculate(bool[] values, bool[] inverts)
         {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor3 : Cell
-    {
-        public Xor3()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor4 : Cell
-    {
-        public Xor4()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor5 : Cell
-    {
-        public Xor5()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false, false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor6 : Cell
-    {
-        public Xor6()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false, false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false, false, false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor7 : Cell
-    {
-        public Xor7()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false, false, false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false, false, false, false, false];
-            Outputs = [false];
-        }
-    }
-
-    public class Xor8 : Cell
-    {
-        public Xor8()
-        {
-            FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            InvertInputs = [false, false, false, false, false, false, false, false];
-            InvertOutputs = [false];
-            Inputs = [false, false, false, false, false, false, false, false];
-            Outputs = [false];
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result && (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 

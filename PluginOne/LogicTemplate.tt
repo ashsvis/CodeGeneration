@@ -14,7 +14,7 @@ namespace PluginOne
             TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    var types = new Tuple<string, string, string>[] { new("Or", "1", "Дизъюнкция"), new("And", "&", "Конъюнкция"), new("Xor", "=1", "Исключающее ИЛИ") };
+    var types = new Tuple<string, string, string, string>[] { new("Or", "1", "Дизъюнкция", "||"), new("And", "&", "Конъюнкция", "&&") };
     foreach (var type in types)
     {
 #>
@@ -50,6 +50,18 @@ namespace PluginOne
             InvertOutputs = [false];
             Inputs = [<#= string.Join(", ", holder) #>];
             Outputs = [false];
+        }
+
+        public override void Calculate(bool[] values, bool[] inverts)
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0] ^ InvertInputs[0];
+                for (int i = 1; i < Inputs.Length; i++)
+                    result = result <#= type.Item4 #> (Inputs[i] ^ InvertInputs[i]);
+                if (Outputs.Length > 0)
+                    Outputs[0] = result;
+            }
         }
     }
 

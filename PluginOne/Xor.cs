@@ -1,14 +1,14 @@
 namespace PluginOne
 {
-    public class Not : Cell
+    public class Xor : Cell
     {
-        public Not() 
+        public Xor()
         {
-            FuncName = "1";
-            FuncDesc = "Инверсия";
-            InvertInputs = [false];
-            InvertOutputs = [true];
-            Inputs = [false];
+            FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
+            InvertInputs = [false, false];
+            InvertOutputs = [false];
+            Inputs = [false, false];
             Outputs = [false];
         }
 
@@ -18,7 +18,7 @@ namespace PluginOne
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
-                    result = result || Inputs[i] ^ InvertInputs[i];
+                    result = result ^ (Inputs[i] ^ InvertInputs[i]);
                 if (Outputs.Length > 0)
                     Outputs[0] = result;
             }
