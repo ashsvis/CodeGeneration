@@ -14,11 +14,11 @@ namespace PluginOne
             TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    var types = new Tuple<string, string>[] { new("Or", "1"), new("And", "&"), new("Xor", "=1") };
+    var types = new Tuple<string, string, string>[] { new("Or", "1", "Дизъюнкция"), new("And", "&", "Конъюнкция"), new("Xor", "=1", "Исключающее ИЛИ") };
     foreach (var type in types)
     {
 #>
-            nodesGroup = new TreeNode("<#= type.Item1.ToUpper() #>");
+            nodesGroup = new TreeNode("<#= type.Item3 #>");
             items.Add(nodesGroup);
 <#
         for (var i = 2; i <= inputCount; i++)
@@ -45,6 +45,7 @@ namespace PluginOne
         public <#= type.Item1 #><#= i #>()
         {
             FuncName = "<#= type.Item2 #>";
+            FuncDesc = "<#= type.Item3 #>";
             Inputs = [<#= string.Join(", ", holder) #>];
             Outputs = [false];
         }

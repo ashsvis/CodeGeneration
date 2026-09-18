@@ -11,6 +11,7 @@ namespace PluginOne
         protected bool[] Inputs = [];
         protected bool[] Outputs = [];
         public string? FuncName { get; set; }
+        public string? FuncDesc { get; set; }
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -67,6 +68,19 @@ namespace PluginOne
                 ho += step;
             }
             return [..paths];
+        }
+
+        public override ToolStripItem[] GetContextMenuItems(PointF point, bool several)
+        {
+            List<ToolStripItem> items = [];
+            var item = new ToolStripMenuItem() { Text = FuncDesc, Enabled = false };
+            if (!several)
+                items.Add(item);
+            var baseItems = base.GetContextMenuItems(point, several);
+            if (!several && baseItems.Length > 0)
+                items.Add(new ToolStripSeparator());
+            items.AddRange(baseItems);
+            return [.. items];
         }
 
         public override GraphicsPath[] GetTextPaths()

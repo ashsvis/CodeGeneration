@@ -15,13 +15,13 @@ namespace PluginOne
             return [path];
         }
 
-        public override ToolStripItem[] GetContextMenuItems(bool several)
+        public override ToolStripItem[] GetContextMenuItems(PointF point, bool several)
         {
             List<ToolStripItem> items = [];
             var item = new ToolStripMenuItem() { Text = "Круг", Enabled = false };
             if (!several)
                 items.Add(item);
-            var baseItems = base.GetContextMenuItems(several);
+            var baseItems = base.GetContextMenuItems(point, several);
             if (!several && baseItems.Length > 0)
                 items.Add(new ToolStripSeparator());
             items.AddRange(baseItems);

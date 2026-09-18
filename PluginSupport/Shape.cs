@@ -34,6 +34,11 @@ namespace PluginSupport
             }
         }
 
+        /// <summary>
+        /// Указанная точка попадает в фигуру
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
         public bool ContainsPoint(PointF point)
         {
             using var pen = new Pen(Foreground, 1);
@@ -46,18 +51,25 @@ namespace PluginSupport
             return false;
         }
 
-        public virtual ToolStripItem[] GetContextMenuItems(bool several)
+        /// <summary>
+        /// Добавление пунктов в контекстное меню
+        /// </summary>
+        /// <param name="point">Точка нажатия на элементе</param>
+        /// <param name="several">Признак выбора нескольких элементов</param>
+        /// <returns></returns>
+        public virtual ToolStripItem[] GetContextMenuItems(PointF point, bool several)
         {
             List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = "Поднять наверх" };
-            items.Add(item);
-            item = new ToolStripMenuItem() { Text = "Поднять выше" };
-            items.Add(item);
-            item = new ToolStripMenuItem() { Text = "Опустить ниже" };
-            items.Add(item);
-            item = new ToolStripMenuItem() { Text = "Опустить вниз" };
-            items.Add(item);
-            items.Add((ToolStripItem)new ToolStripSeparator());
+            ToolStripMenuItem item;
+            //item = new ToolStripMenuItem() { Text = "Поднять наверх" };
+            //items.Add(item);
+            //item = new ToolStripMenuItem() { Text = "Поднять выше" };
+            //items.Add(item);
+            //item = new ToolStripMenuItem() { Text = "Опустить ниже" };
+            //items.Add(item);
+            //item = new ToolStripMenuItem() { Text = "Опустить вниз" };
+            //items.Add(item);
+            //items.Add((ToolStripItem)new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Удалить" };
             items.Add(item);
             return [.. items];

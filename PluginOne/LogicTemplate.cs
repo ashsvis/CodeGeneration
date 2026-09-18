@@ -6,7 +6,7 @@ namespace PluginOne
         static partial void AddTreeNodeItems(List<TreeNode> items)
         {
             TreeNode nodesGroup;
-            nodesGroup = new TreeNode("OR");
+            nodesGroup = new TreeNode("Дизъюнкция");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("OR2") { Tag = typeof(Or2) });
             nodesGroup.Nodes.Add(new TreeNode("OR3") { Tag = typeof(Or3) });
@@ -15,7 +15,7 @@ namespace PluginOne
             nodesGroup.Nodes.Add(new TreeNode("OR6") { Tag = typeof(Or6) });
             nodesGroup.Nodes.Add(new TreeNode("OR7") { Tag = typeof(Or7) });
             nodesGroup.Nodes.Add(new TreeNode("OR8") { Tag = typeof(Or8) });
-            nodesGroup = new TreeNode("AND");
+            nodesGroup = new TreeNode("Конъюнкция");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("AND2") { Tag = typeof(And2) });
             nodesGroup.Nodes.Add(new TreeNode("AND3") { Tag = typeof(And3) });
@@ -24,7 +24,7 @@ namespace PluginOne
             nodesGroup.Nodes.Add(new TreeNode("AND6") { Tag = typeof(And6) });
             nodesGroup.Nodes.Add(new TreeNode("AND7") { Tag = typeof(And7) });
             nodesGroup.Nodes.Add(new TreeNode("AND8") { Tag = typeof(And8) });
-            nodesGroup = new TreeNode("XOR");
+            nodesGroup = new TreeNode("Исключающее ИЛИ");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("XOR2") { Tag = typeof(Xor2) });
             nodesGroup.Nodes.Add(new TreeNode("XOR3") { Tag = typeof(Xor3) });
@@ -41,6 +41,7 @@ namespace PluginOne
         public Or2()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -51,6 +52,7 @@ namespace PluginOne
         public Or3()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -61,6 +63,7 @@ namespace PluginOne
         public Or4()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -71,6 +74,7 @@ namespace PluginOne
         public Or5()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -81,6 +85,7 @@ namespace PluginOne
         public Or6()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -91,6 +96,7 @@ namespace PluginOne
         public Or7()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -101,6 +107,7 @@ namespace PluginOne
         public Or8()
         {
             FuncName = "1";
+            FuncDesc = "Дизъюнкция";
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -111,6 +118,7 @@ namespace PluginOne
         public And2()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -121,6 +129,7 @@ namespace PluginOne
         public And3()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -131,6 +140,7 @@ namespace PluginOne
         public And4()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -141,6 +151,7 @@ namespace PluginOne
         public And5()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -151,6 +162,7 @@ namespace PluginOne
         public And6()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -161,6 +173,7 @@ namespace PluginOne
         public And7()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -171,6 +184,7 @@ namespace PluginOne
         public And8()
         {
             FuncName = "&";
+            FuncDesc = "Конъюнкция";
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -181,6 +195,7 @@ namespace PluginOne
         public Xor2()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false];
             Outputs = [false];
         }
@@ -191,6 +206,7 @@ namespace PluginOne
         public Xor3()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false];
             Outputs = [false];
         }
@@ -201,6 +217,7 @@ namespace PluginOne
         public Xor4()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false, false];
             Outputs = [false];
         }
@@ -211,6 +228,7 @@ namespace PluginOne
         public Xor5()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false, false, false];
             Outputs = [false];
         }
@@ -221,6 +239,7 @@ namespace PluginOne
         public Xor6()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -231,6 +250,7 @@ namespace PluginOne
         public Xor7()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false, false, false, false, false];
             Outputs = [false];
         }
@@ -241,6 +261,7 @@ namespace PluginOne
         public Xor8()
         {
             FuncName = "=1";
+            FuncDesc = "Исключающее ИЛИ";
             Inputs = [false, false, false, false, false, false, false, false];
             Outputs = [false];
         }

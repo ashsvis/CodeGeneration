@@ -59,7 +59,8 @@ namespace CodeGenerator
                 shapes.ForEach(shape => shape.Selected = false);
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
-                if (shape.ContainsPoint(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))))
+                var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
+                if (shape.ContainsPoint(point))
                 {
                     var other = shapes.Where(x => x.Selected).Contains(shape);
                     if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
@@ -68,7 +69,7 @@ namespace CodeGenerator
                     shape.Hover = true;
                     shapeFound = true;
                     if (e.Button == MouseButtons.Right)
-                        contextMenu.Items.AddRange(shape.GetContextMenuItems(shapes.Count(x => x.Selected) > 1));
+                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                     break;
                 }
             }
