@@ -37,10 +37,10 @@ namespace CodeGenerator
             foreach (var plugin in pm.Plugins)
             {
                 var rootNode = new TreeNode(plugin.Name);
+                rootNode.Expand();
                 tvLibrary.Nodes.Add(rootNode);
                 rootNode.Nodes.AddRange(plugin.TreeNodeItems());
             }
-            tvLibrary.ExpandAll();
         }
 
         private PointF firstPoint = PointF.Empty;
