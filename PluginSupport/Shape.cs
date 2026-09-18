@@ -18,6 +18,11 @@ namespace PluginSupport
             return [];
         }
 
+        public virtual Tuple<bool, int, RectangleF>[] GetTargets()
+        {
+            return [];
+        }
+
         public virtual void Draw(Graphics? g, Pen pen, Brush brush)
         {
             foreach (var p in GetGraphicsPaths())
@@ -41,6 +46,11 @@ namespace PluginSupport
         /// <returns></returns>
         public bool ContainsPoint(PointF point)
         {
+            foreach (var r in GetTargets())
+            {
+                if (r.Item3.Contains(point))
+                    return true;
+            }
             using var pen = new Pen(Foreground, 1);
             foreach (var p in GetGraphicsPaths())
             {
@@ -60,7 +70,7 @@ namespace PluginSupport
         public virtual ToolStripItem[] GetContextMenuItems(PointF point, bool several)
         {
             List<ToolStripItem> items = [];
-            ToolStripMenuItem item;
+            //ToolStripMenuItem item;
             //item = new ToolStripMenuItem() { Text = "Поднять наверх" };
             //items.Add(item);
             //item = new ToolStripMenuItem() { Text = "Поднять выше" };
@@ -70,8 +80,8 @@ namespace PluginSupport
             //item = new ToolStripMenuItem() { Text = "Опустить вниз" };
             //items.Add(item);
             //items.Add((ToolStripItem)new ToolStripSeparator());
-            item = new ToolStripMenuItem() { Text = "Удалить" };
-            items.Add(item);
+            //item = new ToolStripMenuItem() { Text = "Удалить" };
+            //items.Add(item);
             return [.. items];
         }
     }

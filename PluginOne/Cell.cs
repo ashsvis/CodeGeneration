@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.IO;
 
@@ -70,16 +71,26 @@ namespace PluginOne
             return [..paths];
         }
 
+        /// <summary>
+        /// Добавление пунктов в контекстное меню
+        /// </summary>
+        /// <param name="point">Точка нажатия на элементе</param>
+        /// <param name="several">Признак выбора нескольких элементов</param>
+        /// <returns></returns>
         public override ToolStripItem[] GetContextMenuItems(PointF point, bool several)
         {
             List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = FuncDesc, Enabled = false };
-            if (!several)
-                items.Add(item);
-            var baseItems = base.GetContextMenuItems(point, several);
-            if (!several && baseItems.Length > 0)
-                items.Add(new ToolStripSeparator());
-            items.AddRange(baseItems);
+            var targets = GetTargets();
+            foreach (var target in targets)
+            {
+                if (target.Item3.Contains(point))
+                {
+                    var io = target.Item1 ? "выход" : "выход";
+                    var item = new ToolStripMenuItem() { Text = $"Инвертировать {io} {target.Item2 + 1}" };
+                    items.Add(item);
+                    return [.. items];
+                }
+            }
             return [.. items];
         }
 
@@ -99,6 +110,33 @@ namespace PluginOne
             path.CloseFigure();
             paths.Add(path);
             return [.. paths];
+        }
+
+        public override Tuple<bool, int, RectangleF>[] GetTargets()
+        {
+            List<Tuple<bool, int, RectangleF>> items = [];
+            var step = Height / 2f;
+            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
+            var sizeTarget = Width / 4f;
+            // вывод таргетов входов
+            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
+            {
+                var r = new RectangleF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f, sizeTarget, sizeTarget);
+                items.Add(new Tuple<bool, int, RectangleF>(false, i, r));
+                hi += step;
+            }
+            // вывод таргетов выходов
+            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
+            {
+                var r = new RectangleF(rect.Right, rect.Top + ho - sizeTarget / 2f, sizeTarget, sizeTarget);
+                items.Add(new Tuple<bool, int, RectangleF>(true, i, r));
+                ho += step;
+            }
+            return [.. items];
         }
     }
 }
