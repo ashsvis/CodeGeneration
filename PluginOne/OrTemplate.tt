@@ -1,0 +1,45 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+
+namespace PluginOne
+{
+    public partial class PluginLogic
+    {
+        static partial void AddTreeNodeItems(List<TreeNode> items)
+        {
+<#
+    var inputCount = 8;
+    for (var i = 2; i <= inputCount; i++)
+    {
+#>
+            items.Add(new TreeNode("OR<#= i #>") { Tag = typeof(Or<#= i #>) });
+<#
+    }
+#>
+        }
+    }
+
+<#
+    for (var i = 2; i <= inputCount; i++)
+    {
+        List<string> holder = [];
+        for (var j = 1; j <= i; j++)
+            holder.Add("false");
+#>
+    public class Or<#= i #> : Cell
+    {
+        public Or<#= i #>()
+        {
+            Inputs = [<#= string.Join(", ", holder) #>];
+            Outputs = [false];
+        }
+    }
+
+<#
+    }
+#>
+}

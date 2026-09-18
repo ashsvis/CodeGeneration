@@ -14,36 +14,55 @@ namespace PluginOne
         {
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? Height * maxPins - Height / 2f : Height;
-            var rect = new RectangleF(Location.X - Width / 2f, Location.Y - CalcHeight / 2f, Width, CalcHeight);
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
             var path = new GraphicsPath();
             // бокс
             path.AddRectangle(rect);
-            // вывод входа
-            path.AddLine(rect.Left, rect.Top + rect.Height / 2f, rect.Left - Width / 4f, rect.Top + rect.Height / 2f);
-            path.CloseFigure();
-            // вывод выхода
-            path.AddLine(rect.Right, rect.Top + rect.Height / 2f, rect.Right + Width / 4f, rect.Top + rect.Height / 2f);
-            path.CloseFigure();
-            paths.Add(path);
-            if (Inputs.Length == 1 && Inputs[0])
+            // вывод входов
+            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
-                path = new GraphicsPath();
-                // инверсия входа
-                var h = Width / 6f;
-                var r = new RectangleF(rect.Left - h / 2f, rect.Top - h / 2f + rect.Height / 2f, h, h);
-                path.AddEllipse(r);
-                paths.Add(path);
+                path.AddLine(rect.Left, rect.Top + hi, rect.Left - Width / 4f, rect.Top + hi);
+                path.CloseFigure();
+                hi += step;
             }
-            if (Outputs.Length == 1 && Outputs[0])
+            // вывод выходов
+            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
+            {    
+                path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4f, rect.Top + ho);
+                path.CloseFigure();
+                ho += step;
+            }
+            paths.Add(path);
+            var sizeInvertRing = Width / 6f;
+            // вывод инверсий входов
+            hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
-                path = new GraphicsPath();
-                // инверсия выхода
-                var h = Width / 6f;
-                var r = new RectangleF(rect.Right - h / 2f, rect.Top - h / 2f + rect.Height / 2f, h, h);
-                path.AddEllipse(r);
-                paths.Add(path);
+                if (Inputs[i])
+                {
+                    path = new GraphicsPath();
+                    var r = new RectangleF(rect.Left - sizeInvertRing / 2f, rect.Top + hi - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
+                    path.AddEllipse(r);
+                    paths.Add(path);
+                }
+                hi += step;
+            }
+            // вывод инверсий выходов
+            ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
+            {
+                if (Outputs[i])
+                {
+                    path = new GraphicsPath();
+                    var r = new RectangleF(rect.Right - sizeInvertRing / 2f, rect.Top + ho - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
+                    path.AddEllipse(r);
+                    paths.Add(path);
+                }
+                ho += step;
             }
             return [..paths];
         }
