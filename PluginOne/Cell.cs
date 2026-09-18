@@ -1,5 +1,6 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace PluginOne
 {
@@ -9,16 +10,17 @@ namespace PluginOne
         public float Height { get; set; } = 50f;
         protected bool[] Inputs = [];
         protected bool[] Outputs = [];
+        public string? FuncName { get; set; }
 
-        public override GraphicsPath[] GetGraphicsPath()
+        public override GraphicsPath[] GetGraphicsPaths()
         {
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
+            // вывод бокса
             var path = new GraphicsPath();
-            // бокс
             path.AddRectangle(rect);
             // вывод входов
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
@@ -65,6 +67,24 @@ namespace PluginOne
                 ho += step;
             }
             return [..paths];
+        }
+
+        public override GraphicsPath[] GetTextPaths()
+        {
+            List<GraphicsPath> paths = [];
+            // вывод обозначения логической функции
+            var path = new GraphicsPath();
+            var fname = FuncName ?? "";
+            using var font = new Font("Arial", 18f);
+            var sz = TextRenderer.MeasureText(fname, font);
+            var trect = new RectangleF(Location, new SizeF(Width, sz.Height));
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
+            path.AddString(fname, font.FontFamily, 0, font.Size, trect, sf);
+            path.CloseFigure();
+            paths.Add(path);
+            return [.. paths];
         }
     }
 }

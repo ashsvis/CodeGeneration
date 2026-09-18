@@ -7,7 +7,7 @@ namespace PluginOne
     {
         public float Radius { get; set; } = 50f;
 
-        public override GraphicsPath[] GetGraphicsPath()
+        public override GraphicsPath[] GetGraphicsPaths()
         {
             var rect = new RectangleF(Location.X - Radius, Location.Y - Radius, Radius * 2f, Radius * 2f);
             var path = new GraphicsPath();

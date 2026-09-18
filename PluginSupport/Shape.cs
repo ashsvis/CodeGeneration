@@ -11,24 +11,33 @@ namespace PluginSupport
         public bool Selected { get; set; }
         public bool Hover { get; set; }
 
-        public abstract GraphicsPath[] GetGraphicsPath();
-
-        public virtual void Draw(Graphics? g, Pen? pen = null, Brush? brush = null)
+        public abstract GraphicsPath[] GetGraphicsPaths();
+        
+        public virtual GraphicsPath[] GetTextPaths()
         {
-            using var Brush = new SolidBrush(Background);
-            using var Pen = new Pen(Foreground, 1);
-            foreach (var p in GetGraphicsPath())
+            return [];
+        }
+
+        public virtual void Draw(Graphics? g, Pen pen, Brush brush)
+        {
+            foreach (var p in GetGraphicsPaths())
             {
                 using var path = p;
-                g?.FillPath(brush ?? Brush, path);
-                g?.DrawPath(pen ?? Pen, path);
+                g?.FillPath(brush, path);
+                g?.DrawPath(pen, path);
+            }
+            using var text = new SolidBrush(pen.Color);
+            foreach (var p in GetTextPaths())
+            {
+                using var path = p;
+                g?.FillPath(text, path);
             }
         }
 
         public bool ContainsPoint(PointF point)
         {
             using var pen = new Pen(Foreground, 1);
-            foreach (var p in GetGraphicsPath())
+            foreach (var p in GetGraphicsPaths())
             {
                 using var path = p;
                 if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))

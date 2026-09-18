@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="OrTemplate - Копировать.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="postcopy.bat" />
   </ItemGroup>
 
@@ -19,10 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="OrTemplate.cs">
+    <None Include="LogicTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>OrTemplate.tt</DependentUpon>
+      <DependentUpon>LogicTemplate.tt</DependentUpon>
     </None>
   </ItemGroup>
 
@@ -31,9 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="OrTemplate.tt">
+    <None Update="LogicTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>OrTemplate.cs</LastGenOutput>
+      <LastGenOutput>LogicTemplate.cs</LastGenOutput>
     </None>
   </ItemGroup>
 
@@ -42,6 +46,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="LogicTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>LogicTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Update="OrTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

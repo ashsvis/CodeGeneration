@@ -210,7 +210,11 @@ namespace CodeGenerator
                     shape.Draw(e.Graphics, selectpen, brush);
                 }
                 else
-                    shape.Draw(e.Graphics);
+                {
+                    using var brush = new SolidBrush(shape.Background);
+                    using var pen = new Pen(shape.Foreground, 1);
+                    shape.Draw(e.Graphics, pen, brush);
+                }
             }
         }
 

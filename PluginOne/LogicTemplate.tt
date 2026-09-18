@@ -11,29 +11,40 @@ namespace PluginOne
     {
         static partial void AddTreeNodeItems(List<TreeNode> items)
         {
+            TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    for (var i = 2; i <= inputCount; i++)
+    var types = new Tuple<string, string>[] { new("Or", "1"), new("And", "&"), new("Xor", "=1") };
+    foreach (var type in types)
     {
 #>
-            items.Add(new TreeNode("OR<#= i #>") { Tag = typeof(Or<#= i #>) });
+            nodesGroup = new TreeNode("<#= type.Item1.ToUpper() #>");
+            items.Add(nodesGroup);
 <#
+        for (var i = 2; i <= inputCount; i++)
+        {
+#>
+            nodesGroup.Nodes.Add(new TreeNode("<#= type.Item1.ToUpper() #><#= i #>") { Tag = typeof(<#= type.Item1 #><#= i #>) });
+<#
+        }
     }
 #>
         }
     }
 
 <#
+    foreach (var type in types)
     for (var i = 2; i <= inputCount; i++)
     {
         List<string> holder = [];
         for (var j = 1; j <= i; j++)
             holder.Add("false");
 #>
-    public class Or<#= i #> : Cell
+    public class <#= type.Item1 #><#= i #> : Cell
     {
-        public Or<#= i #>()
+        public <#= type.Item1 #><#= i #>()
         {
+            FuncName = "<#= type.Item2 #>";
             Inputs = [<#= string.Join(", ", holder) #>];
             Outputs = [false];
         }

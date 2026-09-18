@@ -8,7 +8,7 @@ namespace PluginOne
         public float Width { get; set; } = 100f;
         public float Height { get; set; } = 80f;
 
-        public override GraphicsPath[] GetGraphicsPath()
+        public override GraphicsPath[] GetGraphicsPaths()
         {
             var rect = new RectangleF(Location.X - Width / 2f, Location.Y - Height / 2f, Width, Height);
             var path = new GraphicsPath();
