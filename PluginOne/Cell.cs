@@ -87,6 +87,13 @@ namespace PluginOne
                 {
                     var io = target.Item1 ? "выход" : "выход";
                     var item = new ToolStripMenuItem() { Text = $"Инвертировать {io} {target.Item2 + 1}" };
+                    item.Click += (s, e) => 
+                    {
+                        if (target.Item1)
+                            Outputs[target.Item2] = !Outputs[target.Item2];
+                        else
+                            Inputs[target.Item2] = !Inputs[target.Item2];
+                    };
                     items.Add(item);
                     return [.. items];
                 }
