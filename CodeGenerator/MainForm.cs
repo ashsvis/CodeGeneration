@@ -1,5 +1,4 @@
 using PluginSupport;
-using System.Runtime;
 
 namespace CodeGenerator
 {
@@ -20,7 +19,6 @@ namespace CodeGenerator
                 Dock = DockStyle.Fill,
                 AllowDrop = true,
             };
-            drawPanel.DragEnter += DrawPanel_DragEnter;
             drawPanel.DragOver += DrawPanel_DragOver;
             drawPanel.DragDrop += DrawPanel_DragDrop;
             drawPanel.QueryContinueDrag += DrawPanel_QueryContinueDrag;
@@ -30,6 +28,15 @@ namespace CodeGenerator
 
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
+
+            drawPanel.MouseEnter += (o, e) => Cursor.Hide();
+            drawPanel.MouseLeave += (o, e) =>
+            {
+                currentPoint = PointF.Empty;
+                drawPanel.Invalidate();
+                Cursor.Show();
+            };
+
             panCenter.Controls.Add(drawPanel);
 
             tvLibrary.Nodes.Clear();
@@ -45,8 +52,12 @@ namespace CodeGenerator
             }
         }
 
+        private PointF currentPoint = PointF.Empty;
         private PointF firstPoint = PointF.Empty;
+        private Shape? firstShape = null;
+        private bool linkBuilding = false;
         private bool leftPressed = false;
+        private bool dragShapes = false;
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -54,11 +65,13 @@ namespace CodeGenerator
             leftPressed = e.Button == MouseButtons.Left;
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
+            dragShapes = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
             shapes.ForEach(shape => shape.Hover = false);
             if (!ctrl && shapes.Count(x => x.Selected) == 1)
                 shapes.ForEach(shape => shape.Selected = false);
+            firstShape = null;  
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -66,13 +79,11 @@ namespace CodeGenerator
                 {
                     if (e.Button == MouseButtons.Left)
                     {
-                        shape.Click(point, (a, b, c) => 
+                        shape.Click(point, (isOutput, pinIndex, pinRect) => 
                         {
-                            var ret = drawPanel.DoDragDrop(new DragedInfo { Shape = shape }, DragDropEffects.Link | DragDropEffects.Move);
-                            if (ret == DragDropEffects.None)
-                            {
-                                Cursor = Cursors.Default;
-                            }
+                            firstShape = shape;
+                            linkBuilding = true;
+                            firstPoint = pinRect.Location;
                         });
 
                     }
@@ -90,6 +101,8 @@ namespace CodeGenerator
                     shapeFound = true;
                     if (e.Button == MouseButtons.Right)
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                    else
+                        dragShapes = true;
                     break;
                 }
             }
@@ -106,6 +119,8 @@ namespace CodeGenerator
                 contextMenu.Show(drawPanel, e.Location);
         }
 
+        private const int Step = 20; // Размер клетки
+
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
@@ -120,21 +135,26 @@ namespace CodeGenerator
                 else if (shape.ContainsPoint(point))
                 {
                     shape.Hover = true;
+                    drawPanel.Invalidate();
                     break;
                 }
             }
             if (leftPressed)
             {
-                var dx = e.X - firstPoint.X;
-                var dy = e.Y - firstPoint.Y;
-                // перемещаем только выбранные фигуры
-                foreach (var shape in shapes)
+                if (dragShapes)
                 {
-                    if (shape is ILocation loc && loc.Selected)
-                        loc.Location = PointF.Add(loc.Location, new SizeF(dx / (float)drawPanel.Zoom, dy / (float)drawPanel.Zoom));
+                    var dx = e.X - firstPoint.X;
+                    var dy = e.Y - firstPoint.Y;
+                    // перемещаем только выбранные фигуры
+                    foreach (var shape in shapes)
+                    {
+                        if (shape is ILocation item && item.Selected)
+                            item.Location = PointF.Add(item.Location, new SizeF(dx / (float)drawPanel.Zoom, dy / (float)drawPanel.Zoom));
+                    }
+                    firstPoint = e.Location;
                 }
-                firstPoint = e.Location;
             }
+            currentPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             drawPanel.Invalidate();
         }
 
@@ -145,6 +165,10 @@ namespace CodeGenerator
                 if (leftPressed)
                 {
                     leftPressed = false;
+                    if (dragShapes)
+                    {
+                        dragShapes = false;
+                    }
                     drawPanel.Invalidate();
                 }
             }
@@ -155,36 +179,16 @@ namespace CodeGenerator
             e.Action = e.EscapePressed ? DragAction.Cancel : DragAction.Continue;
         }
 
-        private void DrawPanel_DragEnter(object? sender, DragEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                if (e.Data.GetDataPresent(dragFormat))
-                    e.Effect = DragDropEffects.Copy;
-            }
-            else
-                e.Effect = DragDropEffects.None;
-        }
-
         private void DrawPanel_DragOver(object? sender, DragEventArgs e)
         {
             if (e.Data == null) return;
             if (e.Data.GetData(dragFormat) != null)
             {
                 if (e.AllowedEffect == DragDropEffects.Copy)
-                    e.Effect = DragDropEffects.Copy;
-                else if (e.AllowedEffect == DragDropEffects.Link)
                 {
-                    var point = drawPanel.GetLocation(new Point(e.X, e.Y));
-                    e.Effect = DragDropEffects.None;
-                    foreach (var shape in shapes)
-                    {
-                        if (shape.TargetsPoint(point))
-                        {
-                            e.Effect = DragDropEffects.Link;
-                            break;
-                        }
-                    }
+                    currentPoint = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    drawPanel.Invalidate();
+                    e.Effect = DragDropEffects.Copy;
                 }
                 else
                     e.Effect = DragDropEffects.None;
@@ -201,18 +205,11 @@ namespace CodeGenerator
                 {
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
-                    shape.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    var location = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    shape.Location = new PointF(location.X / 50 * 50, location.Y / 50 * 50);
                     shape.Selected = true;
                     shapes.Add(shape);
                     drawPanel.Invalidate();
-                }
-            }
-            else if (e.Effect == DragDropEffects.Link)
-            {
-                if (e.Data.GetData(typeof(object[])) is object[] items)
-                {
-                    var point = drawPanel.GetLocation(new Point(e.X, e.Y));
-                    e.Effect = DragDropEffects.None;
                 }
             }
         }
@@ -262,6 +259,13 @@ namespace CodeGenerator
                     using var pen = new Pen(shape.Foreground, 1);
                     shape.Draw(e.Graphics, pen, brush);
                 }
+            }
+            if (MouseButtons.HasFlag(MouseButtons.None))
+            {
+                var cursize = (float)(50f / drawPanel.Zoom); 
+                using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(currentPoint, new SizeF(-cursize, 0)), PointF.Add(currentPoint, new SizeF(cursize, 0)));
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(currentPoint, new SizeF(0, -cursize)), PointF.Add(currentPoint, new SizeF(0, cursize)));
             }
         }
 
