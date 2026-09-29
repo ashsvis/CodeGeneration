@@ -11,6 +11,8 @@ namespace PluginSupport
 
         public bool Selected { get; set; }
         public bool Hover { get; set; }
+        public bool CanInputLink { get; set; }
+        public bool CanOutputLink { get; set; }
 
         public abstract GraphicsPath[] GetGraphicsPaths();
         
@@ -68,6 +70,30 @@ namespace PluginSupport
             {
                 if (r.Item3.Contains(point))
                     return true;
+            }
+            return false;
+        }
+
+        public bool OutputTargetsPoint(PointF point)
+        {
+            foreach (var r in GetTargets().Where(x => x.Item1))
+            {
+                if (r.Item3.Contains(point))
+                    return true;
+            }
+            return false;
+        }
+
+        public bool InputTargetsPoint(PointF point, out int index)
+        {
+            index = -1;
+            foreach (var r in GetTargets().Where(x => !x.Item1))
+            {
+                if (r.Item3.Contains(point))
+                {
+                    index = r.Item2;
+                    return true;
+                }
             }
             return false;
         }

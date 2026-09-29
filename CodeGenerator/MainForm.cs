@@ -53,6 +53,7 @@ namespace CodeGenerator
         }
 
         private Point? firstCurrentPoint = null;
+        private PointF? firstLinkPoint = null;
         private Point? currentPoint = null;
         private PointF firstPoint = PointF.Empty;
         private Shape? firstShape = null;
@@ -73,7 +74,8 @@ namespace CodeGenerator
             shapes.ForEach(shape => shape.Hover = false);
             if (!ctrl && shapes.Count(x => x.Selected) == 1)
                 shapes.ForEach(shape => shape.Selected = false);
-            firstShape = null;  
+            firstShape = null;
+            firstLinkPoint = null;
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -85,7 +87,7 @@ namespace CodeGenerator
                         {
                             firstShape = shape;
                             linkBuilding = true;
-                            firstPoint = pinRect.Location;
+                            firstLinkPoint = new PointF(pinRect.Right, pinRect.Location.Y + pinRect.Height / 2f);
                         });
 
                     }
@@ -123,15 +125,31 @@ namespace CodeGenerator
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
+            // передача положения текущего положения курсора
+            currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
             Cursor = Cursors.Default;
             foreach (var shape in shapes)
+            {
                 shape.Hover = false;
+                shape.CanInputLink = false;
+                shape.CanOutputLink = false;
+            }
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape.TargetsPoint(point))
-                    Cursor = Cursors.Hand;
+                if (shape == firstShape && shape.OutputTargetsPoint(point))
+                {
+                    shape.CanOutputLink = true;
+                    drawPanel.Invalidate();
+                    break;
+                }
+                else if (shape.InputTargetsPoint(point, out int index))
+                {
+                    shape.CanInputLink = true;
+                    drawPanel.Invalidate();
+                    break;
+                }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = true;
@@ -153,9 +171,11 @@ namespace CodeGenerator
                     }
                     firstPoint = e.Location;
                 }
+                else if (linkBuilding)
+                {
+                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                }
             }
-            // передача положения текущего положения курсора
-            currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             drawPanel.Invalidate();
         }
 
@@ -181,6 +201,11 @@ namespace CodeGenerator
                             if (shape is ILocation item && item.Selected)
                                 item.Location = MovePointToGrid(Point.Ceiling(item.Location));
                         }
+                    }
+                    else if (linkBuilding)
+                    {
+                        linkBuilding = false;
+
                     }
                     drawPanel.Invalidate();
                 }
@@ -219,7 +244,6 @@ namespace CodeGenerator
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
                     currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
-                    //var location = drawPanel.GetLocation(new Point(e.X, e.Y));
                     shape.Location = (Point)currentPoint;
                     shape.Selected = true;
                     shapes.Add(shape);
@@ -262,6 +286,11 @@ namespace CodeGenerator
                     using var brush = new SolidBrush(shape.Background);
                     shape.Draw(e.Graphics, hoverpen, brush);
                 }
+                else if (shape.CanOutputLink || shape.CanInputLink)
+                {
+                    using var brush = new SolidBrush(Color.Teal);
+                    shape.Draw(e.Graphics, hoverpen, brush);
+                }
                 else if (shape.Selected)
                 {
                     using var brush = new SolidBrush(shape.Background);
@@ -281,6 +310,13 @@ namespace CodeGenerator
                 using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
                 e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
                 e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
+            }
+            if (linkBuilding && firstLinkPoint is PointF point1 && currentPoint is Point point2)
+            {
+                using var linkpen = new Pen(Color.Magenta, 1f);
+                linkpen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+                linkpen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
+                e.Graphics?.DrawLine(linkpen, point1, point2);
             }
         }
 
