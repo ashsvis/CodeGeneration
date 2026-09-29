@@ -122,6 +122,7 @@ namespace PluginSupport
         }
 
         public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
+        public abstract void Calculate();
         public abstract void Linking(ILink link, int index);
     }
 }

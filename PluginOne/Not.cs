@@ -37,7 +37,6 @@ namespace PluginOne
         public void MakeChanges(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
     }
 }

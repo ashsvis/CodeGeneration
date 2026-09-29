@@ -47,13 +47,11 @@ namespace PluginOne
         public void MakeChangesForFirst(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesForSecond(object? sender, OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
     }
 }

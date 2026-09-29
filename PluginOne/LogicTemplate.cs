@@ -70,18 +70,17 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -130,24 +129,22 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -199,30 +196,27 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -277,36 +271,32 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -364,42 +354,37 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -460,48 +445,42 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[6] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -565,54 +544,47 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[6] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[7] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -658,18 +630,17 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -718,24 +689,22 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -787,30 +756,27 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -865,36 +831,32 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -952,42 +914,37 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -1048,48 +1005,42 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[6] = e.NewValue;
-            Calculate();
         }
    }
 
@@ -1153,54 +1104,47 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            //
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[2] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[3] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[4] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[5] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[6] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
         {
             Inputs[7] = e.NewValue;
-            Calculate();
         }
    }
 

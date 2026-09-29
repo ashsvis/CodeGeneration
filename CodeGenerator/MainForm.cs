@@ -14,8 +14,8 @@ namespace CodeGenerator
         {
             InitializeComponent();
             dragFormat = $"{typeof(DragedInfo).FullName}";
-            drawPanel = new DrawPanel 
-            { 
+            drawPanel = new DrawPanel
+            {
                 Dock = DockStyle.Fill,
                 AllowDrop = true,
             };
@@ -83,7 +83,7 @@ namespace CodeGenerator
                 {
                     if (e.Button == MouseButtons.Left)
                     {
-                        shape.Click(point, (isOutput, pinIndex, pinRect) => 
+                        shape.Click(point, (isOutput, pinIndex, pinRect) =>
                         {
                             firstShape = shape;
                             linkBuilding = true;
@@ -312,7 +312,7 @@ namespace CodeGenerator
             // рисование курсора при свободном движении указателя мыши
             if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
             {
-                var cursize = (float)(50f / drawPanel.Zoom); 
+                var cursize = (float)(50f / drawPanel.Zoom);
                 using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
                 e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
                 e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
@@ -394,7 +394,16 @@ namespace CodeGenerator
             }
         }
 
+        private void TimerCalculate_Tick(object sender, EventArgs e)
+        {
+            foreach (var shape in shapes)
+            {
+                shape.Calculate();
+            }
+            drawPanel.Invalidate();
+        }
     }
+
     public class DragedInfo
     {
         public required Shape Shape { get; set; }

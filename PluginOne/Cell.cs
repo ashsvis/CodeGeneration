@@ -163,7 +163,7 @@ namespace PluginOne
             return [.. items];
         }
 
-        public virtual void Calculate() { }
+        public override void Calculate() { }
         public override void Linking(ILink link, int index) { }
 
         /// <summary>

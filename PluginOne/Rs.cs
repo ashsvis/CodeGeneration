@@ -90,13 +90,11 @@ namespace PluginOne
         public void MakeChangesForSet(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0] = e.NewValue;
-            Calculate();
         }
 
         public void MakeChangesForReset(object? sender, OutputChangedEventArgs e)
         {
             Inputs[1] = e.NewValue;
-            Calculate();
         }
     }
 }

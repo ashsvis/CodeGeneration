@@ -85,6 +85,7 @@
             panCenter = new Panel();
             contextMenu = new ContextMenuStrip(components);
             testToolStripMenuItem = new ToolStripMenuItem();
+            timerCalculate = new System.Windows.Forms.Timer(components);
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -276,30 +277,30 @@
             // содержимоеToolStripMenuItem
             // 
             содержимоеToolStripMenuItem.Name = "содержимоеToolStripMenuItem";
-            содержимоеToolStripMenuItem.Size = new Size(180, 22);
+            содержимоеToolStripMenuItem.Size = new Size(158, 22);
             содержимоеToolStripMenuItem.Text = "&Содержимое";
             // 
             // индексToolStripMenuItem
             // 
             индексToolStripMenuItem.Name = "индексToolStripMenuItem";
-            индексToolStripMenuItem.Size = new Size(180, 22);
+            индексToolStripMenuItem.Size = new Size(158, 22);
             индексToolStripMenuItem.Text = "&Индекс";
             // 
             // поискToolStripMenuItem
             // 
             поискToolStripMenuItem.Name = "поискToolStripMenuItem";
-            поискToolStripMenuItem.Size = new Size(180, 22);
+            поискToolStripMenuItem.Size = new Size(158, 22);
             поискToolStripMenuItem.Text = "&Поиск";
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(177, 6);
+            toolStripSeparator5.Size = new Size(155, 6);
             // 
             // опрограммеToolStripMenuItem
             // 
             опрограммеToolStripMenuItem.Name = "опрограммеToolStripMenuItem";
-            опрограммеToolStripMenuItem.Size = new Size(180, 22);
+            опрограммеToolStripMenuItem.Size = new Size(158, 22);
             опрограммеToolStripMenuItem.Text = "&О программе…";
             // 
             // toolStrip1
@@ -525,6 +526,11 @@
             testToolStripMenuItem.Size = new Size(93, 22);
             testToolStripMenuItem.Text = "test";
             // 
+            // timerCalculate
+            // 
+            timerCalculate.Enabled = true;
+            timerCalculate.Tick += TimerCalculate_Tick;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -616,5 +622,6 @@
         private ToolStripStatusLabel tsslStatus;
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem testToolStripMenuItem;
+        private System.Windows.Forms.Timer timerCalculate;
     }
 }
