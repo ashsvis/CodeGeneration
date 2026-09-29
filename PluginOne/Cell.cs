@@ -95,7 +95,7 @@ namespace PluginOne
                             InvertOutputs[target.Item2] = !InvertOutputs[target.Item2];
                         else
                             InvertInputs[target.Item2] = !InvertInputs[target.Item2];
-                        Calculate(Inputs, InvertInputs);
+                        Calculate();
                     };
                     items.Add(item);
                     return [.. items];
@@ -163,7 +163,8 @@ namespace PluginOne
             return [.. items];
         }
 
-        public virtual void Calculate(bool[] values, bool[] inverts) { }
+        public virtual void Calculate() { }
+        public override void Linking(ILink link, int index) { }
 
         /// <summary>
         /// Обработка клика по цели
@@ -187,7 +188,7 @@ namespace PluginOne
                     {
                         // входы
                         Inputs[target.Item2] = !Inputs[target.Item2];
-                        Calculate(Inputs, InvertInputs);
+                        Calculate();
                     }
                 }
             }

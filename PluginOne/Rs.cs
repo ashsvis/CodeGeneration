@@ -1,8 +1,9 @@
+using PluginSupport;
 using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class Rs : Cell
+    public class Rs : Cell, ILink
     {
         public Rs()
         {
@@ -15,6 +16,8 @@ namespace PluginOne
             Outputs = [false];
             OutputNames = ["Q"];
         }
+
+        public event OutputChangedEventHandler? OnOutputChange;
 
         public override GraphicsPath[] GetTextPaths()
         {
@@ -37,7 +40,7 @@ namespace PluginOne
             return [.. paths];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
@@ -45,12 +48,55 @@ namespace PluginOne
                 var Reset = Inputs[1] ^ InvertInputs[1];
                 var Q = Outputs[0];
                 if (Reset)
-                    Outputs[0] = false;
+                {
+                    if (Outputs[0])
+                    {
+                        Outputs[0] = false ^ InvertOutputs[0];
+                        OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                    }
+                }
                 else if (Set)
-                    Outputs[0] = true;
+                {
+                    if (!Outputs[0])
+                    {
+                        Outputs[0] = true ^ InvertOutputs[0];
+                        OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                    }
+                }
                 else
-                    Outputs[0] = Q;
+                {
+                    if (Outputs[0] != Q)
+                    {
+                        Outputs[0] = Q ^ InvertOutputs[0];
+                        OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                    }
+                }
             }
+        }
+
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesForSet;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesForReset;
+                    break;
+            }
+        }
+
+        public void MakeChangesForSet(object? sender, OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesForReset(object? sender, OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
         }
     }
 }

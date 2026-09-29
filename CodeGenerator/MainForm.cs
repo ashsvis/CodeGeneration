@@ -202,6 +202,15 @@ namespace CodeGenerator
                     else if (linkBuilding)
                     {
                         linkBuilding = false;
+                        foreach (var shape in shapes.Select(x => x).Reverse())
+                        {
+                            var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
+                            if (firstShape is ILink link && shape.InputTargetsPoint(point, out int index))
+                            {
+                                shape.Linking(link, index);
+                                break;
+                            }
+                        }
                         firstShape = null;
                     }
                     drawPanel.Invalidate();

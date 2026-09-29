@@ -1,4 +1,5 @@
-﻿
+﻿using PluginSupport;
+
 namespace PluginOne
 {
     public partial class PluginLogic
@@ -27,7 +28,7 @@ namespace PluginOne
         }
     }
 
-    public class Or2 : Cell
+    public class Or2 : Cell, ILink
     {
         public Or2()
         {
@@ -41,20 +42,50 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or3 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or3 : Cell, ILink
     {
         public Or3()
         {
@@ -68,20 +99,59 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or4 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or4 : Cell, ILink
     {
         public Or4()
         {
@@ -95,20 +165,68 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or5 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or5 : Cell, ILink
     {
         public Or5()
         {
@@ -122,20 +240,77 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or6 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or6 : Cell, ILink
     {
         public Or6()
         {
@@ -149,20 +324,86 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or7 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or7 : Cell, ILink
     {
         public Or7()
         {
@@ -176,20 +417,95 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class Or8 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+                case 6:
+                    link.OnOutputChange += MakeChangesFor7;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[6] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class Or8 : Cell, ILink
     {
         public Or8()
         {
@@ -203,20 +519,104 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And2 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+                case 6:
+                    link.OnOutputChange += MakeChangesFor7;
+                    break;
+                case 7:
+                    link.OnOutputChange += MakeChangesFor8;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[6] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[7] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And2 : Cell, ILink
     {
         public And2()
         {
@@ -230,20 +630,50 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And3 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And3 : Cell, ILink
     {
         public And3()
         {
@@ -257,20 +687,59 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And4 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And4 : Cell, ILink
     {
         public And4()
         {
@@ -284,20 +753,68 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And5 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And5 : Cell, ILink
     {
         public And5()
         {
@@ -311,20 +828,77 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And6 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And6 : Cell, ILink
     {
         public And6()
         {
@@ -338,20 +912,86 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And7 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And7 : Cell, ILink
     {
         public And7()
         {
@@ -365,20 +1005,95 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
 
-    public class And8 : Cell
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+                case 6:
+                    link.OnOutputChange += MakeChangesFor7;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[6] = e.NewValue;
+            Calculate();
+        }
+   }
+
+    public class And8 : Cell, ILink
     {
         public And8()
         {
@@ -392,17 +1107,101 @@ namespace PluginOne
             OutputNames = [""];
         }
 
-        public override void Calculate(bool[] values, bool[] inverts)
+        public event OutputChangedEventHandler? OnOutputChange;
+
+        public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
-                if (Outputs.Length > 0)
-                    Outputs[0] = result;
+                if (Outputs.Length > 0 && Outputs[0] != result)
+                {
+                    Outputs[0] = result ^ InvertOutputs[0];
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                }
             }
         }
-    }
+
+        public override void Linking(ILink link, int index)
+        {
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange += MakeChangesFor1;
+                    break;
+                case 1:
+                    link.OnOutputChange += MakeChangesFor2;
+                    break;
+                case 2:
+                    link.OnOutputChange += MakeChangesFor3;
+                    break;
+                case 3:
+                    link.OnOutputChange += MakeChangesFor4;
+                    break;
+                case 4:
+                    link.OnOutputChange += MakeChangesFor5;
+                    break;
+                case 5:
+                    link.OnOutputChange += MakeChangesFor6;
+                    break;
+                case 6:
+                    link.OnOutputChange += MakeChangesFor7;
+                    break;
+                case 7:
+                    link.OnOutputChange += MakeChangesFor8;
+                    break;
+            }
+       }
+
+        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[0] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[1] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[2] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[3] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[4] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[5] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[6] = e.NewValue;
+            Calculate();
+        }
+
+        public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
+        {
+            Inputs[7] = e.NewValue;
+            Calculate();
+        }
+   }
 
 }

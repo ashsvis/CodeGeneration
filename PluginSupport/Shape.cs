@@ -1,5 +1,4 @@
 using System.Drawing.Drawing2D;
-using System.Runtime.Intrinsics.X86;
 
 namespace PluginSupport
 {
@@ -123,5 +122,6 @@ namespace PluginSupport
         }
 
         public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
+        public abstract void Linking(ILink link, int index);
     }
 }
