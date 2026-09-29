@@ -138,23 +138,20 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape == firstShape && shape.OutputTargetsPoint(point))
+                if (firstShape == null && shape.OutputTargetsPoint(point) || firstShape == shape)
                 {
                     shape.CanOutputLink = true;
                     drawPanel.Invalidate();
-                    break;
                 }
-                else if (shape.InputTargetsPoint(point, out int index))
+                else if (linkBuilding && shape.InputTargetsPoint(point, out int index))
                 {
                     shape.CanInputLink = true;
                     drawPanel.Invalidate();
-                    break;
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = true;
                     drawPanel.Invalidate();
-                    break;
                 }
             }
             if (leftPressed)
@@ -205,7 +202,7 @@ namespace CodeGenerator
                     else if (linkBuilding)
                     {
                         linkBuilding = false;
-
+                        firstShape = null;
                     }
                     drawPanel.Invalidate();
                 }
@@ -313,7 +310,7 @@ namespace CodeGenerator
             }
             if (linkBuilding && firstLinkPoint is PointF point1 && currentPoint is Point point2)
             {
-                using var linkpen = new Pen(Color.Magenta, 1f);
+                using var linkpen = new Pen(Color.Teal, 1f);
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
                 linkpen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
                 e.Graphics?.DrawLine(linkpen, point1, point2);
