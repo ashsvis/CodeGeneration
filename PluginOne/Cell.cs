@@ -10,7 +10,9 @@ namespace PluginOne
         protected bool[] InvertInputs = [];
         protected bool[] InvertOutputs = [];
         protected bool[] Inputs = [];
+        protected string[] InputNames = [];
         protected bool[] Outputs = [];
+        protected string[] OutputNames = [];
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
@@ -108,13 +110,13 @@ namespace PluginOne
             // вывод обозначения логической функции
             var path = new GraphicsPath();
             var fname = FuncName ?? "";
-            using var font = new Font("Segoe UI", 12f);
-            var sz = TextRenderer.MeasureText(fname, font);
+            using var fontFunc = new Font("Segoe UI", 12f);
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
             var trect = new RectangleF(Location, new SizeF(Width, sz.Height));
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
-            path.AddString(fname, font.FontFamily, 0, font.Size, trect, sf);
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
             paths.Add(path);
             // значения входов или выходов
             var targets = GetTargets();
@@ -124,7 +126,7 @@ namespace PluginOne
                 var value = target.Item1 ? Outputs[target.Item2] ^ InvertOutputs[target.Item2] : Inputs[target.Item2];
                 var r = target.Item3;
                 r.Offset(0f, -r.Height / 2f);
-                p.AddString(value.ToString()[..1], font.FontFamily, 0, 10f, r, sf);
+                p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, r, sf);
                 paths.Add(p);
             }
             return [.. paths];

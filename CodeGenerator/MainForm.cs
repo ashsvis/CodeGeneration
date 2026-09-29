@@ -1,9 +1,11 @@
 using PluginSupport;
+using System.Runtime;
 
 namespace CodeGenerator
 {
     public partial class MainForm : Form, IHost
     {
+        private readonly string dragFormat;
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
 
@@ -12,7 +14,7 @@ namespace CodeGenerator
         public MainForm()
         {
             InitializeComponent();
-
+            dragFormat = $"{typeof(DragedInfo).FullName}";
             drawPanel = new DrawPanel 
             { 
                 Dock = DockStyle.Fill,
@@ -66,7 +68,7 @@ namespace CodeGenerator
                     {
                         shape.Click(point, (a, b, c) => 
                         {
-                            var ret = drawPanel.DoDragDrop(new object[] { shape }, DragDropEffects.Link);
+                            var ret = drawPanel.DoDragDrop(new DragedInfo { Shape = shape }, DragDropEffects.Link | DragDropEffects.Move);
                             if (ret == DragDropEffects.None)
                             {
                                 Cursor = Cursors.Default;
@@ -157,7 +159,7 @@ namespace CodeGenerator
         {
             if (e.Data != null)
             {
-                if (e.Data.GetDataPresent(typeof(object[])))
+                if (e.Data.GetDataPresent(dragFormat))
                     e.Effect = DragDropEffects.Copy;
             }
             else
@@ -167,7 +169,7 @@ namespace CodeGenerator
         private void DrawPanel_DragOver(object? sender, DragEventArgs e)
         {
             if (e.Data == null) return;
-            if (e.Data.GetData(typeof(object[])) != null)
+            if (e.Data.GetData(dragFormat) != null)
             {
                 if (e.AllowedEffect == DragDropEffects.Copy)
                     e.Effect = DragDropEffects.Copy;
@@ -195,16 +197,14 @@ namespace CodeGenerator
             if (e.Data == null) return;
             if (e.Effect == DragDropEffects.Copy)
             {
-                if (e.Data.GetData(typeof(object[])) is object[] items)
+                if (e.Data.GetData(dragFormat) is DragedInfo draged)
                 {
                     shapes.ForEach(shape => shape.Selected = false);
-                    foreach (var shape in items.Cast<Shape>())
-                    {
-                        shape.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
-                        shape.Selected = true;
-                        shapes.Add(shape);
-                        drawPanel.Invalidate();
-                    }
+                    var shape = draged.Shape;
+                    shape.Location = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    shape.Selected = true;
+                    shapes.Add(shape);
+                    drawPanel.Invalidate();
                 }
             }
             else if (e.Effect == DragDropEffects.Link)
@@ -318,7 +318,7 @@ namespace CodeGenerator
                         if (module != null)
                         {
                             tvLibrary.SelectedNode = node;
-                            var ret = tvLibrary.DoDragDrop(new object[] { module }, DragDropEffects.Copy);
+                            var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = module }, DragDropEffects.Copy);
                             if (ret == DragDropEffects.None)
                             {
                                 Cursor = Cursors.Default;
@@ -333,5 +333,30 @@ namespace CodeGenerator
             }
         }
 
+    }
+    public class DragedInfo
+    {
+        public required Shape Shape { get; set; }
+        public HitInfo HitInfo { get; set; }
+    }
+
+    public struct HitInfo
+    {
+        public ShapeHits Hits;
+        public uint PinIndex;
+        public int LinkIndex;
+        public PointF PinPoint;
+    }
+
+    public enum ShapeHits
+    {
+        None,
+        Body,
+        Caption,
+        OrderNum,
+        InputLink,
+        OutputLink,
+        Descriptor,
+        LeftEdge
     }
 }

@@ -36,7 +36,9 @@ namespace PluginOne
             InvertInputs = [false, false];
             InvertOutputs = [false];
             Inputs = [false, false];
+            InputNames = ["", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -61,7 +63,9 @@ namespace PluginOne
             InvertInputs = [false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false];
+            InputNames = ["", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -86,7 +90,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false];
+            InputNames = ["", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -111,7 +117,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
+            InputNames = ["", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -136,7 +144,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -161,7 +171,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -186,7 +198,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -211,7 +225,9 @@ namespace PluginOne
             InvertInputs = [false, false];
             InvertOutputs = [false];
             Inputs = [false, false];
+            InputNames = ["", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -236,7 +252,9 @@ namespace PluginOne
             InvertInputs = [false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false];
+            InputNames = ["", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -261,7 +279,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false];
+            InputNames = ["", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -286,7 +306,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false];
+            InputNames = ["", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -311,7 +333,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -336,7 +360,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
@@ -361,7 +387,9 @@ namespace PluginOne
             InvertInputs = [false, false, false, false, false, false, false, false];
             InvertOutputs = [false];
             Inputs = [false, false, false, false, false, false, false, false];
+            InputNames = ["", "", "", "", "", "", "", ""];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)

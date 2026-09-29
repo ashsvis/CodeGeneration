@@ -36,9 +36,14 @@ namespace PluginOne
     foreach (var type in types)
     for (var i = 2; i <= inputCount; i++)
     {
-        List<string> holder = [];
+        List<string> holderValues = [];
+        List<string> holderInputNames = [];
+        List<string> holderOutputNames = [];
         for (var j = 1; j <= i; j++)
-            holder.Add("false");
+        {
+            holderValues.Add("false");
+            holderInputNames.Add("\"\"");
+        }
 #>
     public class <#= type.Item1 #><#= i #> : Cell
     {
@@ -46,10 +51,12 @@ namespace PluginOne
         {
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
-            InvertInputs = [<#= string.Join(", ", holder) #>];
+            InvertInputs = [<#= string.Join(", ", holderValues) #>];
             InvertOutputs = [false];
-            Inputs = [<#= string.Join(", ", holder) #>];
+            Inputs = [<#= string.Join(", ", holderValues) #>];
+            InputNames = [<#= string.Join(", ", holderInputNames) #>];
             Outputs = [false];
+            OutputNames = [""];
         }
 
         public override void Calculate(bool[] values, bool[] inverts)
