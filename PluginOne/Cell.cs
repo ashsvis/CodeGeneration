@@ -5,8 +5,8 @@ namespace PluginOne
 {
     public class Cell : Shape
     {
-        public float Width { get; set; } = 50f;
-        public float Height { get; set; } = 50f;
+        public float Width { get; set; } = 48f;
+        public float Height { get; set; } = 48f;
         protected bool[] InvertInputs = [];
         protected bool[] InvertOutputs = [];
         protected bool[] Inputs = [];

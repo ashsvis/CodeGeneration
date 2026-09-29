@@ -32,7 +32,7 @@ namespace CodeGenerator
             drawPanel.MouseEnter += (o, e) => Cursor.Hide();
             drawPanel.MouseLeave += (o, e) =>
             {
-                currentPoint = PointF.Empty;
+                currentPoint = null;
                 drawPanel.Invalidate();
                 Cursor.Show();
             };
@@ -52,7 +52,8 @@ namespace CodeGenerator
             }
         }
 
-        private PointF currentPoint = PointF.Empty;
+        private Point? firstCurrentPoint = null;
+        private Point? currentPoint = null;
         private PointF firstPoint = PointF.Empty;
         private Shape? firstShape = null;
         private bool linkBuilding = false;
@@ -62,6 +63,7 @@ namespace CodeGenerator
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = e.Location;
+            firstCurrentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))));
             leftPressed = e.Button == MouseButtons.Left;
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
@@ -91,7 +93,7 @@ namespace CodeGenerator
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                     break;
                 }
-                else if (shape.ContainsPoint(point))
+                else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     var other = shapes.Where(x => x.Selected).Contains(shape);
                     if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
@@ -119,8 +121,6 @@ namespace CodeGenerator
                 contextMenu.Show(drawPanel, e.Location);
         }
 
-        private const int Step = 20; // Размер клетки
-
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
@@ -132,7 +132,7 @@ namespace CodeGenerator
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.TargetsPoint(point))
                     Cursor = Cursors.Hand;
-                else if (shape.ContainsPoint(point))
+                else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = true;
                     drawPanel.Invalidate();
@@ -154,8 +154,16 @@ namespace CodeGenerator
                     firstPoint = e.Location;
                 }
             }
-            currentPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
+            // передача положения текущего положения курсора
+            currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             drawPanel.Invalidate();
+        }
+
+        private const int Step = 12; // Размер клетки
+
+        private static Point MovePointToGrid(Point point)
+        {
+            return new Point((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
         }
 
         private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
@@ -168,6 +176,11 @@ namespace CodeGenerator
                     if (dragShapes)
                     {
                         dragShapes = false;
+                        foreach (var shape in shapes)
+                        {
+                            if (shape is ILocation item && item.Selected)
+                                item.Location = MovePointToGrid(Point.Ceiling(item.Location));
+                        }
                     }
                     drawPanel.Invalidate();
                 }
@@ -186,7 +199,7 @@ namespace CodeGenerator
             {
                 if (e.AllowedEffect == DragDropEffects.Copy)
                 {
-                    currentPoint = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
                     drawPanel.Invalidate();
                     e.Effect = DragDropEffects.Copy;
                 }
@@ -205,8 +218,9 @@ namespace CodeGenerator
                 {
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
-                    var location = drawPanel.GetLocation(new Point(e.X, e.Y));
-                    shape.Location = new PointF(location.X / 50 * 50, location.Y / 50 * 50);
+                    currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
+                    //var location = drawPanel.GetLocation(new Point(e.X, e.Y));
+                    shape.Location = (Point)currentPoint;
                     shape.Selected = true;
                     shapes.Add(shape);
                     drawPanel.Invalidate();
@@ -260,12 +274,13 @@ namespace CodeGenerator
                     shape.Draw(e.Graphics, pen, brush);
                 }
             }
-            if (MouseButtons.HasFlag(MouseButtons.None))
+            // рисование курсора при свободном движении указателя мыши
+            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
             {
                 var cursize = (float)(50f / drawPanel.Zoom); 
                 using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(currentPoint, new SizeF(-cursize, 0)), PointF.Add(currentPoint, new SizeF(cursize, 0)));
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(currentPoint, new SizeF(0, -cursize)), PointF.Add(currentPoint, new SizeF(0, cursize)));
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
             }
         }
 

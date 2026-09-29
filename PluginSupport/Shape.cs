@@ -1,4 +1,5 @@
 using System.Drawing.Drawing2D;
+using System.Runtime.Intrinsics.X86;
 
 namespace PluginSupport
 {
@@ -44,9 +45,9 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool ContainsPoint(PointF point)
+        public bool ContainsPoint(PointF point, float width)
         {
-            using var pen = new Pen(Foreground, 1);
+            using var pen = new Pen(Foreground, width);
             foreach (var p in GetGraphicsPaths())
             {
                 using var path = p;
