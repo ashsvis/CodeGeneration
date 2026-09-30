@@ -271,10 +271,27 @@ namespace CodeGenerator
                     currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
                     shape.Location = (Point)currentPoint;
                     shape.Selected = true;
+                    shape.OnDeleteLink += Shape_OnDeleteLink;
                     shapes.Add(shape);
                     SortIndexByLocation();
                     drawPanel.Invalidate();
                 }
+            }
+        }
+
+        private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
+        {
+            var linksForDelete = links.Where(x => x.Source == e.Source && x.Target == e.Target).ToList();
+            foreach (var link in linksForDelete)
+            {
+                // ищем источник и цель
+                var source = shapes.FirstOrDefault(x => x == link.Source);
+                var target = shapes.FirstOrDefault(x => x == link.Target);
+                // если найдены оба, то отписывается
+                if (source != null && target != null)
+                    link.UnlinkLocation(source, target);
+                // удаляем визуальную ссылку
+                links.Remove(link);
             }
         }
 
@@ -456,26 +473,33 @@ namespace CodeGenerator
                         timerCalculate.Enabled = false;
                         try
                         {
+                            // сбор элементов для удаления на основании их выбранности
                             var shapesForDelete = shapes.Where(x => x.Selected).ToList();
+                            // сбор связей, которые используются удаляемыми элементами
                             var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
                             foreach (var link in linksForDelete)
                             {
+                                // ищем источник и цель
                                 var source = shapes.FirstOrDefault(x => x == link.Source);
                                 var target = shapes.FirstOrDefault(x => x == link.Target);
+                                // если найдены оба, то отписывается
                                 if (source != null && target != null)
                                     link.UnlinkLocation(source, target);
+                                // удаляем визуальную ссылку
                                 links.Remove(link);
                             }
-
+                            // для всех удаляемых элементов
                             foreach (var shape in shapesForDelete)
                             {
+                                // удаляем подписки для всех входов эелемента
                                 shape.UnlinkAllInputs();
+                                // ищем элементы, у которых были связаны выходы
                                 foreach (var item in shapes)
                                 {
                                     if (shape is ILink link)
                                         item.UnlinkOutputFor(link);
                                 }
-
+                                shape.OnDeleteLink -= Shape_OnDeleteLink;
                             }
                             foreach (var shape in shapesForDelete)
                                 shapes.Remove(shape);

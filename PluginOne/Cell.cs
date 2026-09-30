@@ -1,5 +1,6 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using static System.Windows.Forms.LinkLabel;
 
 namespace PluginOne
 {
@@ -100,7 +101,9 @@ namespace PluginOne
                         item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.Item2 + 1}" };
                         item.Click += (s, e) =>
                         {
-                            UnlinkInput(Inputs[target.Item2].Link, target.Item2);
+                            var link = Inputs[target.Item2].Link;
+                            UnlinkInput(link, target.Item2);
+                            DeleteLinkFromTarget(link, (ILink)this);
                         };
                         items.Add(item);
                     }
