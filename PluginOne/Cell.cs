@@ -1,6 +1,5 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using static System.Windows.Forms.LinkLabel;
 
 namespace PluginOne
 {
