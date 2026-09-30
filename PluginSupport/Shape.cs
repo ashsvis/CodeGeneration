@@ -27,6 +27,7 @@ namespace PluginSupport
         public int Index { get; set; }
 
         public event LocationChangedEventHandler? OnLocationChange;
+        public event EventHandler? OnDeleteLink;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -151,5 +152,10 @@ namespace PluginSupport
         public abstract void UnlinkOutputFor(ILink? link);
 
         public abstract Type GetLinkTypeToCreate();
+    }
+
+    public class DeleteLinkEventArg : EventArgs
+    {
+
     }
 }

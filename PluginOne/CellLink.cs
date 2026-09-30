@@ -5,8 +5,11 @@ namespace PluginOne
 {
     public class CellLink : PluginSupport.Link
     {
+        public override ILocation? Source { get; set; }
+        public override ILocation? Target { get; set; }
         public override PointF StartPoint { get; set; }
         public override PointF EndPoint { get; set; }
+
 
         private SizeF StartShift { get; set; }
         private SizeF EndShift { get; set; }
@@ -23,6 +26,8 @@ namespace PluginOne
         public override void LinkLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint)
         {
             if (source == null || target == null) return;
+            Source = source;
+            Target = target;
 
             StartShift = new SizeF(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new SizeF(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
@@ -36,6 +41,8 @@ namespace PluginOne
             if (source == null || target == null) return;
             source.OnLocationChange -= MakeChangesForFirst;
             target.OnLocationChange -= MakeChangesForLast;
+            Source = null;
+            Target = null;
         }
 
         private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)

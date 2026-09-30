@@ -456,8 +456,18 @@ namespace CodeGenerator
                         timerCalculate.Enabled = false;
                         try
                         {
-                            var forDelete = shapes.Where(x => x.Selected).ToList();
-                            foreach (var shape in forDelete)
+                            var shapesForDelete = shapes.Where(x => x.Selected).ToList();
+                            var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
+                            foreach (var link in linksForDelete)
+                            {
+                                var source = shapes.FirstOrDefault(x => x == link.Source);
+                                var target = shapes.FirstOrDefault(x => x == link.Target);
+                                if (source != null && target != null)
+                                    link.UnlinkLocation(source, target);
+                                links.Remove(link);
+                            }
+
+                            foreach (var shape in shapesForDelete)
                             {
                                 shape.UnlinkAllInputs();
                                 foreach (var item in shapes)
@@ -465,8 +475,9 @@ namespace CodeGenerator
                                     if (shape is ILink link)
                                         item.UnlinkOutputFor(link);
                                 }
+
                             }
-                            foreach (var shape in forDelete)
+                            foreach (var shape in shapesForDelete)
                                 shapes.Remove(shape);
                             SortIndexByLocation();
                             drawPanel.Invalidate();

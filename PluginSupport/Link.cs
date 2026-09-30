@@ -4,8 +4,11 @@ namespace PluginSupport
 {
     public abstract class Link
     {
+        public abstract ILocation? Source { get; set; }
+        public abstract ILocation? Target { get; set; }
         public abstract PointF StartPoint { get; set; }
         public abstract PointF EndPoint { get; set; }
+
         public abstract GraphicsPath[] GetGraphicsPaths();
 
         public abstract void LinkLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint);
