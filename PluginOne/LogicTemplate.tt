@@ -76,8 +76,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
 <#
@@ -91,12 +92,13 @@ namespace PluginOne
             }
 #>
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
 <#
@@ -110,6 +112,8 @@ namespace PluginOne
             }
 #>
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 <#
             for (var j = 1; j <= i; j++)

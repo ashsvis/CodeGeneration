@@ -56,8 +56,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -67,12 +68,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -82,6 +84,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor2;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -123,8 +127,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -137,12 +142,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -155,6 +161,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor3;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -201,8 +209,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -218,12 +227,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -239,6 +249,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor4;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -290,8 +302,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -310,12 +323,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -334,6 +348,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor5;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -390,8 +406,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -413,12 +430,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -440,6 +458,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor6;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -501,8 +521,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -527,12 +548,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -557,6 +579,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor7;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -623,8 +647,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -652,12 +677,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -685,6 +711,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor8;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -756,8 +784,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -767,12 +796,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -782,6 +812,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor2;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -823,8 +855,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -837,12 +870,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -855,6 +889,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor3;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -901,8 +937,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -918,12 +955,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -939,6 +977,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor4;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -990,8 +1030,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1010,12 +1051,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1034,6 +1076,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor5;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -1090,8 +1134,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1113,12 +1158,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1140,6 +1186,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor6;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -1201,8 +1249,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1227,12 +1276,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1257,6 +1307,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor7;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
@@ -1323,8 +1375,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1352,12 +1405,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
        }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -1385,6 +1439,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesFor8;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
        }
 
         public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)

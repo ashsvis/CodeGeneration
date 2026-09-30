@@ -93,6 +93,16 @@ namespace PluginOne
                             Inputs[target.Item2].IsInverted = !Inputs[target.Item2].IsInverted;
                     };
                     items.Add(item);
+                    // если это вход и он связан, то
+                    if (!target.Item1 && Inputs[target.Item2].IsLinked)
+                    {
+                        item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.Item2 + 1}" };
+                        item.Click += (s, e) =>
+                        {
+                            Unlinking(Inputs[target.Item2].Link, target.Item2);
+                        };
+                        items.Add(item);
+                    }
                     return [.. items];
                 }
             }
@@ -190,8 +200,8 @@ namespace PluginOne
         }
 
         public override void Calculate() { }
-        public override void Linking(ILink link, int index) { }
-        public override void Unlinking(ILink link, int index) { }
+        public override void Linking(ILink? link, int index) { }
+        public override void Unlinking(ILink? link, int index) { }
 
         public override bool IsLinked(int index) 
         { 

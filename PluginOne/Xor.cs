@@ -30,8 +30,9 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink link, int index)
+        public override void Linking(ILink? link, int index)
         {
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -41,12 +42,13 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesForSecond;
                     break;
             }
+            Inputs[index].Link = link;
             Inputs[index].IsLinked = true;
         }
 
-        public override void Unlinking(ILink link, int index)
+        public override void Unlinking(ILink? link, int index)
         {
-            Inputs[index].IsLinked = false;
+            if (link == null) return;
             switch (index)
             {
                 case 0:
@@ -56,6 +58,8 @@ namespace PluginOne
                     link.OnOutputChange -= MakeChangesForSecond;
                     break;
             }
+            Inputs[index].Link = null;
+            Inputs[index].IsLinked = false;
         }
 
         public void MakeChangesForFirst(object? sender, OutputChangedEventArgs e)
