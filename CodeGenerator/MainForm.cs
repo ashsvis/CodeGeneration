@@ -214,8 +214,18 @@ namespace CodeGenerator
                                 shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index))
                             {
+                                // настройка фигуры для установления связи
                                 shape.SetInputValue(index, firstShape.GetOutputValue(0));
                                 shape.LinkInput(link, index);
+                                // создание представления связи
+                                var type = shape.GetLinkTypeToCreate();
+                                var cellLink = (Link?)Activator.CreateInstance(type);
+                                if (cellLink != null)
+                                {
+                                    cellLink.StartPoint = firstShape.GetOutputPinPoint(0) ?? PointF.Empty;
+                                    cellLink.EndPoint = shape.GetInputPinPoint(index) ?? PointF.Empty;
+                                    links.Add(cellLink);
+                                }
                                 break;
                             }
                         }

@@ -4,6 +4,8 @@ namespace PluginSupport
 {
     public abstract class Link
     {
+        public abstract PointF StartPoint { get; set; }
+        public abstract PointF EndPoint { get; set; }
         public abstract GraphicsPath[] GetGraphicsPaths();
 
         public virtual void Draw(Graphics? g, Pen pen)

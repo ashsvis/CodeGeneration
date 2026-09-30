@@ -196,7 +196,7 @@ namespace PluginOne
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
             for (int i = 0; i < Inputs.Length; i++)
             {
-                var p = new PointF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f);
+                var p = new PointF(rect.Left - sizeTarget, rect.Top + hi);
                 items.Add(new Tuple<bool, int, PointF>(false, i, p));
                 hi += step;
             }
@@ -204,7 +204,7 @@ namespace PluginOne
             var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
             for (int i = 0; i < Outputs.Length; i++)
             {
-                var p = new PointF(rect.Right, rect.Top + ho - sizeTarget / 2f);
+                var p = new PointF(rect.Right + sizeTarget, rect.Top + ho);
                 items.Add(new Tuple<bool, int, PointF>(true, i, p));
                 ho += step;
             }
@@ -269,6 +269,28 @@ namespace PluginOne
             }
         }
 
+        public override PointF? GetInputPinPoint(int index)
+        {
+            if (index >= 0 && index < Inputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => !x.Item1 && x.Item2 == index);
+                if (item != null)
+                    return item.Item3;
+            }
+            return null;
+        }
+
+        public override PointF? GetOutputPinPoint(int index = 0)
+        {
+            if (index >= 0 && index < Outputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => x.Item1 && x.Item2 == index);
+                if (item != null)
+                    return item.Item3;
+            }
+            return null;
+        }
+
         public override object? GetOutputValue(int index = 0)
         {
             if (index >=0 && index < Outputs.Length)
@@ -287,6 +309,21 @@ namespace PluginOne
         public override int CountInputs()
         {
             return Inputs.Length;
+        }
+
+        public override Type GetLinkTypeToCreate()
+        {
+            return typeof(CellLink);
+        }
+
+        public override void LinkLocation(ILocation? location)
+        {
+            //throw new NotImplementedException();
+        }
+
+        public override void UnlinkLocation(ILocation? location)
+        {
+            //throw new NotImplementedException();
         }
     }
 }

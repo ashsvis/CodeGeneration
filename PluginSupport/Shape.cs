@@ -4,7 +4,19 @@ namespace PluginSupport
 {
     public abstract class Shape : ILocation
     {
-        public PointF Location { get; set; }
+        private PointF location;
+
+        public PointF Location 
+        { 
+            get => location; 
+            set 
+            {
+                if (location == value) return;
+                location = value; 
+                OnLocationChange?.Invoke(this, new LocationChangedEventArgs(location));
+            } 
+        }
+
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
         public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
 
@@ -13,6 +25,8 @@ namespace PluginSupport
         public bool CanInputLink { get; set; }
         public bool CanOutputLink { get; set; }
         public int Index { get; set; }
+
+        public event LocationChangedEventHandler? OnLocationChange;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -85,6 +99,10 @@ namespace PluginSupport
         public abstract object? GetOutputValue(int index = 0);
         public abstract void SetInputValue(int index, object? value);
 
+        public abstract PointF? GetInputPinPoint(int index);
+        public abstract PointF? GetOutputPinPoint(int index = 0);
+
+
         public bool IsInputTargetsPoint(PointF point, out int index)
         {
             index = -1;
@@ -131,6 +149,11 @@ namespace PluginSupport
         public abstract bool IsLinked(int index);
         public abstract void UnlinkAllInputs();
         public abstract void UnlinkOutputFor(ILink? link);
+
+        public abstract Type GetLinkTypeToCreate();
+
+        public abstract void LinkLocation(ILocation? location);
+        public abstract void UnlinkLocation(ILocation? location);
 
     }
 }
