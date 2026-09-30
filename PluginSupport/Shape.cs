@@ -124,8 +124,10 @@ namespace PluginSupport
 
         public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
         public abstract void Calculate();
-        public abstract void Linking(ILink? link, int index);
-        public abstract void Unlinking(ILink? link, int index);
+        public abstract void LinkInput(ILink? link, int index);
+        public abstract void UnlinkInput(ILink? link, int index);
         public abstract bool IsLinked(int index);
+        public abstract void UnlinkAllInputs();
+
     }
 }

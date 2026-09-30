@@ -28,7 +28,7 @@ namespace PluginOne
             }
         }
 
-        public override void Linking(ILink? link, int index)
+        public override void LinkInput(ILink? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange += MakeChanges;
@@ -36,7 +36,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
         }
 
-        public override void Unlinking(ILink? link, int index)
+        public override void UnlinkInput(ILink? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange -= MakeChanges;

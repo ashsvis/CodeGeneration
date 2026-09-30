@@ -214,7 +214,7 @@ namespace CodeGenerator
                                 !shape.IsLinked(index))
                             {
                                 shape.SetInputValue(index, firstShape.GetOutputValue(0)); 
-                                shape.Linking(link, index);
+                                shape.LinkInput(link, index);
                                 break;
                             }
                         }

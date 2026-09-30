@@ -99,7 +99,7 @@ namespace PluginOne
                         item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.Item2 + 1}" };
                         item.Click += (s, e) =>
                         {
-                            Unlinking(Inputs[target.Item2].Link, target.Item2);
+                            UnlinkInput(Inputs[target.Item2].Link, target.Item2);
                         };
                         items.Add(item);
                     }
@@ -200,8 +200,14 @@ namespace PluginOne
         }
 
         public override void Calculate() { }
-        public override void Linking(ILink? link, int index) { }
-        public override void Unlinking(ILink? link, int index) { }
+        public override void LinkInput(ILink? link, int index) { }
+        public override void UnlinkInput(ILink? link, int index) { }
+
+        public override void UnlinkAllInputs() 
+        { 
+            for (var i = 0; i < Inputs.Length; i++)
+                UnlinkInput(Inputs[i].Link, i);
+        }
 
         public override bool IsLinked(int index) 
         { 
