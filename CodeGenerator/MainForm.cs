@@ -9,6 +9,7 @@ namespace CodeGenerator
         private readonly PluginManager pm = new();
 
         private readonly List<Shape> shapes = [];
+        private readonly List<Link> links = [];
 
         public MainForm()
         {
@@ -295,6 +296,12 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
+            // рисуем связи фигур из списка
+            foreach (var link in links)
+            {
+                link.Draw(e.Graphics, Pens.White);
+            }
+            // рисуем фигуры из списка
             using var hoverpen = new Pen(Color.FromArgb(255, 255, 255), 1f);
             using var selectpen = new Pen(Color.DarkMagenta, 1f);
             using var selecthoverpen = new Pen(Color.Magenta, 1f);
@@ -335,6 +342,8 @@ namespace CodeGenerator
             //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
             //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
             //}
+
+            // рисуем резиновую связь в момент построения связи
             if (linkBuilding && firstLinkPoint is PointF point1 && currentPoint is Point point2)
             {
                 using var linkpen = new Pen(Color.Teal, 1f);

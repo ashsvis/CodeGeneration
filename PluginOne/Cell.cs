@@ -283,5 +283,10 @@ namespace PluginOne
                 Inputs[index].Value = Convert.ToBoolean(value);
             }
         }
+
+        public override int CountInputs()
+        {
+            return Inputs.Length;
+        }
     }
 }
