@@ -7,19 +7,19 @@ namespace PluginOne
     {
         public float Width { get; set; } = 48f;
         public float Height { get; set; } = 48f;
-        protected bool[] InvertInputs = [];
-        protected bool[] InvertOutputs = [];
-        protected bool[] Inputs = [];
-        protected string[] InputNames = [];
-        protected bool[] Outputs = [];
-        protected string[] OutputNames = [];
+        //protected bool[] InvertInputs = [];
+        //protected bool[] InvertOutputs = [];
+        protected CellInput[] Inputs = [];
+        //protected string[] InputNames = [];
+        protected CellOutput[] Outputs = [];
+        //protected string[] OutputNames = [];
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
             var step = Height / 2f;
-            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
+            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
@@ -27,16 +27,16 @@ namespace PluginOne
             var path = new GraphicsPath();
             path.AddRectangle(rect);
             // вывод входов
-            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertInputs.Length; i++)
+            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
                 path.AddLine(rect.Left, rect.Top + hi, rect.Left - Width / 4f, rect.Top + hi);
                 path.CloseFigure();
                 hi += step;
             }
             // вывод выходов
-            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertOutputs.Length; i++)
+            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
             {    
                 path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4f, rect.Top + ho);
                 path.CloseFigure();
@@ -45,10 +45,10 @@ namespace PluginOne
             paths.Add(path);
             var sizeInvertRing = Width / 6f;
             // вывод инверсий входов
-            hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertInputs.Length; i++)
+            hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
-                if (InvertInputs[i])
+                if (Inputs[i].IsInverted)
                 {
                     path = new GraphicsPath();
                     var r = new RectangleF(rect.Left - sizeInvertRing / 2f, rect.Top + hi - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
@@ -58,10 +58,10 @@ namespace PluginOne
                 hi += step;
             }
             // вывод инверсий выходов
-            ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertOutputs.Length; i++)
+            ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
             {
-                if (InvertOutputs[i])
+                if (Outputs[i].IsInverted)
                 {
                     path = new GraphicsPath();
                     var r = new RectangleF(rect.Right - sizeInvertRing / 2f, rect.Top + ho - sizeInvertRing / 2f, sizeInvertRing, sizeInvertRing);
@@ -92,10 +92,9 @@ namespace PluginOne
                     item.Click += (s, e) => 
                     {
                         if (target.Item1)
-                            InvertOutputs[target.Item2] = !InvertOutputs[target.Item2];
+                            Outputs[target.Item2].IsInverted = !Outputs[target.Item2].IsInverted;
                         else
-                            InvertInputs[target.Item2] = !InvertInputs[target.Item2];
-                        //Calculate();
+                            Inputs[target.Item2].IsInverted = !Inputs[target.Item2].IsInverted;
                     };
                     items.Add(item);
                     return [.. items];
@@ -123,7 +122,7 @@ namespace PluginOne
             foreach (var target in targets)
             {
                 var p = new GraphicsPath();
-                var value = target.Item1 ? Outputs[target.Item2] : Inputs[target.Item2];
+                var value = target.Item1 ? Outputs[target.Item2].Value : Inputs[target.Item2].Value;
                 var r = target.Item3;
                 r.Offset(0f, -r.Height / 2f);
                 p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, r, sf);
@@ -140,21 +139,21 @@ namespace PluginOne
         {
             List<Tuple<bool, int, RectangleF>> items = [];
             var step = Height / 2f;
-            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
+            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = Width / 4f;
             // вывод целей входов
-            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertInputs.Length; i++)
+            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
                 var r = new RectangleF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f, sizeTarget, sizeTarget);
                 items.Add(new Tuple<bool, int, RectangleF>(false, i, r));
                 hi += step;
             }
             // вывод целей выходов
-            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertOutputs.Length; i++)
+            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
             {
                 var r = new RectangleF(rect.Right, rect.Top + ho - sizeTarget / 2f, sizeTarget, sizeTarget);
                 items.Add(new Tuple<bool, int, RectangleF>(true, i, r));
@@ -171,21 +170,21 @@ namespace PluginOne
         {
             List<Tuple<bool, int, PointF>> items = [];
             var step = Height / 2f;
-            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
+            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = Width / 4f;
             // вывод целей входов
-            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertInputs.Length; i++)
+            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Inputs.Length; i++)
             {
                 var p = new PointF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f);
                 items.Add(new Tuple<bool, int, PointF>(false, i, p));
                 hi += step;
             }
             // вывод целей выходов
-            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < InvertOutputs.Length; i++)
+            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < Outputs.Length; i++)
             {
                 var p = new PointF(rect.Right, rect.Top + ho - sizeTarget / 2f);
                 items.Add(new Tuple<bool, int, PointF>(true, i, p));
@@ -195,7 +194,9 @@ namespace PluginOne
         }
 
         public override void Calculate() { }
+        public override int GetSubscriptionCount() { return 0; }
         public override void Linking(ILink link, int index) { }
+        public override void Unlinking(ILink link, int index) { }
 
         /// <summary>
         /// Обработка клика по цели
@@ -212,13 +213,13 @@ namespace PluginOne
                     if (target.Item1)
                     {
                         // выходы
-                        //Outputs[target.Item2] = !Outputs[target.Item2];
+                        //Outputs[target.Item2].Value = !Outputs[target.Item2].Value;
                         action?.Invoke(true, target.Item2, target.Item3);
                     }
                     else
                     {
                         // входы
-                        Inputs[target.Item2] = !Inputs[target.Item2];
+                        Inputs[target.Item2].Value = !Inputs[target.Item2].Value;
                         //Calculate();
                     }
                 }
@@ -228,7 +229,7 @@ namespace PluginOne
         public override object? GetOutputValue(int index = 0)
         {
             if (index >=0 && index < Outputs.Length)
-                return Outputs[index];
+                return Outputs[index].Value;
             return null;
         }
 
@@ -236,7 +237,7 @@ namespace PluginOne
         {
             if (index >= 0 && index < Inputs.Length)
             {
-                Inputs[index] = Convert.ToBoolean(value);
+                Inputs[index].Value = Convert.ToBoolean(value);
             }
         }
     }

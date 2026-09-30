@@ -38,11 +38,13 @@ namespace PluginOne
     for (var i = 2; i <= inputCount; i++)
     {
         List<string> holderValues = [];
+        List<string> holderInits = [];
         List<string> holderInputNames = [];
         List<string> holderOutputNames = [];
         for (var j = 1; j <= i; j++)
         {
             holderValues.Add("false");
+            holderInits.Add("new() { }");
             holderInputNames.Add("\"\"");
         }
 #>
@@ -52,12 +54,8 @@ namespace PluginOne
         {
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
-            InvertInputs = [<#= string.Join(", ", holderValues) #>];
-            InvertOutputs = [false];
-            Inputs = [<#= string.Join(", ", holderValues) #>];
-            InputNames = [<#= string.Join(", ", holderInputNames) #>];
-            Outputs = [false];
-            OutputNames = [""];
+            Inputs = [<#= string.Join(", ", holderInits) #>];
+            Outputs = [new() { }];
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -66,14 +64,14 @@ namespace PluginOne
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0] ^ InvertInputs[0];
+                var result = Inputs[0].Value ^ Inputs[0].IsInverted;
                 for (int i = 1; i < Inputs.Length; i++)
-                    result = result <#= type.Item4 #> (Inputs[i] ^ InvertInputs[i]);
-                result ^= InvertOutputs[0];
-                if (Outputs.Length > 0 && Outputs[0] != result)
+                    result = result <#= type.Item4 #> (Inputs[i].Value ^ Inputs[i].IsInverted);
+                result ^= Outputs[0].IsInverted;
+                if (Outputs.Length > 0 && Outputs[0].Value != result)
                 {
-                    Outputs[0] = result;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                    Outputs[0].Value = result;
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
                 }
             }
         }
@@ -93,7 +91,23 @@ namespace PluginOne
             }
 #>
             }
-            //
+       }
+
+        public override void Unlinking(ILink link, int index)
+        {
+            switch (index)
+            {
+<#
+            for (var j = 1; j <= i; j++)
+            {
+#>
+                case <#= j - 1 #>:
+                    link.OnOutputChange -= MakeChangesFor<#= j #>;
+                    break;
+<#
+            }
+#>
+            }
        }
 <#
             for (var j = 1; j <= i; j++)
@@ -102,7 +116,7 @@ namespace PluginOne
 
         public void MakeChangesFor<#= j #>(object? sender,  OutputChangedEventArgs e)
         {
-            Inputs[<#= j - 1 #>] = e.NewValue;
+            Inputs[<#= j - 1 #>].Value = e.NewValue;
         }
 <#
             }

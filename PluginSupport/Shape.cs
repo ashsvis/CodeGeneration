@@ -14,7 +14,7 @@ namespace PluginSupport
         public bool CanOutputLink { get; set; }
 
         public abstract GraphicsPath[] GetGraphicsPaths();
-        
+
         public virtual GraphicsPath[] GetTextPaths()
         {
             return [];
@@ -124,6 +124,8 @@ namespace PluginSupport
 
         public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
         public abstract void Calculate();
+        public abstract int GetSubscriptionCount();
         public abstract void Linking(ILink link, int index);
+        public abstract void Unlinking(ILink link, int index);
     }
 }

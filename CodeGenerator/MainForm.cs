@@ -146,6 +146,10 @@ namespace CodeGenerator
                 }
                 else if (shape.IsInputTargetsPoint(point, out int index))
                 {
+                    if (linkBuilding)
+                    {
+                        var count = shape.GetSubscriptionCount();
+                    }
                     Cursor = linkBuilding ? Cursors.Cross : Cursors.Hand;
                     shape.CanInputLink = linkBuilding;
                     shape.Hover = !linkBuilding;
@@ -209,7 +213,9 @@ namespace CodeGenerator
                         foreach (var shape in shapes.Select(x => x).Reverse())
                         {
                             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                            if (firstShape is ILink link && shape.IsInputTargetsPoint(point, out int index))
+                            if (firstShape is ILink link && 
+                                shape.IsInputTargetsPoint(point, out int index) &&
+                                shape.GetSubscriptionCount() == 0)
                             {
                                 shape.SetInputValue(index, firstShape.GetOutputValue(0)); 
                                 shape.Linking(link, index);

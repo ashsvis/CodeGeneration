@@ -8,10 +8,8 @@ namespace PluginOne
         {
             FuncName = "1";
             FuncDesc = "Инверсия";
-            InvertInputs = [false];
-            InvertOutputs = [true];
-            Inputs = [false];
-            Outputs = [false];
+            Inputs = [new() { }];
+            Outputs = [new() { IsInverted = true }];
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -20,11 +18,11 @@ namespace PluginOne
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0] ^ InvertInputs[0] ^ InvertOutputs[0];
-                if (Outputs.Length > 0 && Outputs[0] != result)
+                var result = Inputs[0].Value ^ Inputs[0].IsInverted ^ Outputs[0].IsInverted;
+                if (Outputs.Length > 0 && Outputs[0].Value != result)
                 {
-                    Outputs[0] = result;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
+                    Outputs[0].Value = result;
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
                 }
             }
         }
@@ -36,7 +34,7 @@ namespace PluginOne
 
         public void MakeChanges(object? sender, OutputChangedEventArgs e)
         {
-            Inputs[0] = e.NewValue;
+            Inputs[0].Value = e.NewValue;
         }
     }
 }
