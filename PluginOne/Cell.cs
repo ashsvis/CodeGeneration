@@ -315,15 +315,5 @@ namespace PluginOne
         {
             return typeof(CellLink);
         }
-
-        public override void LinkLocation(ILocation? location)
-        {
-            //throw new NotImplementedException();
-        }
-
-        public override void UnlinkLocation(ILocation? location)
-        {
-            //throw new NotImplementedException();
-        }
     }
 }

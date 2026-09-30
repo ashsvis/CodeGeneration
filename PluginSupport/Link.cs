@@ -8,6 +8,9 @@ namespace PluginSupport
         public abstract PointF EndPoint { get; set; }
         public abstract GraphicsPath[] GetGraphicsPaths();
 
+        public abstract void LinkLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint);
+        public abstract void UnlinkLocation(ILocation? source, ILocation? target);
+
         public virtual void Draw(Graphics? g, Pen pen)
         {
             foreach (var p in GetGraphicsPaths())

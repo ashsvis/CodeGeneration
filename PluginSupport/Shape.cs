@@ -151,9 +151,5 @@ namespace PluginSupport
         public abstract void UnlinkOutputFor(ILink? link);
 
         public abstract Type GetLinkTypeToCreate();
-
-        public abstract void LinkLocation(ILocation? location);
-        public abstract void UnlinkLocation(ILocation? location);
-
     }
 }

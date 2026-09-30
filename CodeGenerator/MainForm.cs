@@ -53,7 +53,7 @@ namespace CodeGenerator
             }
         }
 
-        private Point? firstCurrentPoint = null;
+        //private Point? firstCurrentPoint = null;
         private PointF? firstLinkPoint = null;
         private Point? currentPoint = null;
         private PointF firstPoint = PointF.Empty;
@@ -65,7 +65,7 @@ namespace CodeGenerator
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = e.Location;
-            firstCurrentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))));
+            //firstCurrentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))));
             leftPressed = e.Button == MouseButtons.Left;
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
@@ -220,10 +220,11 @@ namespace CodeGenerator
                                 // создание представления связи
                                 var type = shape.GetLinkTypeToCreate();
                                 var cellLink = (Link?)Activator.CreateInstance(type);
-                                if (cellLink != null)
+                                if (cellLink != null && firstShape is ILocation source && shape is ILocation target)
                                 {
                                     cellLink.StartPoint = firstShape.GetOutputPinPoint(0) ?? PointF.Empty;
                                     cellLink.EndPoint = shape.GetInputPinPoint(index) ?? PointF.Empty;
+                                    cellLink.LinkLocation(source, cellLink.StartPoint, target, cellLink.EndPoint);
                                     links.Add(cellLink);
                                 }
                                 break;
@@ -306,11 +307,6 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
-            // рисуем связи фигур из списка
-            foreach (var link in links)
-            {
-                link.Draw(e.Graphics, Pens.White);
-            }
             // рисуем фигуры из списка
             using var hoverpen = new Pen(Color.FromArgb(255, 255, 255), 1f);
             using var selectpen = new Pen(Color.DarkMagenta, 1f);
@@ -340,14 +336,22 @@ namespace CodeGenerator
                 else
                 {
                     using var brush = new SolidBrush(shape.Background);
-                    using var pen = new Pen(shape.Foreground, 1);
-                    shape.Draw(e.Graphics, pen, brush);
+                    using var defaultpen = new Pen(shape.Foreground, 1);
+                    shape.Draw(e.Graphics, defaultpen, brush);
                 }
+            }
+            // рисуем связи фигур из списка
+            using var pen = new Pen(Color.White, 1);
+            pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
+            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+            foreach (var link in links)
+            {
+                link.Draw(e.Graphics, pen);
             }
             // рисование курсора при свободном движении указателя мыши
             //if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
             //{
-            //    var cursize = (float)(50f / drawPanel.Zoom);
+            //    var cursize = (float)(10f / drawPanel.Zoom);
             //    using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
             //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
             //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
