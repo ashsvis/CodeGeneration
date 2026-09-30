@@ -67,10 +67,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -135,10 +137,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -214,10 +218,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -304,10 +310,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -405,10 +413,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -517,10 +527,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -640,10 +652,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -753,10 +767,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor2;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -821,10 +837,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor3;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -900,10 +918,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor4;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -990,10 +1010,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor5;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -1091,10 +1113,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor6;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -1203,10 +1227,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor7;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:
@@ -1326,10 +1352,12 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesFor8;
                     break;
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
                 case 0:

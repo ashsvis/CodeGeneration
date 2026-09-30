@@ -1,4 +1,5 @@
 using PluginSupport;
+using System;
 
 namespace PluginOne
 {
@@ -30,6 +31,13 @@ namespace PluginOne
         public override void Linking(ILink link, int index)
         {
             link.OnOutputChange += MakeChanges;
+            Inputs[index].IsLinked = true;
+        }
+
+        public override void Unlinking(ILink link, int index)
+        {
+            Inputs[index].IsLinked = false;
+            link.OnOutputChange -= MakeChanges;
         }
 
         public void MakeChanges(object? sender, OutputChangedEventArgs e)

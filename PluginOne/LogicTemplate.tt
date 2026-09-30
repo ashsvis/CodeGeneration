@@ -91,10 +91,12 @@ namespace PluginOne
             }
 #>
             }
+            Inputs[index].IsLinked = true;
        }
 
         public override void Unlinking(ILink link, int index)
         {
+            Inputs[index].IsLinked = false;
             switch (index)
             {
 <#

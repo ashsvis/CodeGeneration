@@ -20,7 +20,7 @@ namespace PluginOne
             {
                 var result = Inputs[0].Value ^ Inputs[0].IsInverted;
                 for (int i = 1; i < Inputs.Length; i++)
-                    result = result ^ (Inputs[i].Value ^ Inputs[i].IsInverted);
+                    result ^= (Inputs[i].Value ^ Inputs[i].IsInverted);
                 result ^= Outputs[0].IsInverted;
                 if (Outputs.Length > 0 && Outputs[0].Value != result)
                 {
@@ -39,6 +39,21 @@ namespace PluginOne
                     break;
                 case 1:
                     link.OnOutputChange += MakeChangesForSecond;
+                    break;
+            }
+            Inputs[index].IsLinked = true;
+        }
+
+        public override void Unlinking(ILink link, int index)
+        {
+            Inputs[index].IsLinked = false;
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange -= MakeChangesForFirst;
+                    break;
+                case 1:
+                    link.OnOutputChange -= MakeChangesForSecond;
                     break;
             }
         }

@@ -7,12 +7,8 @@ namespace PluginOne
     {
         public float Width { get; set; } = 48f;
         public float Height { get; set; } = 48f;
-        //protected bool[] InvertInputs = [];
-        //protected bool[] InvertOutputs = [];
         protected CellInput[] Inputs = [];
-        //protected string[] InputNames = [];
         protected CellOutput[] Outputs = [];
-        //protected string[] OutputNames = [];
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
@@ -194,9 +190,15 @@ namespace PluginOne
         }
 
         public override void Calculate() { }
-        public override int GetSubscriptionCount() { return 0; }
         public override void Linking(ILink link, int index) { }
         public override void Unlinking(ILink link, int index) { }
+
+        public override bool IsLinked(int index) 
+        { 
+            if (index >= 0 && index < Inputs.Length)
+                return Inputs[index].IsLinked;
+            return false; 
+        }
 
         /// <summary>
         /// Обработка клика по цели
@@ -213,14 +215,12 @@ namespace PluginOne
                     if (target.Item1)
                     {
                         // выходы
-                        //Outputs[target.Item2].Value = !Outputs[target.Item2].Value;
                         action?.Invoke(true, target.Item2, target.Item3);
                     }
                     else
                     {
                         // входы
                         Inputs[target.Item2].Value = !Inputs[target.Item2].Value;
-                        //Calculate();
                     }
                 }
             }

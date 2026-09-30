@@ -82,6 +82,21 @@ namespace PluginOne
                     link.OnOutputChange += MakeChangesForReset;
                     break;
             }
+            Inputs[index].IsLinked = true;
+        }
+
+        public override void Unlinking(ILink link, int index)
+        {
+            Inputs[index].IsLinked = false;
+            switch (index)
+            {
+                case 0:
+                    link.OnOutputChange -= MakeChangesForSet;
+                    break;
+                case 1:
+                    link.OnOutputChange -= MakeChangesForReset;
+                    break;
+            }
         }
 
         public void MakeChangesForSet(object? sender, OutputChangedEventArgs e)
