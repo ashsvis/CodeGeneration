@@ -89,7 +89,6 @@ namespace CodeGenerator
                             linkBuilding = true;
                             firstLinkPoint = new PointF(pinRect.Right, pinRect.Location.Y + pinRect.Height / 2f);
                         });
-
                     }
                     else if (e.Button == MouseButtons.Right)
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
@@ -146,7 +145,7 @@ namespace CodeGenerator
                 }
                 else if (shape.IsInputTargetsPoint(point, out int index))
                 {
-                    Cursor = linkBuilding ? Cursors.Cross : Cursors.Hand;
+                    Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     shape.CanInputLink = !shape.IsLinked(index) && linkBuilding;
                     shape.Hover = !linkBuilding;
                     drawPanel.Invalidate();
@@ -201,6 +200,7 @@ namespace CodeGenerator
                             if (shape is ILocation item && item.Selected)
                                 item.Location = MovePointToGrid(Point.Ceiling(item.Location));
                         }
+                        SortIndexByLocation();
                     }
                     else if (linkBuilding)
                     {
@@ -209,11 +209,11 @@ namespace CodeGenerator
                         foreach (var shape in shapes.Select(x => x).Reverse())
                         {
                             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                            if (firstShape is ILink link && 
-                                shape.IsInputTargetsPoint(point, out int index) && 
+                            if (firstShape is ILink link &&
+                                shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index))
                             {
-                                shape.SetInputValue(index, firstShape.GetOutputValue(0)); 
+                                shape.SetInputValue(index, firstShape.GetOutputValue(0));
                                 shape.LinkInput(link, index);
                                 break;
                             }
@@ -260,8 +260,19 @@ namespace CodeGenerator
                     shape.Location = (Point)currentPoint;
                     shape.Selected = true;
                     shapes.Add(shape);
+                    SortIndexByLocation();
                     drawPanel.Invalidate();
                 }
+            }
+        }
+
+        private void SortIndexByLocation()
+        {
+            var n = 0;
+            foreach (var item in shapes.OrderBy(x => x.Location.X).ThenBy(x => x.Location.Y))
+            {
+                item.Index = n;
+                n++;
             }
         }
 
@@ -404,10 +415,46 @@ namespace CodeGenerator
         private void TimerCalculate_Tick(object sender, EventArgs e)
         {
             foreach (var shape in shapes)
-            {
                 shape.Calculate();
-            }
             drawPanel.Invalidate();
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    break;
+                case Keys.Delete:
+                    if (shapes.Any(x => x.Selected) &&
+                        MessageBox.Show("Удалить выбранны(й,е) объект(ы)?", "Удаление объектов",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        timerCalculate.Enabled = false;
+                        try
+                        {
+                            var forDelete = shapes.Where(x => x.Selected).ToList();
+                            foreach (var shape in forDelete)
+                            {
+                                shape.UnlinkAllInputs();
+                                foreach (var item in shapes)
+                                {
+                                    if (shape is ILink link)
+                                        item.UnlinkOutputFor(link);
+                                }
+                            }
+                            foreach (var shape in forDelete)
+                                shapes.Remove(shape);
+                            SortIndexByLocation();
+                            drawPanel.Invalidate();
+                        }
+                        finally
+                        {
+                            timerCalculate.Enabled = true;
+                        }
+                    }
+                    break;
+            }
         }
     }
 

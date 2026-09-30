@@ -7,6 +7,7 @@ namespace PluginOne
     {
         public float Width { get; set; } = 48f;
         public float Height { get; set; } = 48f;
+        protected float CalcHeight { get; set; }
         protected CellInput[] Inputs = [];
         protected CellOutput[] Outputs = [];
         public string? FuncName { get; set; }
@@ -16,7 +17,7 @@ namespace PluginOne
         {
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
             // вывод бокса
@@ -123,6 +124,17 @@ namespace PluginOne
             sf.LineAlignment = StringAlignment.Center;
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
             paths.Add(path);
+            // вывод номера по порядку выполнения
+            path = new GraphicsPath();
+            var fnumber = $"L{Index + 1}";
+            using var fontNumber = new Font("Segoe UI", 12f);
+            sz = TextRenderer.MeasureText(fnumber, fontNumber);
+            trect = new RectangleF(Location, new SizeF(Width, CalcHeight));
+            using var sf1 = new StringFormat();
+            sf1.Alignment = StringAlignment.Center;
+            sf1.LineAlignment = StringAlignment.Far;
+            path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf1);
+            paths.Add(path);
             // значения входов или выходов
             var targets = GetTargets();
             foreach (var target in targets)
@@ -209,6 +221,18 @@ namespace PluginOne
                 UnlinkInput(Inputs[i].Link, i);
         }
 
+        public override void UnlinkOutputFor(ILink? link)
+        {
+            foreach (var input in Inputs.Where(x => x.Link == link))
+            {
+                for (var i = 0; i < Inputs.Length; i++)
+                {
+                    if (Inputs[i] == input)
+                        UnlinkInput(Inputs[i].Link, i);
+                }
+            }
+        }
+
         public override bool IsLinked(int index) 
         { 
             if (index >= 0 && index < Inputs.Length)
@@ -236,7 +260,10 @@ namespace PluginOne
                     else
                     {
                         // входы
-                        Inputs[target.Item2].Value = !Inputs[target.Item2].Value;
+                        if (!Inputs[target.Item2].IsLinked)
+                        {
+                            Inputs[target.Item2].Value = !Inputs[target.Item2].Value;
+                        }
                     }
                 }
             }

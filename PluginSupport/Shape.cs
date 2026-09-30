@@ -12,6 +12,7 @@ namespace PluginSupport
         public bool Hover { get; set; }
         public bool CanInputLink { get; set; }
         public bool CanOutputLink { get; set; }
+        public int Index { get; set; }
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -128,6 +129,7 @@ namespace PluginSupport
         public abstract void UnlinkInput(ILink? link, int index);
         public abstract bool IsLinked(int index);
         public abstract void UnlinkAllInputs();
+        public abstract void UnlinkOutputFor(ILink? link);
 
     }
 }
