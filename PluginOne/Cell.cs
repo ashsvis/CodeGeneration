@@ -32,12 +32,21 @@ namespace PluginOne
                 hi += step;
             }
             // вывод выходов
-            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
-            {    
-                path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4f, rect.Top + ho);
+            float ho;
+            if (Outputs.Length == 1)
+            {
+                path.AddLine(rect.Right, rect.Top + rect.Height / 2f, rect.Right + Width / 4f, rect.Top + rect.Height / 2f);
                 path.CloseFigure();
-                ho += step;
+            }
+            else
+            {
+                ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+                for (int i = 0; i < Outputs.Length; i++)
+                {
+                    path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4f, rect.Top + ho);
+                    path.CloseFigure();
+                    ho += step;
+                }
             }
             paths.Add(path);
             var sizeInvertRing = Width / 6f;
@@ -203,12 +212,20 @@ namespace PluginOne
                 hi += step;
             }
             // вывод целей выходов
-            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
+            if (Outputs.Length == 1)
             {
-                var p = new PointF(rect.Right + sizeTarget, rect.Top + ho);
-                items.Add(new Tuple<bool, int, PointF>(true, i, p));
-                ho += step;
+                var p = new PointF(rect.Right + sizeTarget, rect.Top + rect.Height / 2f);
+                items.Add(new Tuple<bool, int, PointF>(true, 0, p));
+            }
+            else
+            {
+                var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+                for (int i = 0; i < Outputs.Length; i++)
+                {
+                    var p = new PointF(rect.Right + sizeTarget, rect.Top + ho);
+                    items.Add(new Tuple<bool, int, PointF>(true, i, p));
+                    ho += step;
+                }
             }
             return [.. items];
         }
