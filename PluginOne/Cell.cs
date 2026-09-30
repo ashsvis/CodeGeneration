@@ -123,7 +123,7 @@ namespace PluginOne
             foreach (var target in targets)
             {
                 var p = new GraphicsPath();
-                var value = target.Item1 ? Outputs[target.Item2] ^ InvertOutputs[target.Item2] : Inputs[target.Item2];
+                var value = target.Item1 ? Outputs[target.Item2] : Inputs[target.Item2];
                 var r = target.Item3;
                 r.Offset(0f, -r.Height / 2f);
                 p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, r, sf);
@@ -222,6 +222,21 @@ namespace PluginOne
                         //Calculate();
                     }
                 }
+            }
+        }
+
+        public override object? GetOutputValue(int index = 0)
+        {
+            if (index >=0 && index < Outputs.Length)
+                return Outputs[index];
+            return null;
+        }
+
+        public override void SetInputValue(int index, object? value)
+        {
+            if (index >= 0 && index < Inputs.Length)
+            {
+                Inputs[index] = Convert.ToBoolean(value);
             }
         }
     }

@@ -79,7 +79,7 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape.TargetsPoint(point))
+                if (shape.IsPointInTargets(point))
                 {
                     if (e.Button == MouseButtons.Left)
                     {
@@ -138,16 +138,17 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (firstShape == null && shape.OutputTargetsPoint(point) || firstShape == shape)
+                if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
                     Cursor = Cursors.Cross;
                     shape.CanOutputLink = true;
                     drawPanel.Invalidate();
                 }
-                else if (shape.InputTargetsPoint(point, out int index))
+                else if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = linkBuilding ? Cursors.Cross : Cursors.Hand;
                     shape.CanInputLink = linkBuilding;
+                    shape.Hover = !linkBuilding;
                     drawPanel.Invalidate();
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
@@ -203,12 +204,14 @@ namespace CodeGenerator
                     }
                     else if (linkBuilding)
                     {
+                        // построение связи данных между фигурами
                         linkBuilding = false;
                         foreach (var shape in shapes.Select(x => x).Reverse())
                         {
                             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                            if (firstShape is ILink link && shape.InputTargetsPoint(point, out int index))
+                            if (firstShape is ILink link && shape.IsInputTargetsPoint(point, out int index))
                             {
+                                shape.SetInputValue(index, firstShape.GetOutputValue(0)); 
                                 shape.Linking(link, index);
                                 break;
                             }

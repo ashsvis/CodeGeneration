@@ -51,9 +51,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -107,9 +108,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -171,9 +173,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -243,9 +246,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -323,9 +327,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -411,9 +416,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -507,9 +513,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result || (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -611,9 +618,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -667,9 +675,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -731,9 +740,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -803,9 +813,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -883,9 +894,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -971,9 +983,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }
@@ -1067,9 +1080,10 @@ namespace PluginOne
                 var result = Inputs[0] ^ InvertInputs[0];
                 for (int i = 1; i < Inputs.Length; i++)
                     result = result && (Inputs[i] ^ InvertInputs[i]);
+                result ^= InvertOutputs[0];
                 if (Outputs.Length > 0 && Outputs[0] != result)
                 {
-                    Outputs[0] = result ^ InvertOutputs[0];
+                    Outputs[0] = result;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                 }
             }

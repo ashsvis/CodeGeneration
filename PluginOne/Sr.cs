@@ -51,7 +51,9 @@ namespace PluginOne
                 {
                     if (Outputs[0])
                     {
-                        Outputs[0] = true ^ InvertOutputs[0];
+                        var result = true ^ InvertOutputs[0];
+                        result ^= InvertOutputs[0];
+                        Outputs[0] = result;
                         OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                     }
                 }
@@ -59,7 +61,9 @@ namespace PluginOne
                 {
                     if (!Outputs[0])
                     {
-                        Outputs[0] = false ^ InvertOutputs[0];
+                        var result = false ^ InvertOutputs[0];
+                        result ^= InvertOutputs[0];
+                        Outputs[0] = result;
                         OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                     }
                 }
@@ -67,7 +71,9 @@ namespace PluginOne
                 {
                     if (Outputs[0] != Q)
                     {
-                        Outputs[0] = Q ^ InvertOutputs[0];
+                        var result = Q ^ InvertOutputs[0];
+                        result ^= InvertOutputs[0];
+                        Outputs[0] = result;
                         OnOutputChange?.Invoke(this, new OutputChangedEventArgs(Outputs[0]));
                     }
                 }

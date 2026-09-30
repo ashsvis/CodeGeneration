@@ -61,7 +61,7 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool TargetsPoint(PointF point)
+        public bool IsPointInTargets(PointF point)
         {
             foreach (var r in GetTargets())
             {
@@ -71,7 +71,7 @@ namespace PluginSupport
             return false;
         }
 
-        public bool OutputTargetsPoint(PointF point)
+        public bool IsOutputTargetsPoint(PointF point)
         {
             foreach (var r in GetTargets().Where(x => x.Item1))
             {
@@ -81,7 +81,10 @@ namespace PluginSupport
             return false;
         }
 
-        public bool InputTargetsPoint(PointF point, out int index)
+        public abstract object? GetOutputValue(int index = 0);
+        public abstract void SetInputValue(int index, object? value);
+
+        public bool IsInputTargetsPoint(PointF point, out int index)
         {
             index = -1;
             foreach (var r in GetTargets().Where(x => !x.Item1))
