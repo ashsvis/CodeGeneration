@@ -29,13 +29,13 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
-            drawPanel.MouseEnter += (o, e) => Cursor.Hide();
-            drawPanel.MouseLeave += (o, e) =>
-            {
-                currentPoint = null;
-                drawPanel.Invalidate();
-                Cursor.Show();
-            };
+            //drawPanel.MouseEnter += (o, e) => Cursor.Hide();
+            //drawPanel.MouseLeave += (o, e) =>
+            //{
+            //    currentPoint = null;
+            //    drawPanel.Invalidate();
+            //    Cursor.Show();
+            //};
 
             panCenter.Controls.Add(drawPanel);
 
@@ -140,12 +140,14 @@ namespace CodeGenerator
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (firstShape == null && shape.OutputTargetsPoint(point) || firstShape == shape)
                 {
+                    Cursor = Cursors.Cross;
                     shape.CanOutputLink = true;
                     drawPanel.Invalidate();
                 }
-                else if (linkBuilding && shape.InputTargetsPoint(point, out int index))
+                else if (shape.InputTargetsPoint(point, out int index))
                 {
-                    shape.CanInputLink = true;
+                    Cursor = linkBuilding ? Cursors.Cross : Cursors.Hand;
+                    shape.CanInputLink = linkBuilding;
                     drawPanel.Invalidate();
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
@@ -310,13 +312,13 @@ namespace CodeGenerator
                 }
             }
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
-            {
-                var cursize = (float)(50f / drawPanel.Zoom);
-                using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
-            }
+            //if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
+            //{
+            //    var cursize = (float)(50f / drawPanel.Zoom);
+            //    using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
+            //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
+            //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
+            //}
             if (linkBuilding && firstLinkPoint is PointF point1 && currentPoint is Point point2)
             {
                 using var linkpen = new Pen(Color.Teal, 1f);

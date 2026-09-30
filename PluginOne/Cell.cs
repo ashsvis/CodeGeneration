@@ -95,7 +95,7 @@ namespace PluginOne
                             InvertOutputs[target.Item2] = !InvertOutputs[target.Item2];
                         else
                             InvertInputs[target.Item2] = !InvertInputs[target.Item2];
-                        Calculate();
+                        //Calculate();
                     };
                     items.Add(item);
                     return [.. items];
@@ -163,6 +163,37 @@ namespace PluginOne
             return [.. items];
         }
 
+        /// <summary>
+        /// Получение массива целей
+        /// </summary>
+        /// <returns>Кортеж bool - (true: выход, false: вход; индекс входа или выхода; точка пина)</returns>
+        public override Tuple<bool, int, PointF>[] GetPinPoints()
+        {
+            List<Tuple<bool, int, PointF>> items = [];
+            var step = Height / 2f;
+            var maxPins = Math.Max(InvertInputs.Length, InvertOutputs.Length);
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
+            var sizeTarget = Width / 4f;
+            // вывод целей входов
+            var hi = InvertInputs.Length < maxPins ? (CalcHeight - (step * InvertInputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertInputs.Length; i++)
+            {
+                var p = new PointF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f);
+                items.Add(new Tuple<bool, int, PointF>(false, i, p));
+                hi += step;
+            }
+            // вывод целей выходов
+            var ho = InvertOutputs.Length < maxPins ? (CalcHeight - (step * InvertOutputs.Length + 1) + step) / 2f : step;
+            for (int i = 0; i < InvertOutputs.Length; i++)
+            {
+                var p = new PointF(rect.Right, rect.Top + ho - sizeTarget / 2f);
+                items.Add(new Tuple<bool, int, PointF>(true, i, p));
+                ho += step;
+            }
+            return [.. items];
+        }
+
         public override void Calculate() { }
         public override void Linking(ILink link, int index) { }
 
@@ -188,7 +219,7 @@ namespace PluginOne
                     {
                         // входы
                         Inputs[target.Item2] = !Inputs[target.Item2];
-                        Calculate();
+                        //Calculate();
                     }
                 }
             }

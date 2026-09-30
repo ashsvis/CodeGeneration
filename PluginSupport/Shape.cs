@@ -20,10 +20,8 @@ namespace PluginSupport
             return [];
         }
 
-        public virtual Tuple<bool, int, RectangleF>[] GetTargets()
-        {
-            return [];
-        }
+        public abstract Tuple<bool, int, RectangleF>[] GetTargets();
+        public abstract Tuple<bool, int, PointF>[] GetPinPoints();
 
         public virtual void Draw(Graphics? g, Pen pen, Brush brush)
         {
