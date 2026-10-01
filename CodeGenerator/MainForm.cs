@@ -55,7 +55,7 @@ namespace CodeGenerator
 
         //private Point? firstCurrentPoint = null;
         private PointF? firstLinkPoint = null;
-        private Point? currentPoint = null;
+        private PointF currentPoint = PointF.Empty;
         private PointF firstPoint = PointF.Empty;
         private Shape? firstShape = null;
         private bool linkBuilding = false;
@@ -65,7 +65,6 @@ namespace CodeGenerator
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = e.Location;
-            //firstCurrentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))));
             leftPressed = e.Button == MouseButtons.Left;
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
@@ -80,21 +79,45 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape.IsPointInTargets(point) && shape.IsOutputTargetsPoint(point) && 
-                    shape.IsOuputTargetsPoint(point, out int index))
+                if (shape.IsPointInTargets(point))
                 {
-                    if (e.Button == MouseButtons.Left)
+                    if (shape.IsOuputTargetsPoint(point, out int outputIndex))
                     {
-                        shape.Click(point, (targetInfo) =>
+                        if (e.Button == MouseButtons.Left)
                         {
-                            firstShape = shape;
-                            linkBuilding = true;
-                            firstLinkPoint = shape.GetOutputPinPoint(index);
-                        });
+                            shape.Click(point, (targetInfo) =>
+                            {
+                                firstShape = shape;
+                                linkBuilding = true;
+                                firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
+                            });
+                        }
+                        else if (e.Button == MouseButtons.Right)
+                        {
+                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                            contextMenu.Show(drawPanel, e.Location);
+                        }
+                        break;
                     }
-                    else if (e.Button == MouseButtons.Right)
-                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
-                    break;
+                    else if (shape.IsInputTargetsPoint(point, out int inputIndex))
+                    {
+                        var other = shapes.Where(x => x.Selected).Contains(shape);
+                        if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
+                            shapes.ForEach(shape => shape.Selected = false);
+                        shape.Selected = true;
+                        shape.Hover = true;
+                        shapeFound = true;
+                        if (e.Button == MouseButtons.Left)
+                        {
+                            shape.Click(point, (targetInfo) => {});
+                        }
+                        else if (e.Button == MouseButtons.Right)
+                        {
+                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                            contextMenu.Show(drawPanel, e.Location);
+                        }
+                        break;
+                    }
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
@@ -104,10 +127,7 @@ namespace CodeGenerator
                     shape.Selected = true;
                     shape.Hover = true;
                     shapeFound = true;
-                    if (e.Button == MouseButtons.Right)
-                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
-                    else
-                        dragShapes = true;
+                    dragShapes = true;
                     break;
                 }
             }
@@ -120,8 +140,6 @@ namespace CodeGenerator
                 });
             }
             drawPanel.Invalidate();
-            if (e.Button == MouseButtons.Right)
-                contextMenu.Show(drawPanel, e.Location);
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
@@ -182,9 +200,9 @@ namespace CodeGenerator
 
         private const int Step = 12; // Размер клетки
 
-        private static Point MovePointToGrid(Point point)
+        private static PointF MovePointToGrid(PointF point)
         {
-            return new Point((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
+            return new PointF((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
         }
 
         private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
@@ -200,7 +218,7 @@ namespace CodeGenerator
                         foreach (var shape in shapes)
                         {
                             if (shape is ILocation item && item.Selected)
-                                item.Location = MovePointToGrid(Point.Ceiling(item.Location));
+                                item.Location = MovePointToGrid(item.Location);
                         }
                         SortIndexByLocation();
                     }
@@ -269,8 +287,8 @@ namespace CodeGenerator
                 {
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
-                    currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
-                    shape.Location = (Point)currentPoint;
+                    currentPoint = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
+                    shape.Location = currentPoint;
                     shape.Selected = true;
                     shape.OnDeleteLink += Shape_OnDeleteLink;
                     shapes.Add(shape);
@@ -303,6 +321,15 @@ namespace CodeGenerator
             {
                 item.Index = n;
                 n++;
+            }
+            shapes.Sort(new ShapesComparer());
+        }
+
+        class ShapesComparer : IComparer<Shape>
+        {
+            public int Compare(Shape? x, Shape? y)
+            {
+                return x == null || y == null ? 0 : x.Index > y.Index ? 1 : x.Index < y.Index ? -1 : 0;
             }
         }
 
@@ -367,16 +394,16 @@ namespace CodeGenerator
                 link.Draw(e.Graphics, pen);
             }
             // рисование курсора при свободном движении указателя мыши
-            //if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
-            //{
-            //    var cursize = (float)(10f / drawPanel.Zoom);
-            //    using var cursorpen = new Pen(Color.FromArgb(255, 255, 255), 0f);
-            //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
-            //    e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
-            //}
+            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is PointF point)
+            {
+                var cursize = (float)(50f / drawPanel.Zoom);
+                using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
+                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
+            }
 
             // рисуем резиновую связь в момент построения связи
-            if (linkBuilding && firstLinkPoint is PointF source && currentPoint is Point target)
+            if (linkBuilding && firstLinkPoint is PointF source && currentPoint is PointF target)
             {
                 using var linkpen = new Pen(Color.Teal, 1f);
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
