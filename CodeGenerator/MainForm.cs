@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Threading.Channels;
 
 namespace CodeGenerator
 {
@@ -309,10 +310,10 @@ namespace CodeGenerator
                                     {
                                         cellLink.StartPoint = (PointF)startPoint;
                                         cellLink.EndPoint = (PointF)endPoint;
-                                        // построение волны
-                                        BuildWaveInField(startPoint, endPoint);
+                                        // построение волны и точек визуальной связи
+                                        BuildWaveInField(startPoint, endPoint, out List<PointF> points);
 
-                                        cellLink.LinkToLocation(source, cellLink.StartPoint, target, cellLink.EndPoint);
+                                        cellLink.LinkToLocation(source, cellLink.StartPoint, target, cellLink.EndPoint, points);
                                         links.Add(cellLink);
                                         // настройка фигуры для установления связи
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
@@ -329,8 +330,9 @@ namespace CodeGenerator
             }
         }
 
-        private void BuildWaveInField(PointF? startPoint, PointF? endPoint)
+        private void BuildWaveInField(PointF? startPoint, PointF? endPoint, out List<PointF> points)
         {
+            points = [];
             if (field == null || endPoint == null) return;
             InitField();
             Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
@@ -393,11 +395,44 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i && gy == j + 1;
                             }
+                            if (found) break;
                         }
+                        if (found) break;
                     }
                 }
                 if (!changed) break;
                 n++;
+            }
+            if (found)
+            {
+                var i = gx;
+                var j = gy;
+                var wave = field[i, j].Wave;
+                points.Add(field[i, j].Node);
+                while (wave > 0)
+                {
+                    if (i - 1 >= 0 && field[i - 1, j].Wave == wave)
+                    {
+                        i--;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
+                    {
+                        j--;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
+                    {
+                        i++;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
+                    {
+                        j++;
+                        points.Add(field[i, j].Node);
+                    }
+                    wave--;
+                }
             }
         }
 

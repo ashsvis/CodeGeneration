@@ -14,16 +14,21 @@ namespace PluginOne
         private SizeF StartShift { get; set; }
         private SizeF EndShift { get; set; }
 
+        private PointF[] linkPoints = [];
+
         public override GraphicsPath[] GetGraphicsPaths()
         {
             List<GraphicsPath> paths = [];
             var path = new GraphicsPath();
-            path.AddLine(StartPoint, EndPoint);
+            if (linkPoints.Length > 1)
+                path.AddLines(linkPoints);
+            else
+                path.AddLine(StartPoint, EndPoint);
             paths.Add(path);
             return [.. paths];
         }
 
-        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint)
+        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint, List<PointF> points)
         {
             if (source == null || target == null) return;
             Source = source;
@@ -31,6 +36,8 @@ namespace PluginOne
 
             StartShift = new SizeF(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new SizeF(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
+
+            linkPoints = [.. points];
 
             source.OnLocationChange += MakeChangesForFirst;
             target.OnLocationChange += MakeChangesForLast;

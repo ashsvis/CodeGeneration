@@ -11,7 +11,7 @@ namespace PluginSupport
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
-        public abstract void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint);
+        public abstract void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint, List<PointF> points);
         public abstract void UnlinkToLocation(ILocation? source, ILocation? target);
 
         public virtual void Draw(Graphics? g, Pen pen)
