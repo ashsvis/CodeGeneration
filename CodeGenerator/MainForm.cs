@@ -113,6 +113,15 @@ namespace CodeGenerator
                         }
                     }
                 }
+                foreach (var link in links)
+                {
+                    foreach (var point in link.GetPoints())
+                    {
+                        var px = ((int)point.X - rect.X) / step;
+                        var py = ((int)point.Y - rect.Y) / step;
+                        field[px, py].Empty = false;
+                    }
+                }
             }
             else
                 field = null;
@@ -416,11 +425,6 @@ namespace CodeGenerator
                         i--;
                         points.Add(field[i, j].Node);
                     }
-                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
-                    {
-                        j--;
-                        points.Add(field[i, j].Node);
-                    }
                     else if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
                     {
                         i++;
@@ -429,6 +433,11 @@ namespace CodeGenerator
                     else if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
                     {
                         j++;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
+                    {
+                        j--;
                         points.Add(field[i, j].Node);
                     }
                     wave--;

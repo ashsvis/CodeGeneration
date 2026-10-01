@@ -8,6 +8,8 @@ namespace PluginSupport
         public abstract ILocation? Target { get; set; }
         public abstract PointF StartPoint { get; set; }
         public abstract PointF EndPoint { get; set; }
+        public abstract PointF[] GetPoints();
+        public abstract void SetPoints(PointF[] points);
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 

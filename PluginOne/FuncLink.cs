@@ -61,5 +61,15 @@ namespace PluginOne
         {
             EndPoint = PointF.Add(e.NewValue, EndShift);
         }
+
+        public override PointF[] GetPoints()
+        {
+            return linkPoints;
+        }
+
+        public override void SetPoints(PointF[] points)
+        {
+            linkPoints = points;
+        }
     }
 }
