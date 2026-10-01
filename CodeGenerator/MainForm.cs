@@ -298,18 +298,26 @@ namespace CodeGenerator
                                 shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index))
                             {
-                                // настройка фигуры для установления связи
-                                shape.SetInputValue(index, firstShape.GetOutputValue(0));
-                                shape.LinkInput(link, index);
                                 // создание представления связи
                                 var type = shape.GetLinkTypeToCreate();
                                 var cellLink = (Link?)Activator.CreateInstance(type);
                                 if (cellLink != null && firstShape is ILocation source && shape is ILocation target)
                                 {
-                                    cellLink.StartPoint = firstShape.GetOutputPinPoint(0) ?? PointF.Empty;
-                                    cellLink.EndPoint = shape.GetInputPinPoint(index) ?? PointF.Empty;
-                                    cellLink.LinkLocation(source, cellLink.StartPoint, target, cellLink.EndPoint);
-                                    links.Add(cellLink);
+                                    var startPoint = firstShape.GetOutputPinPoint(0);
+                                    var endPoint = shape.GetInputPinPoint(index);
+                                    if (startPoint != null && endPoint != null)
+                                    {
+                                        cellLink.StartPoint = (PointF)startPoint;
+                                        cellLink.EndPoint = (PointF)endPoint;
+                                        // построение волны
+                                        BuildWaveInField(startPoint, endPoint);
+
+                                        cellLink.LinkToLocation(source, cellLink.StartPoint, target, cellLink.EndPoint);
+                                        links.Add(cellLink);
+                                        // настройка фигуры для установления связи
+                                        shape.SetInputValue(index, firstShape.GetOutputValue(0));
+                                        shape.LinkInput(link, index);
+                                    }
                                 }
                                 break;
                             }
@@ -318,6 +326,78 @@ namespace CodeGenerator
                     }
                     drawPanel.Invalidate();
                 }
+            }
+        }
+
+        private void BuildWaveInField(PointF? startPoint, PointF? endPoint)
+        {
+            if (field == null || endPoint == null) return;
+            InitField();
+            Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
+            foreach (var shape in shapes.Skip(1))
+                rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
+            rect.Inflate(step * 5, step * 5);
+            // установка начальной точки волны
+            var n = 1;
+            if (startPoint is PointF start)
+            {
+                var px = ((int)start.X - rect.X) / step;
+                var py = ((int)start.Y - rect.Y) / step;
+                field[px, py].Wave = n;
+                field[px, py].Empty = false;
+            }
+            if (endPoint is not PointF end) return;
+            var gx = ((int)end.X - rect.X) / step;
+            var gy = ((int)end.Y - rect.Y) / step;
+            field[gx, gy].Empty = true;
+            // заполнение свободных ячеек номером волны
+            var found = false;
+            while (!found)
+            {
+                var changed = false;
+                for (int i = 0; i < field.GetLength(0); i++)
+                {
+                    for (int j = 0; j < field.GetLength(1); j++)
+                    {
+                        if (field[i, j].Wave == n)
+                        {
+                            if (i - 1 >= 0 && field[i - 1, j].Empty)
+                            {
+                                field[i - 1, j].Wave = n + 1;
+                                field[i - 1, j].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i - 1 && gy == j;
+                            }
+                            if (j - 1 >= 0 && field[i, j - 1].Empty)
+                            {
+                                field[i, j - 1].Wave = n + 1;
+                                field[i, j - 1].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i && gy == j - 1;
+                            }
+                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty)
+                            {
+                                field[i + 1, j].Wave = n + 1;
+                                field[i + 1, j].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i + 1 && gy == j;
+                            }
+                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty)
+                            {
+                                field[i, j + 1].Wave = n + 1;
+                                field[i, j + 1].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i && gy == j + 1;
+                            }
+                        }
+                    }
+                }
+                if (!changed) break;
+                n++;
             }
         }
 
@@ -376,7 +456,7 @@ namespace CodeGenerator
                 var target = shapes.FirstOrDefault(x => x == link.Target);
                 // если найдены оба, то отписывается
                 if (source != null && target != null)
-                    link.UnlinkLocation(source, target);
+                    link.UnlinkToLocation(source, target);
                 // удаляем визуальную ссылку
                 links.Remove(link);
             }
@@ -592,7 +672,7 @@ namespace CodeGenerator
                                 var target = shapes.FirstOrDefault(x => x == link.Target);
                                 // если найдены оба, то отписывается
                                 if (source != null && target != null)
-                                    link.UnlinkLocation(source, target);
+                                    link.UnlinkToLocation(source, target);
                                 // удаляем визуальную ссылку
                                 links.Remove(link);
                             }

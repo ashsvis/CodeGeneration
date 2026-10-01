@@ -53,5 +53,10 @@ namespace CodeGenerator
                 g?.DrawString($"{Wave}", SystemFonts.DefaultFont, SystemBrushes.ControlDark, Node, sf);
             }
         }
+
+        public override string ToString()
+        {
+            return Wave.ToString();
+        }
     }
 }

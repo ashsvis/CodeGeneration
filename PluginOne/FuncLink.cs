@@ -23,7 +23,7 @@ namespace PluginOne
             return [.. paths];
         }
 
-        public override void LinkLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint)
+        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint)
         {
             if (source == null || target == null) return;
             Source = source;
@@ -36,7 +36,7 @@ namespace PluginOne
             target.OnLocationChange += MakeChangesForLast;
         }
 
-        public override void UnlinkLocation(ILocation? source, ILocation? target)
+        public override void UnlinkToLocation(ILocation? source, ILocation? target)
         {
             if (source == null || target == null) return;
             source.OnLocationChange -= MakeChangesForFirst;
