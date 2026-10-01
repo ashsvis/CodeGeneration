@@ -1,5 +1,5 @@
 using PluginSupport;
-using System.Threading.Channels;
+using System.Net;
 
 namespace CodeGenerator
 {
@@ -119,7 +119,11 @@ namespace CodeGenerator
                     {
                         var px = ((int)point.X - rect.X) / step;
                         var py = ((int)point.Y - rect.Y) / step;
-                        field[px, py].Empty = false;
+                        if (px >= 0 && px < field.GetLength(0) &&
+                            py >= 0 && py < field.GetLength(1))
+                        {
+                            field[px, py].Empty = false;
+                        }
                     }
                 }
             }
@@ -295,7 +299,9 @@ namespace CodeGenerator
                                 item.Location = MovePointToGrid(item.Location);
                         }
                         SortIndexByLocation();
-                        InitField();
+                        //InitField();
+                        foreach (var link in links)
+                            link.Update();
                     }
                     else if (linkBuilding)
                     {
@@ -327,6 +333,7 @@ namespace CodeGenerator
                                         // настройка фигуры для установления связи
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
                                         shape.LinkInput(link, index);
+                                        cellLink.OnRebuildLink += CellLink_OnRebuildLink;
                                     }
                                 }
                                 break;
@@ -337,6 +344,15 @@ namespace CodeGenerator
                     drawPanel.Invalidate();
                 }
             }
+        }
+
+        private void CellLink_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
+        {
+            var link = e.Link;
+            link.SetPoints([]);
+            // построение волны и точек визуальной связи
+            BuildWaveInField(link.StartPoint, link.EndPoint, out List<PointF> points);
+            link.SetPoints([..points]);
         }
 
         private void BuildWaveInField(PointF? startPoint, PointF? endPoint, out List<PointF> points)
@@ -717,6 +733,7 @@ namespace CodeGenerator
                                 // если найдены оба, то отписывается
                                 if (source != null && target != null)
                                     link.UnlinkToLocation(source, target);
+                                link.OnRebuildLink -= CellLink_OnRebuildLink;
                                 // удаляем визуальную ссылку
                                 links.Remove(link);
                             }

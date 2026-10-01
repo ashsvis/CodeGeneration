@@ -15,6 +15,9 @@ namespace PluginOne
         private SizeF EndShift { get; set; }
 
         private PointF[] linkPoints = [];
+        private bool mustRebuild = false;
+
+        public bool MustRebuild => mustRebuild;
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -55,11 +58,13 @@ namespace PluginOne
         private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)
         {
             StartPoint = PointF.Add(e.NewValue, StartShift);
+            mustRebuild = true;
         }
 
         private void MakeChangesForLast(object sender, LocationChangedEventArgs e)
         {
             EndPoint = PointF.Add(e.NewValue, EndShift);
+            mustRebuild = true;
         }
 
         public override PointF[] GetPoints()
@@ -70,6 +75,15 @@ namespace PluginOne
         public override void SetPoints(PointF[] points)
         {
             linkPoints = points;
+        }
+
+        public override void Update()
+        {
+            if (mustRebuild)
+            {
+                mustRebuild = false;
+                RebuildLinkFromTarget(this);
+            }
         }
     }
 }
