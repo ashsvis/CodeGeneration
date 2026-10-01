@@ -23,6 +23,8 @@ namespace CodeGenerator
 
         public bool Empty { get; set; } = true;
 
+        public int Wave { get; set; }
+
         private void CalculateTarget()
         {
             var xmin = (int)Math.Round(hori.Min(a => a.X));
@@ -37,9 +39,19 @@ namespace CodeGenerator
 
         public void Draw(Graphics? g)
         {
-            using Pen pen = new(Empty ? SystemColors.ControlDarkDark : Color.Red, 0);
-            g?.DrawLines(pen, hori);
-            g?.DrawLines(pen, vert);
+            if (Wave == 0)
+            {
+                using Pen pen = new(Empty ? SystemColors.ControlDarkDark : Color.Red, 0);
+                g?.DrawLines(pen, hori);
+                g?.DrawLines(pen, vert);
+            }
+            else
+            {
+                using var sf = new StringFormat();
+                sf.Alignment = StringAlignment.Center;
+                sf.LineAlignment = StringAlignment.Center;
+                g?.DrawString($"{Wave}", SystemFonts.DefaultFont, SystemBrushes.ControlDark, Node, sf);
+            }
         }
     }
 }

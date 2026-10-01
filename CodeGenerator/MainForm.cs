@@ -89,6 +89,7 @@ namespace CodeGenerator
                             field[i + dx, j + dy].Empty = false;
                         }
                     }
+                    // занятие точек входов
                     for (var n = 0; n < shape.CountInputs(); n++)
                     {
                         var pt = shape.GetInputPinPoint(n);
@@ -99,6 +100,7 @@ namespace CodeGenerator
                             field[px, py].Empty = false;
                         }
                     }
+                    // занятие точек выходов
                     for (var n = 0; n < shape.CountOutputs(); n++)
                     {
                         var pt = shape.GetOutputPinPoint(n);
