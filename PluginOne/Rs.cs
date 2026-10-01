@@ -24,13 +24,13 @@ namespace PluginOne
             sf.LineAlignment = StringAlignment.Center;
             // значения входов или выходов
             var targets = GetTargets();
-            foreach (var target in targets)
+            foreach (var info in targets)
             {
                 var p = new GraphicsPath();
-                var r = target.Item3;
-                if (target.Item1) r.Offset(-r.Width * 1.2f, 0f); else r.Offset(r.Width * 1.2f, 0f);
-                p.AddString(target.Item1 ? Outputs[target.Item2].Name ?? "" : Inputs[target.Item2].Name ?? "", 
-                    fontFunc.FontFamily, (int)FontStyle.Bold, 10f, r, sf);
+                var t = info.Target;
+                if (info.IsOutput) t.Offset(-t.Width * 1.2f, 0f); else t.Offset(t.Width * 1.2f, 0f);
+                p.AddString(info.IsOutput ? Outputs[info.PinIndex].Name ?? "" : Inputs[info.PinIndex].Name ?? "", 
+                    fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                 paths.Add(p);
             }
             return [.. paths];

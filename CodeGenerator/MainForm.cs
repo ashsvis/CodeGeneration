@@ -80,15 +80,16 @@ namespace CodeGenerator
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                if (shape.IsPointInTargets(point))
+                if (shape.IsPointInTargets(point) && shape.IsOutputTargetsPoint(point) && 
+                    shape.IsOuputTargetsPoint(point, out int index))
                 {
                     if (e.Button == MouseButtons.Left)
                     {
-                        shape.Click(point, (isOutput, pinIndex, pinRect) =>
+                        shape.Click(point, (targetInfo) =>
                         {
                             firstShape = shape;
                             linkBuilding = true;
-                            firstLinkPoint = new PointF(pinRect.Right, pinRect.Location.Y + pinRect.Height / 2f);
+                            firstLinkPoint = shape.GetOutputPinPoint(index);
                         });
                     }
                     else if (e.Button == MouseButtons.Right)
@@ -375,12 +376,12 @@ namespace CodeGenerator
             //}
 
             // рисуем резиновую св€зь в момент построени€ св€зи
-            if (linkBuilding && firstLinkPoint is PointF point1 && currentPoint is Point point2)
+            if (linkBuilding && firstLinkPoint is PointF source && currentPoint is Point target)
             {
                 using var linkpen = new Pen(Color.Teal, 1f);
-                linkpen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-                linkpen.EndCap = System.Drawing.Drawing2D.LineCap.ArrowAnchor;
-                e.Graphics?.DrawLine(linkpen, point1, point2);
+                linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
+                linkpen.EndCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
+                e.Graphics?.DrawLine(linkpen, source, target);
             }
         }
 

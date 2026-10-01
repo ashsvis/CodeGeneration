@@ -36,8 +36,8 @@ namespace PluginSupport
             return [];
         }
 
-        public abstract Tuple<bool, int, RectangleF>[] GetTargets();
-        public abstract Tuple<bool, int, PointF>[] GetPinPoints();
+        public abstract TargetInfo[] GetTargets();
+        public abstract PinInfo[] GetPinPoints();
 
         public virtual void Draw(Graphics? g, Pen pen, Brush brush)
         {
@@ -79,9 +79,9 @@ namespace PluginSupport
         /// <returns></returns>
         public bool IsPointInTargets(PointF point)
         {
-            foreach (var r in GetTargets())
+            foreach (var t in GetTargets())
             {
-                if (r.Item3.Contains(point))
+                if (t.Target.Contains(point))
                     return true;
             }
             return false;
@@ -89,9 +89,9 @@ namespace PluginSupport
 
         public bool IsOutputTargetsPoint(PointF point)
         {
-            foreach (var r in GetTargets().Where(x => x.Item1))
+            foreach (var t in GetTargets().Where(x => x.IsOutput))
             {
-                if (r.Item3.Contains(point))
+                if (t.Target.Contains(point))
                     return true;
             }
             return false;
@@ -107,11 +107,25 @@ namespace PluginSupport
         public bool IsInputTargetsPoint(PointF point, out int index)
         {
             index = -1;
-            foreach (var r in GetTargets().Where(x => !x.Item1))
+            foreach (var t in GetTargets().Where(x => !x.IsOutput))
             {
-                if (r.Item3.Contains(point))
+                if (t.Target.Contains(point))
                 {
-                    index = r.Item2;
+                    index = t.PinIndex;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool IsOuputTargetsPoint(PointF point, out int index)
+        {
+            index = -1;
+            foreach (var t in GetTargets().Where(x => x.IsOutput))
+            {
+                if (t.Target.Contains(point))
+                {
+                    index = t.PinIndex;
                     return true;
                 }
             }
@@ -142,7 +156,7 @@ namespace PluginSupport
             return [.. items];
         }
 
-        public abstract void Click(PointF point, Action<bool, int, RectangleF>? action = null);
+        public abstract void Click(PointF point, Action<TargetInfo>? action = null);
         public abstract void Calculate();
         public abstract int CountInputs();
         public abstract void LinkInput(ILink? link, int index);

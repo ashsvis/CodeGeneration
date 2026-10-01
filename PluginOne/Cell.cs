@@ -91,26 +91,26 @@ namespace PluginOne
             var targets = GetTargets();
             foreach (var target in targets)
             {
-                if (target.Item3.Contains(point))
+                if (target.Target.Contains(point))
                 {
-                    var io = target.Item1 ? "выход" : "выход";
-                    var item = new ToolStripMenuItem() { Text = $"Инвертировать {io} {target.Item2 + 1}" };
+                    var io = target.IsOutput ? "выход" : "выход";
+                    var item = new ToolStripMenuItem() { Text = $"Инвертировать {io} {target.PinIndex + 1}" };
                     item.Click += (s, e) => 
                     {
-                        if (target.Item1)
-                            Outputs[target.Item2].IsInverted = !Outputs[target.Item2].IsInverted;
+                        if (target.IsOutput)
+                            Outputs[target.PinIndex].IsInverted = !Outputs[target.PinIndex].IsInverted;
                         else
-                            Inputs[target.Item2].IsInverted = !Inputs[target.Item2].IsInverted;
+                            Inputs[target.PinIndex].IsInverted = !Inputs[target.PinIndex].IsInverted;
                     };
                     items.Add(item);
                     // если это вход и он связан, то
-                    if (!target.Item1 && Inputs[target.Item2].IsLinked)
+                    if (!target.IsOutput && Inputs[target.PinIndex].IsLinked)
                     {
-                        item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.Item2 + 1}" };
+                        item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.PinIndex + 1}" };
                         item.Click += (s, e) =>
                         {
-                            var link = Inputs[target.Item2].Link;
-                            UnlinkInput(link, target.Item2);
+                            var link = Inputs[target.PinIndex].Link;
+                            UnlinkInput(link, target.PinIndex);
                             DeleteLinkFromTarget(link, (ILink)this);
                         };
                         items.Add(item);
@@ -151,10 +151,10 @@ namespace PluginOne
             foreach (var target in targets)
             {
                 var p = new GraphicsPath();
-                var value = target.Item1 ? Outputs[target.Item2].Value : Inputs[target.Item2].Value;
-                var r = target.Item3;
-                r.Offset(0f, -r.Height / 2f);
-                p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, r, sf);
+                var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
+                var t = target.Target;
+                t.Offset(0f, -t.Height / 4f);
+                p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                 paths.Add(p);
             }
             return [.. paths];
@@ -164,9 +164,9 @@ namespace PluginOne
         /// Получение массива целей
         /// </summary>
         /// <returns>Кортеж bool - (true: выход, false: вход; индекс входа или выхода; прямоугольник цели)</returns>
-        public override Tuple<bool, int, RectangleF>[] GetTargets()
+        public override TargetInfo[] GetTargets()
         {
-            List<Tuple<bool, int, RectangleF>> items = [];
+            List<TargetInfo> items = [];
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
@@ -176,17 +176,28 @@ namespace PluginOne
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2f : step;
             for (int i = 0; i < Inputs.Length; i++)
             {
-                var r = new RectangleF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget / 2f, sizeTarget, sizeTarget);
-                items.Add(new Tuple<bool, int, RectangleF>(false, i, r));
+                var r = new RectangleF(rect.Left - sizeTarget, rect.Top + hi - sizeTarget, sizeTarget, sizeTarget * 2f);
+                r.Inflate(0f, -1f);
+                items.Add(new TargetInfo(false, i, r));
                 hi += step;
             }
             // вывод целей выходов
-            var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
-            for (int i = 0; i < Outputs.Length; i++)
+            if (Outputs.Length == 1)
             {
-                var r = new RectangleF(rect.Right, rect.Top + ho - sizeTarget / 2f, sizeTarget, sizeTarget);
-                items.Add(new Tuple<bool, int, RectangleF>(true, i, r));
-                ho += step;
+                var r = new RectangleF(rect.Right, rect.Top + rect.Height / 2f - sizeTarget, sizeTarget, sizeTarget * 2f);
+                r.Inflate(0f, -1f);
+                items.Add(new TargetInfo(true, 0, r));
+            }
+            else
+            {
+                var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2f : step;
+                for (int i = 0; i < Outputs.Length; i++)
+                {
+                    var r = new RectangleF(rect.Right, rect.Top + ho - sizeTarget, sizeTarget, sizeTarget * 2f);
+                    r.Inflate(0f, -1f);
+                    items.Add(new TargetInfo(true, i, r));
+                    ho += step;
+                }
             }
             return [.. items];
         }
@@ -195,9 +206,9 @@ namespace PluginOne
         /// Получение массива целей
         /// </summary>
         /// <returns>Кортеж bool - (true: выход, false: вход; индекс входа или выхода; точка пина)</returns>
-        public override Tuple<bool, int, PointF>[] GetPinPoints()
+        public override PinInfo[] GetPinPoints()
         {
-            List<Tuple<bool, int, PointF>> items = [];
+            List<PinInfo> items = [];
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
@@ -208,14 +219,14 @@ namespace PluginOne
             for (int i = 0; i < Inputs.Length; i++)
             {
                 var p = new PointF(rect.Left - sizeTarget, rect.Top + hi);
-                items.Add(new Tuple<bool, int, PointF>(false, i, p));
+                items.Add(new PinInfo(false, i, p));
                 hi += step;
             }
             // вывод целей выходов
             if (Outputs.Length == 1)
             {
                 var p = new PointF(rect.Right + sizeTarget, rect.Top + rect.Height / 2f);
-                items.Add(new Tuple<bool, int, PointF>(true, 0, p));
+                items.Add(new PinInfo(true, 0, p));
             }
             else
             {
@@ -223,7 +234,7 @@ namespace PluginOne
                 for (int i = 0; i < Outputs.Length; i++)
                 {
                     var p = new PointF(rect.Right + sizeTarget, rect.Top + ho);
-                    items.Add(new Tuple<bool, int, PointF>(true, i, p));
+                    items.Add(new PinInfo(true, i, p));
                     ho += step;
                 }
             }
@@ -263,25 +274,25 @@ namespace PluginOne
         /// Обработка клика по цели
         /// </summary>
         /// <param name="point">Точка нажатия</param>
-        public override void Click(PointF point, Action<bool, int, RectangleF>? action = null)
+        public override void Click(PointF point, Action<TargetInfo>? action = null)
         {
             var targets = GetTargets();
-            foreach (var target in targets)
+            foreach (TargetInfo info in targets)
             {
-                if (target.Item3.Contains(point))
+                if (info.Target.Contains(point))
                 {
-                    var pin = target.Item2;
-                    if (target.Item1)
+                    var pin = info.PinPoint;
+                    if (info.IsOutput)
                     {
                         // выходы
-                        action?.Invoke(true, target.Item2, target.Item3);
+                        action?.Invoke(info);
                     }
                     else
                     {
                         // входы
-                        if (!Inputs[target.Item2].IsLinked)
+                        if (!Inputs[info.PinIndex].IsLinked)
                         {
-                            Inputs[target.Item2].Value = !Inputs[target.Item2].Value;
+                            Inputs[info.PinIndex].Value = !Inputs[info.PinIndex].Value;
                         }
                     }
                 }
@@ -292,9 +303,9 @@ namespace PluginOne
         {
             if (index >= 0 && index < Inputs.Length)
             {
-                var item = GetPinPoints().FirstOrDefault(x => !x.Item1 && x.Item2 == index);
+                var item = GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == index);
                 if (item != null)
-                    return item.Item3;
+                    return item.PinPoint;
             }
             return null;
         }
@@ -303,9 +314,9 @@ namespace PluginOne
         {
             if (index >= 0 && index < Outputs.Length)
             {
-                var item = GetPinPoints().FirstOrDefault(x => x.Item1 && x.Item2 == index);
+                var item = GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == index);
                 if (item != null)
-                    return item.Item3;
+                    return item.PinPoint;
             }
             return null;
         }
