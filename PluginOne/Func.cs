@@ -7,17 +7,27 @@ namespace PluginOne
     {
         public float Width { get; set; } = 48f;
         public float Height { get; set; } = 48f;
-        protected float CalcHeight { get; set; }
+        private float CalcHeight { get; set; }
         protected FuncInput[] Inputs = [];
         protected FuncOutput[] Outputs = [];
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
-        public override GraphicsPath[] GetGraphicsPaths()
+        protected override void CalculateHeight()
         {
             var step = Height / 2f;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+        }
+
+        public override RectangleF Bounds => new(Location.X, Location.Y, Width, CalcHeight);
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var step = Height / 2f;
+            var maxPins = Math.Max(Inputs.Length, Outputs.Length);
+            if (CalcHeight == 0f)
+                CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new RectangleF(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
             // вывод бокса

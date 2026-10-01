@@ -11,6 +11,7 @@ namespace PluginOne
             FuncDesc = "Инверсия";
             Inputs = [new() { }];
             Outputs = [new() { IsInverted = true }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;

@@ -13,7 +13,7 @@ namespace CodeGenerator
             get => node; 
             set 
             { 
-                if (node == value) return;
+                if (!value.IsEmpty && node == value) return;
                 node = value;
                 hori = [new PointF(Node.X - 0.5f, Node.Y), new PointF(Node.X + 0.5f, Node.Y)];
                 vert = [new PointF(Node.X, Node.Y - 0.5f), new PointF(Node.X, Node.Y + 0.5f)];
@@ -33,10 +33,11 @@ namespace CodeGenerator
 
         public Rectangle Target => target;
 
-        public void Draw(Graphics g)
+        public void Draw(Graphics? g)
         {
-            g.DrawLines(SystemPens.ControlDarkDark, hori);
-            g.DrawLines(SystemPens.ControlDarkDark, vert);
+            using Pen pen = new(SystemColors.ControlDarkDark, 0);
+            g?.DrawLines(pen, hori);
+            g?.DrawLines(pen, vert);
         }
     }
 }

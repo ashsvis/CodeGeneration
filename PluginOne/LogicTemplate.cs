@@ -36,6 +36,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -107,6 +108,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -189,6 +191,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -282,6 +285,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -386,6 +390,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -501,6 +506,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -627,6 +633,7 @@ namespace PluginOne
             FuncDesc = "Дизъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -764,6 +771,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -835,6 +843,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -917,6 +926,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1010,6 +1020,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1114,6 +1125,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1229,6 +1241,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1355,6 +1368,7 @@ namespace PluginOne
             FuncDesc = "Конъюнкция";
             Inputs = [new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;

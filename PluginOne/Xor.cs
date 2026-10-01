@@ -10,6 +10,7 @@ namespace PluginOne
             FuncDesc = "Исключающее ИЛИ";
             Inputs = [new() { }, new() { }];
             Outputs = [new() { }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;

@@ -17,6 +17,7 @@ namespace PluginSupport
             } 
         }
 
+        public abstract RectangleF Bounds { get; }
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
         public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
 
@@ -158,6 +159,7 @@ namespace PluginSupport
 
         public abstract void Click(PointF point, Action<TargetInfo>? action = null);
         public abstract void Calculate();
+        protected abstract void CalculateHeight();
         public abstract int CountInputs();
         public abstract void LinkInput(ILink? link, int index);
         public abstract void UnlinkInput(ILink? link, int index);

@@ -4,12 +4,15 @@ namespace CodeGenerator
 {
     public partial class MainForm : Form, IHost
     {
+        private const int step = 12;
+
         private readonly string dragFormat;
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
 
         private readonly List<Shape> shapes = [];
         private readonly List<Link> links = [];
+        private Cell[,]? field;
 
         public MainForm()
         {
@@ -31,12 +34,12 @@ namespace CodeGenerator
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
             //drawPanel.MouseEnter += (o, e) => Cursor.Hide();
-            //drawPanel.MouseLeave += (o, e) =>
-            //{
-            //    currentPoint = null;
-            //    drawPanel.Invalidate();
-            //    Cursor.Show();
-            //};
+            drawPanel.MouseLeave += (o, e) =>
+            {
+                currentPoint = null;
+                drawPanel.Invalidate();
+                Cursor.Show();
+            };
 
             panCenter.Controls.Add(drawPanel);
 
@@ -53,9 +56,31 @@ namespace CodeGenerator
             }
         }
 
+        private void InitField()
+        {
+            if (shapes.Count > 0)
+            {
+                Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
+                foreach (var shape in shapes.Skip(1))
+                    rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
+                rect.Inflate(step * 5, step * 5);
+                field = new Cell[rect.Width / step + 1, rect.Height / step + 1];
+                // инициализация поля трассировки связей
+                for (int i = 0; i < field.GetLength(0); i++)
+                {
+                    for (int j = 0; j < field.GetLength(1); j++)
+                    {
+                        field[i, j] = new Cell() { Node = new Point(i * step + rect.Left, j * step + rect.Top) };
+                    }
+                }
+            }
+            else
+                field = null;
+        }
+
         //private Point? firstCurrentPoint = null;
         private PointF? firstLinkPoint = null;
-        private PointF currentPoint = PointF.Empty;
+        private PointF? currentPoint = null;
         private PointF firstPoint = PointF.Empty;
         private Shape? firstShape = null;
         private bool linkBuilding = false;
@@ -221,6 +246,7 @@ namespace CodeGenerator
                                 item.Location = MovePointToGrid(item.Location);
                         }
                         SortIndexByLocation();
+                        InitField();
                     }
                     else if (linkBuilding)
                     {
@@ -288,11 +314,14 @@ namespace CodeGenerator
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
                     currentPoint = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    shape.Location = currentPoint;
+                    shape.Location = (PointF)currentPoint;
                     shape.Selected = true;
                     shape.OnDeleteLink += Shape_OnDeleteLink;
                     shapes.Add(shape);
                     SortIndexByLocation();
+
+                    InitField();
+
                     drawPanel.Invalidate();
                 }
             }
@@ -409,6 +438,18 @@ namespace CodeGenerator
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 linkpen.EndCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 e.Graphics?.DrawLine(linkpen, source, target);
+            }
+
+            if (field != null)
+            {
+                // рисуем поле трассировки связей
+                for (int i = 0; i < field.GetLength(0); i++)
+                {
+                    for (int j = 0; j < field.GetLength(1); j++)
+                    {
+                        field[i, j].Draw(e.Graphics);
+                    }
+                }
             }
         }
 
@@ -532,6 +573,7 @@ namespace CodeGenerator
                             foreach (var shape in shapesForDelete)
                                 shapes.Remove(shape);
                             SortIndexByLocation();
+                            InitField();
                             drawPanel.Invalidate();
                         }
                         finally

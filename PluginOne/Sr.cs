@@ -8,6 +8,7 @@ namespace PluginOne
             FuncDesc = "SR-ענטדדונ";
             Inputs = [new() { Name = "S" }, new() { Name = "R" }];
             Outputs = [new() { Name = "Q" }];
+            CalculateHeight();
         }
 
         public override void Calculate()

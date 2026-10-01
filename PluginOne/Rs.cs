@@ -11,6 +11,7 @@ namespace PluginOne
             FuncDesc = "RS-ענטדדונ";
             Inputs = [new() { Name = "S" }, new() { Name = "R" }];
             Outputs = [new() { Name = "Q" }];
+            CalculateHeight();
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
