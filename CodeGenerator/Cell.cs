@@ -21,6 +21,8 @@ namespace CodeGenerator
             }
         }
 
+        public bool Empty { get; set; } = true;
+
         private void CalculateTarget()
         {
             var xmin = (int)Math.Round(hori.Min(a => a.X));
@@ -35,7 +37,7 @@ namespace CodeGenerator
 
         public void Draw(Graphics? g)
         {
-            using Pen pen = new(SystemColors.ControlDarkDark, 0);
+            using Pen pen = new(Empty ? SystemColors.ControlDarkDark : Color.Red, 0);
             g?.DrawLines(pen, hori);
             g?.DrawLines(pen, vert);
         }

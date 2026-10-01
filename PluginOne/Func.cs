@@ -351,6 +351,11 @@ namespace PluginOne
             return Inputs.Length;
         }
 
+        public override int CountOutputs()
+        {
+            return Outputs.Length;
+        }
+
         public override Type GetLinkTypeToCreate()
         {
             return typeof(FuncLink);

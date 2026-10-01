@@ -161,6 +161,7 @@ namespace PluginSupport
         public abstract void Calculate();
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
+        public abstract int CountOutputs();
         public abstract void LinkInput(ILink? link, int index);
         public abstract void UnlinkInput(ILink? link, int index);
         public abstract bool IsLinked(int index);

@@ -56,6 +56,9 @@ namespace CodeGenerator
             }
         }
 
+        /// <summary>
+        /// Построение поля для трассировки связей
+        /// </summary>
         private void InitField()
         {
             if (shapes.Count > 0)
@@ -71,6 +74,40 @@ namespace CodeGenerator
                     for (int j = 0; j < field.GetLength(1); j++)
                     {
                         field[i, j] = new Cell() { Node = new Point(i * step + rect.Left, j * step + rect.Top) };
+                    }
+                }
+                // указание занятых ячеек поля, на которых размещены фигуры и связи
+                foreach (var shape in shapes)
+                {
+                    var bounds = shape.Bounds;
+                    var dx = ((int)bounds.X - rect.X) / step;
+                    var dy = ((int)bounds.Y - rect.Y) / step;
+                    for (int i = 0; i < bounds.Width / step + 1; i++)
+                    {
+                        for (var j = 0; j < bounds.Height / step + 1; j++)
+                        {
+                            field[i + dx, j + dy].Empty = false;
+                        }
+                    }
+                    for (var n = 0; n < shape.CountInputs(); n++)
+                    {
+                        var pt = shape.GetInputPinPoint(n);
+                        if (pt is PointF point)
+                        {
+                            var px = ((int)point.X - rect.X) / step;
+                            var py = ((int)point.Y - rect.Y) / step;
+                            field[px, py].Empty = false;
+                        }
+                    }
+                    for (var n = 0; n < shape.CountOutputs(); n++)
+                    {
+                        var pt = shape.GetOutputPinPoint(n);
+                        if (pt is PointF point)
+                        {
+                            var px = ((int)point.X - rect.X) / step;
+                            var py = ((int)point.Y - rect.Y) / step;
+                            field[px, py].Empty = false;
+                        }
                     }
                 }
             }
