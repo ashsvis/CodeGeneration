@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace PluginOne
 {
-    public class Xor : Cell, ILink
+    public class Xor : Func, ILink
     {
         public Xor()
         {

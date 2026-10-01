@@ -28,7 +28,7 @@ namespace PluginOne
         }
     }
 
-    public class Or2 : Cell, ILink
+    public class Or2 : Func, ILink
     {
         public Or2()
         {
@@ -99,7 +99,7 @@ namespace PluginOne
         }
    }
 
-    public class Or3 : Cell, ILink
+    public class Or3 : Func, ILink
     {
         public Or3()
         {
@@ -181,7 +181,7 @@ namespace PluginOne
         }
    }
 
-    public class Or4 : Cell, ILink
+    public class Or4 : Func, ILink
     {
         public Or4()
         {
@@ -274,7 +274,7 @@ namespace PluginOne
         }
    }
 
-    public class Or5 : Cell, ILink
+    public class Or5 : Func, ILink
     {
         public Or5()
         {
@@ -378,7 +378,7 @@ namespace PluginOne
         }
    }
 
-    public class Or6 : Cell, ILink
+    public class Or6 : Func, ILink
     {
         public Or6()
         {
@@ -493,7 +493,7 @@ namespace PluginOne
         }
    }
 
-    public class Or7 : Cell, ILink
+    public class Or7 : Func, ILink
     {
         public Or7()
         {
@@ -619,7 +619,7 @@ namespace PluginOne
         }
    }
 
-    public class Or8 : Cell, ILink
+    public class Or8 : Func, ILink
     {
         public Or8()
         {
@@ -756,7 +756,7 @@ namespace PluginOne
         }
    }
 
-    public class And2 : Cell, ILink
+    public class And2 : Func, ILink
     {
         public And2()
         {
@@ -827,7 +827,7 @@ namespace PluginOne
         }
    }
 
-    public class And3 : Cell, ILink
+    public class And3 : Func, ILink
     {
         public And3()
         {
@@ -909,7 +909,7 @@ namespace PluginOne
         }
    }
 
-    public class And4 : Cell, ILink
+    public class And4 : Func, ILink
     {
         public And4()
         {
@@ -1002,7 +1002,7 @@ namespace PluginOne
         }
    }
 
-    public class And5 : Cell, ILink
+    public class And5 : Func, ILink
     {
         public And5()
         {
@@ -1106,7 +1106,7 @@ namespace PluginOne
         }
    }
 
-    public class And6 : Cell, ILink
+    public class And6 : Func, ILink
     {
         public And6()
         {
@@ -1221,7 +1221,7 @@ namespace PluginOne
         }
    }
 
-    public class And7 : Cell, ILink
+    public class And7 : Func, ILink
     {
         public And7()
         {
@@ -1347,7 +1347,7 @@ namespace PluginOne
         }
    }
 
-    public class And8 : Cell, ILink
+    public class And8 : Func, ILink
     {
         public And8()
         {

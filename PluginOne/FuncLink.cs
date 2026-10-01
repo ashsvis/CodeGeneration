@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class CellLink : PluginSupport.Link
+    public class FuncLink : PluginSupport.Link
     {
         public override ILocation? Source { get; set; }
         public override ILocation? Target { get; set; }

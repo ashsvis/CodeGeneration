@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class Rs : Cell, ILink
+    public class Rs : Func, ILink
     {
         public Rs()
         {

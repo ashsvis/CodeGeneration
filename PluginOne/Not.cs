@@ -3,7 +3,7 @@ using System;
 
 namespace PluginOne
 {
-    public class Not : Cell, ILink
+    public class Not : Func, ILink
     {
         public Not() 
         {

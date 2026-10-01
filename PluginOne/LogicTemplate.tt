@@ -48,7 +48,7 @@ namespace PluginOne
             holderInputNames.Add("\"\"");
         }
 #>
-    public class <#= type.Item1 #><#= i #> : Cell, ILink
+    public class <#= type.Item1 #><#= i #> : Func, ILink
     {
         public <#= type.Item1 #><#= i #>()
         {

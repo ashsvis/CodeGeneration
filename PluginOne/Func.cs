@@ -3,13 +3,13 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class Cell : Shape
+    public class Func : Shape
     {
         public float Width { get; set; } = 48f;
         public float Height { get; set; } = 48f;
         protected float CalcHeight { get; set; }
-        protected CellInput[] Inputs = [];
-        protected CellOutput[] Outputs = [];
+        protected FuncInput[] Inputs = [];
+        protected FuncOutput[] Outputs = [];
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
@@ -343,7 +343,7 @@ namespace PluginOne
 
         public override Type GetLinkTypeToCreate()
         {
-            return typeof(CellLink);
+            return typeof(FuncLink);
         }
     }
 }

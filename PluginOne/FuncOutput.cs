@@ -1,13 +1,9 @@
-using PluginSupport;
-
 namespace PluginOne
 {
-    public class CellInput
+    public class FuncOutput
     {
         public string? Name { get; set; }
         public bool Value { get; set; }
         public bool IsInverted { get; set; }
-        public bool IsLinked { get; set; }
-        public ILink? Link { get; set; }
     }
 }
