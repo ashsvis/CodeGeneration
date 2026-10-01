@@ -543,30 +543,4 @@ namespace CodeGenerator
             }
         }
     }
-
-    public class DragedInfo
-    {
-        public required Shape Shape { get; set; }
-        public HitInfo HitInfo { get; set; }
-    }
-
-    public struct HitInfo
-    {
-        public ShapeHits Hits;
-        public uint PinIndex;
-        public int LinkIndex;
-        public PointF PinPoint;
-    }
-
-    public enum ShapeHits
-    {
-        None,
-        Body,
-        Caption,
-        OrderNum,
-        InputLink,
-        OutputLink,
-        Descriptor,
-        LeftEdge
-    }
 }
