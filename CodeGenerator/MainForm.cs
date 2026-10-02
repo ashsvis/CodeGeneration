@@ -1,5 +1,4 @@
 using PluginSupport;
-using System.Net;
 
 namespace CodeGenerator
 {
@@ -113,6 +112,7 @@ namespace CodeGenerator
                         }
                     }
                 }
+                // занятие точек существующих связей
                 foreach (var link in links)
                 {
                     foreach (var point in link.GetPoints())
@@ -129,6 +129,113 @@ namespace CodeGenerator
             }
             else
                 field = null;
+        }
+
+        private List<Point> BuildWaveInField(PointF? startPoint, PointF? endPoint)
+        {
+            List<Point> points = [];
+            if (field == null || endPoint == null) return [];
+            InitField();
+            Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
+            foreach (var shape in shapes.Skip(1))
+                rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
+            rect.Inflate(step * 5, step * 5);
+            // установка начальной точки волны
+            var n = 1;
+            if (startPoint is PointF start)
+            {
+                var px = ((int)start.X - rect.X) / step;
+                var py = ((int)start.Y - rect.Y) / step;
+                field[px, py].Wave = n;
+                field[px, py].Empty = false;
+            }
+            if (endPoint is not PointF end) return [];
+            var gx = ((int)end.X - rect.X) / step;
+            var gy = ((int)end.Y - rect.Y) / step;
+            field[gx, gy].Empty = true;
+            // заполнение свободных ячеек номером волны
+            var found = false;
+            while (!found)
+            {
+                var changed = false;
+                for (int i = 0; i < field.GetLength(0); i++)
+                {
+                    for (int j = 0; j < field.GetLength(1); j++)
+                    {
+                        if (field[i, j].Wave == n)
+                        {
+                            if (i - 1 >= 0 && field[i - 1, j].Empty)
+                            {
+                                field[i - 1, j].Wave = n + 1;
+                                field[i - 1, j].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i - 1 && gy == j;
+                            }
+                            if (j - 1 >= 0 && field[i, j - 1].Empty)
+                            {
+                                field[i, j - 1].Wave = n + 1;
+                                field[i, j - 1].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i && gy == j - 1;
+                            }
+                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty)
+                            {
+                                field[i + 1, j].Wave = n + 1;
+                                field[i + 1, j].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i + 1 && gy == j;
+                            }
+                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty)
+                            {
+                                field[i, j + 1].Wave = n + 1;
+                                field[i, j + 1].Empty = false;
+                                changed = true;
+                                if (!found)
+                                    found = gx == i && gy == j + 1;
+                            }
+                            if (found) break;
+                        }
+                        if (found) break;
+                    }
+                }
+                if (!changed) break;
+                n++;
+            }
+            if (found)
+            {
+                var i = gx;
+                var j = gy;
+                var wave = field[i, j].Wave;
+                points.Add(field[i, j].Node);
+                while (wave > 0)
+                {
+                    if (i - 1 >= 0 && field[i - 1, j].Wave == wave)
+                    {
+                        i--;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
+                    {
+                        i++;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
+                    {
+                        j++;
+                        points.Add(field[i, j].Node);
+                    }
+                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
+                    {
+                        j--;
+                        points.Add(field[i, j].Node);
+                    }
+                    wave--;
+                }
+            }
+            return points;
         }
 
         //private Point? firstCurrentPoint = null;
@@ -323,10 +430,10 @@ namespace CodeGenerator
                                     var endPoint = shape.GetInputPinPoint(index);
                                     if (startPoint != null && endPoint != null)
                                     {
-                                        cellLink.StartPoint = (PointF)startPoint;
-                                        cellLink.EndPoint = (PointF)endPoint;
+                                        cellLink.StartPoint = (Point)startPoint;
+                                        cellLink.EndPoint = (Point)endPoint;
                                         // построение волны и точек визуальной связи
-                                        BuildWaveInField(startPoint, endPoint, out List<PointF> points);
+                                        var points = BuildWaveInField(startPoint, endPoint);
 
                                         cellLink.LinkToLocation(source, cellLink.StartPoint, target, index, cellLink.EndPoint, points);
                                         links.Add(cellLink);
@@ -351,114 +458,8 @@ namespace CodeGenerator
             var link = e.Link;
             link.SetPoints([]);
             // построение волны и точек визуальной связи
-            BuildWaveInField(link.StartPoint, link.EndPoint, out List<PointF> points);
+            var points = BuildWaveInField(link.StartPoint, link.EndPoint);
             link.SetPoints([..points]);
-        }
-
-        private void BuildWaveInField(PointF? startPoint, PointF? endPoint, out List<PointF> points)
-        {
-            points = [];
-            if (field == null || endPoint == null) return;
-            InitField();
-            Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
-            foreach (var shape in shapes.Skip(1))
-                rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
-            rect.Inflate(step * 5, step * 5);
-            // установка начальной точки волны
-            var n = 1;
-            if (startPoint is PointF start)
-            {
-                var px = ((int)start.X - rect.X) / step;
-                var py = ((int)start.Y - rect.Y) / step;
-                field[px, py].Wave = n;
-                field[px, py].Empty = false;
-            }
-            if (endPoint is not PointF end) return;
-            var gx = ((int)end.X - rect.X) / step;
-            var gy = ((int)end.Y - rect.Y) / step;
-            field[gx, gy].Empty = true;
-            // заполнение свободных ячеек номером волны
-            var found = false;
-            while (!found)
-            {
-                var changed = false;
-                for (int i = 0; i < field.GetLength(0); i++)
-                {
-                    for (int j = 0; j < field.GetLength(1); j++)
-                    {
-                        if (field[i, j].Wave == n)
-                        {
-                            if (i - 1 >= 0 && field[i - 1, j].Empty)
-                            {
-                                field[i - 1, j].Wave = n + 1;
-                                field[i - 1, j].Empty = false;
-                                changed = true;
-                                if (!found)
-                                    found = gx == i - 1 && gy == j;
-                            }
-                            if (j - 1 >= 0 && field[i, j - 1].Empty)
-                            {
-                                field[i, j - 1].Wave = n + 1;
-                                field[i, j - 1].Empty = false;
-                                changed = true;
-                                if (!found)
-                                    found = gx == i && gy == j - 1;
-                            }
-                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty)
-                            {
-                                field[i + 1, j].Wave = n + 1;
-                                field[i + 1, j].Empty = false;
-                                changed = true;
-                                if (!found)
-                                    found = gx == i + 1 && gy == j;
-                            }
-                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty)
-                            {
-                                field[i, j + 1].Wave = n + 1;
-                                field[i, j + 1].Empty = false;
-                                changed = true;
-                                if (!found)
-                                    found = gx == i && gy == j + 1;
-                            }
-                            if (found) break;
-                        }
-                        if (found) break;
-                    }
-                }
-                if (!changed) break;
-                n++;
-            }
-            if (found)
-            {
-                var i = gx;
-                var j = gy;
-                var wave = field[i, j].Wave;
-                points.Add(field[i, j].Node);
-                while (wave > 0)
-                {
-                    if (i - 1 >= 0 && field[i - 1, j].Wave == wave)
-                    {
-                        i--;
-                        points.Add(field[i, j].Node);
-                    }
-                    else if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
-                    {
-                        i++;
-                        points.Add(field[i, j].Node);
-                    }
-                    else if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
-                    {
-                        j++;
-                        points.Add(field[i, j].Node);
-                    }
-                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
-                    {
-                        j--;
-                        points.Add(field[i, j].Node);
-                    }
-                    wave--;
-                }
-            }
         }
 
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)

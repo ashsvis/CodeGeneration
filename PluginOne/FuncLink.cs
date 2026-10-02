@@ -8,14 +8,14 @@ namespace PluginOne
         public override ILocation? Source { get; set; }
         public override ILocation? Target { get; set; }
         public override int TargetPinIndex { get; set; }
-        public override PointF StartPoint { get; set; }
-        public override PointF EndPoint { get; set; }
+        public override Point StartPoint { get; set; }
+        public override Point EndPoint { get; set; }
 
 
-        private SizeF StartShift { get; set; }
-        private SizeF EndShift { get; set; }
+        private Size StartShift { get; set; }
+        private Size EndShift { get; set; }
 
-        private PointF[] linkPoints = [];
+        private Point[] linkPoints = [];
         private bool mustRebuild = false;
 
         public bool MustRebuild => mustRebuild;
@@ -33,15 +33,16 @@ namespace PluginOne
             return [.. paths];
         }
 
-        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, int targetPinIndex, PointF endPoint, List<PointF> points)
+        public override void LinkToLocation(ILocation? source, Point startPoint, 
+            ILocation? target, int targetPinIndex, Point endPoint, List<Point> points)
         {
             if (source == null || target == null) return;
             Source = source;
             Target = target;
             TargetPinIndex = targetPinIndex;
 
-            StartShift = new SizeF(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
-            EndShift = new SizeF(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
+            StartShift = new Size(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
+            EndShift = new Size(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
 
             linkPoints = [.. points];
 
@@ -60,22 +61,22 @@ namespace PluginOne
 
         private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)
         {
-            StartPoint = PointF.Add(e.NewValue, StartShift);
+            StartPoint = Point.Add(e.NewValue, StartShift);
             mustRebuild = true;
         }
 
         private void MakeChangesForLast(object sender, LocationChangedEventArgs e)
         {
-            EndPoint = PointF.Add(e.NewValue, EndShift);
+            EndPoint = Point.Add(e.NewValue, EndShift);
             mustRebuild = true;
         }
 
-        public override PointF[] GetPoints()
+        public override Point[] GetPoints()
         {
             return linkPoints;
         }
 
-        public override void SetPoints(PointF[] points)
+        public override void SetPoints(Point[] points)
         {
             linkPoints = points;
         }
