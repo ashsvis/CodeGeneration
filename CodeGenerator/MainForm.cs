@@ -1,3 +1,4 @@
+using Microsoft.VisualBasic.Devices;
 using PluginSupport;
 
 namespace CodeGenerator
@@ -671,7 +672,16 @@ namespace CodeGenerator
             foreach (var link in links)
             {
                 using var pen = new Pen(link.Foreground);
-                link.Draw(e.Graphics, pen);
+                link.DrawLines(e.Graphics, pen);
+            }
+            if (!dragShapes)
+            {
+                // рисуем присоединения связей фигур из списка
+                foreach (var link in links)
+                {
+                    using var brush = new SolidBrush(link.Foreground);
+                    link.DrawDots(e.Graphics, brush);
+                }
             }
             // рисование курсора при свободном движении указателя мыши
             if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)

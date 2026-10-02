@@ -24,17 +24,20 @@ namespace PluginSupport
 
         public event RebuildLinkFromTargetEventHandler? OnRebuildLink;
 
-        public virtual void Draw(Graphics? g, Pen pen)
+        public virtual void DrawLines(Graphics? g, Pen pen)
         {
             foreach (var p in GetLinesPaths())
             {
                 using var path = p;
                 g?.DrawPath(pen, path);
             }
+        }
+
+        public virtual void DrawDots(Graphics? g, Brush brush)
+        {
             foreach (var p in GetDotsPaths())
             {
                 using var path = p;
-                using var brush = new SolidBrush(pen.Color);
                 g?.FillPath(brush, path);
             }
         }
