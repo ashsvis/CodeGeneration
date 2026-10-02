@@ -11,7 +11,7 @@ namespace CodeGenerator
         private readonly PluginManager pm = new();
 
         private readonly List<Shape> shapes = [];
-        private readonly List<Link> links = [];
+        private readonly List<PluginSupport.Link> links = [];
         private Cell[,]? field;
 
         public MainForm()
@@ -146,7 +146,7 @@ namespace CodeGenerator
                 field = null;
         }
 
-        private List<Point> BuildWaveInField(Link link)
+        private List<Point> BuildWaveInField(PluginSupport.Link link)
         {
             List<Point> points = [];
             if (field == null) return [];
@@ -204,7 +204,9 @@ namespace CodeGenerator
                     {
                         if (field[i, j].Wave == n)
                         {
-                            if (i - 1 >= 0 && field[i - 1, j].Empty == ThroughPassage.Both)
+                            if (i - 1 >= 0 && 
+                                (field[i - 1, j].Empty == ThroughPassage.Both ||
+                                 field[i - 1, j].Empty == ThroughPassage.Vertical))
                             {
                                 field[i - 1, j].Wave = n + 1;
                                 field[i - 1, j].Empty = ThroughPassage.None;
@@ -212,7 +214,9 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i - 1 && gy == j;
                             }
-                            if (j - 1 >= 0 && field[i, j - 1].Empty == ThroughPassage.Both)
+                            if (j - 1 >= 0 && 
+                                (field[i, j - 1].Empty == ThroughPassage.Both ||
+                                 field[i, j - 1].Empty == ThroughPassage.Horizontal))
                             {
                                 field[i, j - 1].Wave = n + 1;
                                 field[i, j - 1].Empty = ThroughPassage.None;
@@ -220,7 +224,9 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i && gy == j - 1;
                             }
-                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty == ThroughPassage.Both)
+                            if (i + 1 < field.GetLength(0) && 
+                                (field[i + 1, j].Empty == ThroughPassage.Both ||
+                                 field[i + 1, j].Empty == ThroughPassage.Vertical))
                             {
                                 field[i + 1, j].Wave = n + 1;
                                 field[i + 1, j].Empty = ThroughPassage.None;
@@ -228,7 +234,9 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i + 1 && gy == j;
                             }
-                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty == ThroughPassage.Both)
+                            if (j + 1 < field.GetLength(1) && 
+                                (field[i, j + 1].Empty == ThroughPassage.Both ||
+                                 field[i, j + 1].Empty == ThroughPassage.Horizontal))
                             {
                                 field[i, j + 1].Wave = n + 1;
                                 field[i, j + 1].Empty = ThroughPassage.None;
@@ -470,7 +478,7 @@ namespace CodeGenerator
                             {
                                 // создание представления связи
                                 var type = shape.GetLinkTypeToCreate();
-                                var cellLink = (Link?)Activator.CreateInstance(type);
+                                var cellLink = (PluginSupport.Link?)Activator.CreateInstance(type);
                                 if (cellLink != null && firstShape is ILocation source && shape is ILocation target)
                                 {
                                     var startPoint = firstShape.GetOutputPinPoint(0);
@@ -509,14 +517,7 @@ namespace CodeGenerator
         /// <param name="e"></param>
         private void CellLink_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
         {
-            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-            // очищаем массив внутренних точек
-            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint))
-                link.SetPoints([]);
-            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-            // перестраиваем массив внутренних точек
-            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint).OrderBy(x => x.Length))
-                link.SetPoints([.. BuildWaveInField(link)]);
+            UpdateOtherLinks(e.Link);
         }
 
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)
@@ -575,17 +576,22 @@ namespace CodeGenerator
                     link.UnlinkToLocation(source, target);
                 // удаляем визуальную ссылку
                 links.Remove(link);
-                // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-                // очищаем массив внутренних точек
-                foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
-                    item.SetPoints([]);
-                // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-                // перестраиваем массив внутренних точек
-                foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
-                    item.SetPoints([.. BuildWaveInField(item)]);
+                UpdateOtherLinks(link);
             }
             InitField();
             drawPanel.Invalidate();
+        }
+
+        private void UpdateOtherLinks(Link link)
+        {
+            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+            // очищаем массив внутренних точек
+            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
+                item.SetPoints([]);
+            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+            // перестраиваем массив внутренних точек
+            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
+                item.SetPoints([.. BuildWaveInField(item)]);
         }
 
         private void SortIndexByLocation()
@@ -627,9 +633,9 @@ namespace CodeGenerator
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
             // рисуем фигуры из списка
-            using var hoverpen = new Pen(Color.FromArgb(255, 255, 255), 1f);
-            using var selectpen = new Pen(Color.DarkMagenta, 1f);
-            using var selecthoverpen = new Pen(Color.Magenta, 1f);
+            using var hoverpen = new Pen(Color.White);
+            using var selectpen = new Pen(Color.Pink);
+            using var selecthoverpen = new Pen(Color.AntiqueWhite);
             foreach (var shape in shapes)
             {
                 if (shape.Hover && shape.Selected)
@@ -655,14 +661,14 @@ namespace CodeGenerator
                 else
                 {
                     using var brush = new SolidBrush(shape.Background);
-                    using var defaultpen = new Pen(shape.Foreground, 1);
+                    using var defaultpen = new Pen(shape.Foreground);
                     shape.Draw(e.Graphics, defaultpen, brush);
                 }
             }
             // рисуем связи фигур из списка
-            using var pen = new Pen(Color.WhiteSmoke, 1);
             foreach (var link in links)
             {
+                using var pen = new Pen(link.Foreground);
                 link.Draw(e.Graphics, pen);
             }
             // рисование курсора при свободном движении указателя мыши
@@ -677,23 +683,23 @@ namespace CodeGenerator
             // рисуем резиновую связь в момент построения связи
             if (linkBuilding && firstLinkPoint is Point source && currentPoint is Point target)
             {
-                using var linkpen = new Pen(Color.Teal, 1f);
+                using var linkpen = new Pen(Color.Teal);
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 linkpen.EndCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 e.Graphics?.DrawLine(linkpen, source, target);
             }
 
-            if (field != null)
-            {
-                // рисуем поле трассировки связей
-                for (int i = 0; i < field.GetLength(0); i++)
-                {
-                    for (int j = 0; j < field.GetLength(1); j++)
-                    {
-                        field[i, j].Draw(e.Graphics);
-                    }
-                }
-            }
+            //if (field != null)
+            //{
+            //    // рисуем поле трассировки связей
+            //    for (int i = 0; i < field.GetLength(0); i++)
+            //    {
+            //        for (int j = 0; j < field.GetLength(1); j++)
+            //        {
+            //            field[i, j].Draw(e.Graphics);
+            //        }
+            //    }
+            //}
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -800,6 +806,7 @@ namespace CodeGenerator
                                 link.OnRebuildLink -= CellLink_OnRebuildLink;
                                 // удаляем визуальную ссылку
                                 links.Remove(link);
+                                UpdateOtherLinks(link);
                             }
                             // для всех удаляемых элементов
                             foreach (var shape in shapesForDelete)

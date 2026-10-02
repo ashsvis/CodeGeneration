@@ -13,6 +13,7 @@ namespace PluginSupport
         public abstract Point[] GetPoints();
         public abstract void SetPoints(Point[] points);
         public abstract void Rebuild();
+        public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
 
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();
@@ -44,9 +45,9 @@ namespace PluginSupport
         }
     }
 
-    public class RebuildLinkFromTargetEventArgs(Link link) : EventArgs
+    public class RebuildLinkFromTargetEventArgs(PluginSupport.Link link) : EventArgs
     {
-        public Link Link { get; set; } = link;
+        public PluginSupport.Link Link { get; set; } = link;
     }
 
     public delegate void RebuildLinkFromTargetEventHandler(object sender, RebuildLinkFromTargetEventArgs e);
