@@ -9,6 +9,7 @@ namespace PluginSupport
         public abstract int TargetPinIndex { get; set; }
         public abstract Point StartPoint { get; set; }
         public abstract Point EndPoint { get; set; }
+        public abstract int Length { get; }
         public abstract Point[] GetPoints();
         public abstract void SetPoints(Point[] points);
         public abstract void Rebuild();

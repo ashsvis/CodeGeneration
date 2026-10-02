@@ -10,6 +10,7 @@ namespace PluginOne
         public override int TargetPinIndex { get; set; }
         public override Point StartPoint { get; set; }
         public override Point EndPoint { get; set; }
+        public override int Length => Math.Abs(EndPoint.X - StartPoint.X) + Math.Abs(EndPoint.Y - StartPoint.Y);
 
 
         private Size StartShift { get; set; }

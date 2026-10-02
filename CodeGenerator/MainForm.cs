@@ -82,7 +82,7 @@ namespace CodeGenerator
                     var bounds = shape.Bounds;
                     var dx = ((int)bounds.X - rect.X) / step;
                     var dy = ((int)bounds.Y - rect.Y) / step;
-                    for (int i = 0; i < bounds.Width / step + 1; i++)
+                    for (int i = -1; i < bounds.Width / step + 2; i++)
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
                         {
@@ -241,22 +241,27 @@ namespace CodeGenerator
                     {
                         i--;
                         points.Add(field[i, j].Node);
+                        goto nextWave;
                     }
-                    else if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
-                    {
-                        i++;
-                        points.Add(field[i, j].Node);
-                    }
-                    else if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
-                    {
-                        j++;
-                        points.Add(field[i, j].Node);
-                    }
-                    else if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
+                    if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
                     {
                         j--;
                         points.Add(field[i, j].Node);
+                        goto nextWave;
                     }
+                    if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
+                    {
+                        j++;
+                        points.Add(field[i, j].Node);
+                        goto nextWave;
+                    }
+                    if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
+                    {
+                        i++;
+                        points.Add(field[i, j].Node);
+                        goto nextWave;
+                    }
+                nextWave:
                     wave--;
                 }
             }
@@ -491,7 +496,7 @@ namespace CodeGenerator
                 link.SetPoints([]);
             // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
             // перестраиваем массив внутренних точек
-            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint))
+            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint).OrderBy(x => x.Length))
                 link.SetPoints([.. BuildWaveInField(link)]);
         }
 
@@ -553,6 +558,14 @@ namespace CodeGenerator
                     link.UnlinkToLocation(source, target);
                 // удаляем визуальную ссылку
                 links.Remove(link);
+                // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+                // очищаем массив внутренних точек
+                foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
+                    item.SetPoints([]);
+                // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+                // перестраиваем массив внутренних точек
+                foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
+                    item.SetPoints([.. BuildWaveInField(item)]);
             }
         }
 
