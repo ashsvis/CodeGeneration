@@ -22,32 +22,36 @@ namespace PluginOne
         public bool MustRebuild => mustRebuild;
 
 
-        public override GraphicsPath[] GetGraphicsPaths()
+        public override GraphicsPath[] GetLinesPaths()
         {
             List<GraphicsPath> paths = [];
             var path = new GraphicsPath();
             if (linkPoints.Length > 1)
             {
-                for (var i = 1; i < linkPoints.Length; i++)
-                {
-                    path.AddLine(linkPoints[i - 1], linkPoints[i]);
-                    path.CloseFigure();
-                }
+                path.AddLines(linkPoints);
                 paths.Add(path);
-                var pt = linkPoints[0];
-                if (pt != StartPoint)
-                {
-                    var rect = new Rectangle(pt.X - 2, pt.Y - 2, 4, 4);
-                    var pathDot = new GraphicsPath();
-                    pathDot.AddEllipse(rect);
-                    pathDot.CloseFigure();
-                    paths.Add(pathDot);
-                }
             }
             else
             {
                 path.AddLine(StartPoint, EndPoint);
                 paths.Add(path);
+            }
+            return [.. paths];
+        }
+
+        public override GraphicsPath[] GetDotsPaths()
+        {
+            List<GraphicsPath> paths = [];
+            var path = new GraphicsPath();
+            if (linkPoints.Length > 1)
+            {
+                var pt = linkPoints[0];
+                if (pt != StartPoint)
+                {
+                    var rect = new Rectangle(pt.X - 3, pt.Y - 3, 6, 6);
+                    path.AddEllipse(rect);
+                    paths.Add(path);
+                }
             }
             return [.. paths];
         }

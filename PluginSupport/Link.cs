@@ -14,7 +14,8 @@ namespace PluginSupport
         public abstract void SetPoints(Point[] points);
         public abstract void Rebuild();
 
-        public abstract GraphicsPath[] GetGraphicsPaths();
+        public abstract GraphicsPath[] GetLinesPaths();
+        public abstract GraphicsPath[] GetDotsPaths();
 
         public abstract void LinkToLocation(ILocation? source, Point startPoint, 
             ILocation? target, int targetPinIndex, Point endPoint, List<Point> points);
@@ -24,12 +25,16 @@ namespace PluginSupport
 
         public virtual void Draw(Graphics? g, Pen pen)
         {
-            foreach (var p in GetGraphicsPaths())
+            foreach (var p in GetLinesPaths())
+            {
+                using var path = p;
+                g?.DrawPath(pen, path);
+            }
+            foreach (var p in GetDotsPaths())
             {
                 using var path = p;
                 using var brush = new SolidBrush(pen.Color);
                 g?.FillPath(brush, path);
-                g?.DrawPath(pen, path);
             }
         }
 
