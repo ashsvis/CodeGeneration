@@ -121,7 +121,7 @@ namespace PluginOne
                         {
                             var link = Inputs[target.PinIndex].Link;
                             UnlinkInput(link, target.PinIndex);
-                            DeleteLinkFromTarget(link, (ILink)this);
+                            DeleteLinkFromTarget(link, (ILink)this, target.PinIndex);
                         };
                         items.Add(item);
                     }

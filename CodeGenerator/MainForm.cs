@@ -328,7 +328,7 @@ namespace CodeGenerator
                                         // построение волны и точек визуальной связи
                                         BuildWaveInField(startPoint, endPoint, out List<PointF> points);
 
-                                        cellLink.LinkToLocation(source, cellLink.StartPoint, target, cellLink.EndPoint, points);
+                                        cellLink.LinkToLocation(source, cellLink.StartPoint, target, index, cellLink.EndPoint, points);
                                         links.Add(cellLink);
                                         // настройка фигуры для установления связи
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
@@ -508,7 +508,7 @@ namespace CodeGenerator
 
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
-            var linksForDelete = links.Where(x => x.Source == e.Source && x.Target == e.Target).ToList();
+            var linksForDelete = links.Where(x => x.Source == e.Source && x.Target == e.Target && x.TargetPinIndex == e.TargetPinIndex).ToList();
             foreach (var link in linksForDelete)
             {
                 // ищем источник и цель

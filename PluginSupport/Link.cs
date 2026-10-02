@@ -6,6 +6,7 @@ namespace PluginSupport
     {
         public abstract ILocation? Source { get; set; }
         public abstract ILocation? Target { get; set; }
+        public abstract int TargetPinIndex { get; set; }
         public abstract PointF StartPoint { get; set; }
         public abstract PointF EndPoint { get; set; }
         public abstract PointF[] GetPoints();
@@ -14,7 +15,7 @@ namespace PluginSupport
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
-        public abstract void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint, List<PointF> points);
+        public abstract void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, int targetPinIndex, PointF endPoint, List<PointF> points);
         public abstract void UnlinkToLocation(ILocation? source, ILocation? target);
 
         public event RebuildLinkFromTargetEventHandler? OnRebuildLink;

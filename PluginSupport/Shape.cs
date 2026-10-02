@@ -170,16 +170,17 @@ namespace PluginSupport
 
         public abstract Type GetLinkTypeToCreate();
 
-        public void DeleteLinkFromTarget(ILink? source, ILink target)
+        public void DeleteLinkFromTarget(ILink? source, ILink target, int pinIndex)
         {
-            OnDeleteLink?.Invoke(this, new DeleteLinkFromTargetEventArgs(source, target));
+            OnDeleteLink?.Invoke(this, new DeleteLinkFromTargetEventArgs(source, target, pinIndex));
         }
     }
 
-    public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target) : EventArgs
+    public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target, int targetPinIndex) : EventArgs
     {
         public ILink? Source { get; set; } = source;
         public ILink? Target { get; set; } = target;
+        public int TargetPinIndex { get; set; } = targetPinIndex;
     }
 
     public delegate void DeleteLinkFromTargetEventHandler(object sender, DeleteLinkFromTargetEventArgs e);

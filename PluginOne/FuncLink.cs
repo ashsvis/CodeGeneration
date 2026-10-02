@@ -7,6 +7,7 @@ namespace PluginOne
     {
         public override ILocation? Source { get; set; }
         public override ILocation? Target { get; set; }
+        public override int TargetPinIndex { get; set; }
         public override PointF StartPoint { get; set; }
         public override PointF EndPoint { get; set; }
 
@@ -18,6 +19,7 @@ namespace PluginOne
         private bool mustRebuild = false;
 
         public bool MustRebuild => mustRebuild;
+
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -31,11 +33,12 @@ namespace PluginOne
             return [.. paths];
         }
 
-        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, PointF endPoint, List<PointF> points)
+        public override void LinkToLocation(ILocation? source, PointF startPoint, ILocation? target, int targetPinIndex, PointF endPoint, List<PointF> points)
         {
             if (source == null || target == null) return;
             Source = source;
             Target = target;
+            TargetPinIndex = targetPinIndex;
 
             StartShift = new SizeF(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new SizeF(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
