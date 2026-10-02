@@ -439,6 +439,8 @@ namespace CodeGenerator
                         SortIndexByLocation();
                         foreach (var link in links)
                             link.Rebuild();
+                        InitField();
+                        drawPanel.Invalidate();
                     }
                     else if (linkBuilding)
                     {
@@ -477,6 +479,8 @@ namespace CodeGenerator
                             }
                         }
                         firstShape = null;
+                        InitField();
+                        drawPanel.Invalidate();
                     }
                     drawPanel.Invalidate();
                 }
@@ -537,9 +541,7 @@ namespace CodeGenerator
                     shape.OnDeleteLink += Shape_OnDeleteLink;
                     shapes.Add(shape);
                     SortIndexByLocation();
-
                     InitField();
-
                     drawPanel.Invalidate();
                 }
             }
@@ -567,6 +569,8 @@ namespace CodeGenerator
                 foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
                     item.SetPoints([.. BuildWaveInField(item)]);
             }
+            InitField();
+            drawPanel.Invalidate();
         }
 
         private void SortIndexByLocation()

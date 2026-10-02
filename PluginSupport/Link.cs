@@ -27,6 +27,8 @@ namespace PluginSupport
             foreach (var p in GetGraphicsPaths())
             {
                 using var path = p;
+                using var brush = new SolidBrush(pen.Color);
+                g?.FillPath(brush, path);
                 g?.DrawPath(pen, path);
             }
         }

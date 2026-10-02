@@ -27,10 +27,28 @@ namespace PluginOne
             List<GraphicsPath> paths = [];
             var path = new GraphicsPath();
             if (linkPoints.Length > 1)
-                path.AddLines(linkPoints);
+            {
+                for (var i = 1; i < linkPoints.Length; i++)
+                {
+                    path.AddLine(linkPoints[i - 1], linkPoints[i]);
+                    path.CloseFigure();
+                }
+                paths.Add(path);
+                var pt = linkPoints[0];
+                if (pt != StartPoint)
+                {
+                    var rect = new Rectangle(pt.X - 2, pt.Y - 2, 4, 4);
+                    var pathDot = new GraphicsPath();
+                    pathDot.AddEllipse(rect);
+                    pathDot.CloseFigure();
+                    paths.Add(pathDot);
+                }
+            }
             else
+            {
                 path.AddLine(StartPoint, EndPoint);
-            paths.Add(path);
+                paths.Add(path);
+            }
             return [.. paths];
         }
 
