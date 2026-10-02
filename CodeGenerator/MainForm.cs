@@ -637,8 +637,8 @@ namespace CodeGenerator
         {
             // рисуем фигуры из списка
             using var hoverpen = new Pen(Color.White);
-            using var selectpen = new Pen(Color.Pink);
-            using var selecthoverpen = new Pen(Color.AntiqueWhite);
+            using var selectpen = new Pen(Color.Teal);
+            using var selecthoverpen = new Pen(Color.CadetBlue);
             foreach (var shape in shapes)
             {
                 if (shape.Hover && shape.Selected)
