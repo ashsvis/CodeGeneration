@@ -303,7 +303,7 @@ namespace CodeGenerator
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
-            firstPoint = e.Location;
+            firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             leftPressed = e.Button == MouseButtons.Left;
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
@@ -419,15 +419,17 @@ namespace CodeGenerator
             {
                 if (dragShapes)
                 {
-                    var dx = e.X - firstPoint.X;
-                    var dy = e.Y - firstPoint.Y;
+                    var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    var dx = ePoint.X - firstPoint.X;
+                    var dy = ePoint.Y - firstPoint.Y;
+                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     // перемещаем только выбранные фигуры
                     foreach (var shape in shapes)
                     {
                         if (shape is ILocation item && item.Selected)
-                            item.Location = Point.Add(item.Location, new Size((int)Math.Round(dx / drawPanel.Zoom), (int)Math.Round(dy / drawPanel.Zoom)));
+                            item.Location = Point.Add(item.Location, new Size(dx, dy));
                     }
-                    firstPoint = e.Location;
+                    firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 }
                 else if (linkBuilding)
                 {
