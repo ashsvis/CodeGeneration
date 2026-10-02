@@ -80,8 +80,8 @@ namespace CodeGenerator
                 foreach (var shape in shapes)
                 {
                     var bounds = shape.Bounds;
-                    var dx = ((int)bounds.X - rect.X) / step;
-                    var dy = ((int)bounds.Y - rect.Y) / step;
+                    var dx = (bounds.X - rect.X) / step;
+                    var dy = (bounds.Y - rect.Y) / step;
                     for (int i = -1; i < bounds.Width / step + 2; i++)
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
@@ -95,8 +95,8 @@ namespace CodeGenerator
                         var pt = shape.GetInputPinPoint(n);
                         if (pt is Point point)
                         {
-                            var px = ((int)point.X - rect.X) / step;
-                            var py = ((int)point.Y - rect.Y) / step;
+                            var px = (point.X - rect.X) / step;
+                            var py = (point.Y - rect.Y) / step;
                             field[px, py].Empty = ThroughPassage.None;
                         }
                     }
@@ -106,8 +106,8 @@ namespace CodeGenerator
                         var pt = shape.GetOutputPinPoint(n);
                         if (pt is Point point)
                         {
-                            var px = ((int)point.X - rect.X) / step;
-                            var py = ((int)point.Y - rect.Y) / step;
+                            var px = (point.X - rect.X) / step;
+                            var py = (point.Y - rect.Y) / step;
                             field[px, py].Empty = ThroughPassage.None;
                         }
                     }
@@ -115,14 +115,29 @@ namespace CodeGenerator
                 // занятие точек существующих связей
                 foreach (var link in links)
                 {
-                    foreach (var point in link.GetPoints())
+                    var points = link.GetPoints();
+                    for (var i = 0; i < points.Length; i++)
                     {
-                        var px = ((int)point.X - rect.X) / step;
-                        var py = ((int)point.Y - rect.Y) / step;
+                        var point = points[i];
+                        var px = (point.X - rect.X) / step;
+                        var py = (point.Y - rect.Y) / step;
                         if (px >= 0 && px < field.GetLength(0) &&
                             py >= 0 && py < field.GetLength(1))
                         {
                             field[px, py].Empty = ThroughPassage.None;
+                            if (i > 0 && i < points.Length - 1)
+                            {
+                                var ptPrev = points[i - 1];
+                                var ptNext = points[i + 1];
+                                if (ptPrev.X == ptNext.X && point.X == ptPrev.X)
+                                {
+                                    field[px, py].Empty = ThroughPassage.Vertical;
+                                }
+                                else if (ptPrev.Y == ptNext.Y && point.Y == ptPrev.Y)
+                                {
+                                    field[px, py].Empty = ThroughPassage.Horizontal;
+                                }
+                            }
                         }
                     }
                 }
@@ -645,9 +660,7 @@ namespace CodeGenerator
                 }
             }
             // рисуем связи фигур из списка
-            using var pen = new Pen(Color.White, 1);
-            pen.StartCap = System.Drawing.Drawing2D.LineCap.Round;
-            pen.EndCap = System.Drawing.Drawing2D.LineCap.Round;
+            using var pen = new Pen(Color.WhiteSmoke, 1);
             foreach (var link in links)
             {
                 link.Draw(e.Graphics, pen);

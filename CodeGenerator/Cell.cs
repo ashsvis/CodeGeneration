@@ -41,9 +41,22 @@ namespace CodeGenerator
         {
             if (Wave == 0)
             {
-                using Pen pen = new(Empty == ThroughPassage.Both ? SystemColors.ControlDarkDark : Color.Red, 0);
-                g?.DrawLines(pen, hori);
-                g?.DrawLines(pen, vert);
+                var color = Empty switch
+                {
+                    ThroughPassage.None => Color.Red,
+                    ThroughPassage.Vertical or ThroughPassage.Horizontal => Color.Gray,
+                    _ => SystemColors.ControlDarkDark,
+                };
+                using Pen pen = new(color, 0);
+                if (Empty.HasFlag(ThroughPassage.Vertical))
+                    g?.DrawLines(pen, hori);
+                if (Empty.HasFlag(ThroughPassage.Horizontal))
+                    g?.DrawLines(pen, vert);
+                if (Empty.HasFlag(ThroughPassage.Both) || Empty == ThroughPassage.None)
+                {
+                    g?.DrawLines(pen, hori);
+                    g?.DrawLines(pen, vert);
+                }
             }
             else
             {
