@@ -81,7 +81,7 @@ namespace PluginOne
             linkPoints = points;
         }
 
-        public override void Update()
+        public override void Rebuild()
         {
             if (mustRebuild)
             {

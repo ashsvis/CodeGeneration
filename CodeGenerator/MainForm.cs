@@ -131,10 +131,12 @@ namespace CodeGenerator
                 field = null;
         }
 
-        private List<Point> BuildWaveInField(PointF? startPoint, PointF? endPoint)
+        private List<Point> BuildWaveInField(Link link)
         {
             List<Point> points = [];
-            if (field == null || endPoint == null) return [];
+            if (field == null) return [];
+            // очистка старых точек линии связи
+            link.SetPoints([]);
             InitField();
             Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
             foreach (var shape in shapes.Skip(1))
@@ -142,17 +144,40 @@ namespace CodeGenerator
             rect.Inflate(step * 5, step * 5);
             // установка начальной точки волны
             var n = 1;
-            if (startPoint is PointF start)
+            var start = link.StartPoint;
+            var px = (start.X - rect.X) / step;
+            var py = (start.Y - rect.Y) / step;
+            if (px >= 0 && px < field.GetLength(0) &&
+                py >= 0 && py < field.GetLength(1))
             {
-                var px = ((int)start.X - rect.X) / step;
-                var py = ((int)start.Y - rect.Y) / step;
                 field[px, py].Wave = n;
                 field[px, py].Empty = false;
             }
-            if (endPoint is not PointF end) return [];
-            var gx = ((int)end.X - rect.X) / step;
-            var gy = ((int)end.Y - rect.Y) / step;
-            field[gx, gy].Empty = true;
+            // поиск других связей из этого же выхода
+            foreach (var other in links.Where(x => x != link && x.StartPoint == link.StartPoint))
+            {
+                foreach (var pt in other.GetPoints())
+                {
+                    // установка начальной точки волны во всех точках связи
+                    var ox = (pt.X - rect.X) / step;
+                    var oy = (pt.Y - rect.Y) / step;
+                    if (ox >= 0 && ox < field.GetLength(0) &&
+                        oy >= 0 && oy < field.GetLength(1))
+                    {
+                        field[ox, oy].Wave = n;
+                        field[ox, oy].Empty = false;
+                    }
+                }
+            }
+            // установка конечной точки волны
+            var end = link.EndPoint;
+            var gx = (end.X - rect.X) / step;
+            var gy = (end.Y - rect.Y) / step;
+            if (gx >= 0 && gx < field.GetLength(0) &&
+                gy >= 0 && gy < field.GetLength(1))
+            {
+                field[gx, gy].Empty = true;
+            }           
             // заполнение свободных ячеек номером волны
             var found = false;
             while (!found)
@@ -235,6 +260,7 @@ namespace CodeGenerator
                     wave--;
                 }
             }
+            points.Reverse();
             return points;
         }
 
@@ -406,9 +432,8 @@ namespace CodeGenerator
                                 item.Location = MovePointToGrid(item.Location);
                         }
                         SortIndexByLocation();
-                        //InitField();
                         foreach (var link in links)
-                            link.Update();
+                            link.Rebuild();
                     }
                     else if (linkBuilding)
                     {
@@ -433,7 +458,7 @@ namespace CodeGenerator
                                         cellLink.StartPoint = (Point)startPoint;
                                         cellLink.EndPoint = (Point)endPoint;
                                         // построение волны и точек визуальной связи
-                                        var points = BuildWaveInField(startPoint, endPoint);
+                                        var points = BuildWaveInField(cellLink);
 
                                         cellLink.LinkToLocation(source, cellLink.StartPoint, target, index, cellLink.EndPoint, points);
                                         links.Add(cellLink);
@@ -453,13 +478,21 @@ namespace CodeGenerator
             }
         }
 
+        /// <summary>
+        /// Событие при перестройке точек линии связи
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CellLink_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
         {
-            var link = e.Link;
-            link.SetPoints([]);
-            // построение волны и точек визуальной связи
-            var points = BuildWaveInField(link.StartPoint, link.EndPoint);
-            link.SetPoints([..points]);
+            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+            // очищаем массив внутренних точек
+            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint))
+                link.SetPoints([]);
+            // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
+            // перестраиваем массив внутренних точек
+            foreach (var link in links.Where(x => x.StartPoint == e.Link.StartPoint))
+                link.SetPoints([.. BuildWaveInField(link)]);
         }
 
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)

@@ -11,7 +11,7 @@ namespace PluginSupport
         public abstract Point EndPoint { get; set; }
         public abstract Point[] GetPoints();
         public abstract void SetPoints(Point[] points);
-        public abstract void Update();
+        public abstract void Rebuild();
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
