@@ -301,6 +301,8 @@ namespace CodeGenerator
         private bool linkBuilding = false;
         private bool leftPressed = false;
         private bool dragShapes = false;
+        private bool frameBuilding = false;
+        private Rectangle ribbonRect = Rectangle.Empty;
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -378,6 +380,8 @@ namespace CodeGenerator
                     shape.Selected = false;
                     shape.Hover = false;
                 });
+                //ничего не выбрано, рисуем рамку выбора
+                frameBuilding = true;
             }
             drawPanel.Invalidate();
         }
@@ -420,6 +424,7 @@ namespace CodeGenerator
             {
                 if (dragShapes)
                 {
+                    // начинам перемещение фигур
                     var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     var dx = ePoint.X - firstPoint.X;
                     var dy = ePoint.Y - firstPoint.Y;
@@ -434,7 +439,30 @@ namespace CodeGenerator
                 }
                 else if (linkBuilding)
                 {
+                    // начинаем тянуть ссылку от выхода функции ко входу функции
                     currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                }
+                else if (frameBuilding)
+                {
+                    //ничего не выбрано, рисуем рамку выбора
+                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    if (firstPoint is Point first && currentPoint is Point current)
+                    {
+                        var minX = Math.Min(first.X, current.X);
+                        var minY = Math.Min(first.Y, current.Y);
+                        var maxX = Math.Max(first.X, current.X);
+                        var maxY = Math.Max(first.Y, current.Y);
+                        ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
+                        var mode = current.X > first.X;
+                        foreach (var shape in shapes)
+                        {
+                            if (mode && ribbonRect.Contains(shape.Bounds) ||
+                                !mode && ribbonRect.IntersectsWith(shape.Bounds))
+                            {
+                                shape.Hover = true;
+                            }
+                        }
+                    }
                 }
             }
             drawPanel.Invalidate();
@@ -444,7 +472,7 @@ namespace CodeGenerator
 
         private static Point MovePointToGrid(Point point)
         {
-            return new Point((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
+            return new Point(point.X / Step * Step, point.Y / Step * Step);
         }
 
         private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
@@ -508,7 +536,23 @@ namespace CodeGenerator
                         InitField();
                         drawPanel.Invalidate();
                     }
-                    drawPanel.Invalidate();
+                    else if (frameBuilding)
+                    {
+                        frameBuilding = false;
+                        shapes.ForEach(shape => shape.Selected = false);
+
+                        var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
+                        foreach(var shape in shapes)
+                        {
+                            if (mode && ribbonRect.Contains(shape.Bounds) ||
+                                !mode && ribbonRect.IntersectsWith(shape.Bounds))
+                            {
+                                shape.Selected = true;
+                            }
+                        }
+                        ribbonRect = Rectangle.Empty;
+                        drawPanel.Invalidate();
+                    }
                 }
             }
         }
@@ -699,6 +743,15 @@ namespace CodeGenerator
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 linkpen.EndCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
                 e.Graphics?.DrawLine(linkpen, source, target);
+            }
+
+            if (frameBuilding && ribbonRect is Rectangle rect)
+            {
+                var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
+                using var pen = new Pen(mode ? Color.Blue : Color.Lime, 0);
+                pen.DashPattern = [(int)(4 / drawPanel.Zoom), (int)(4 / drawPanel.Zoom)];
+                pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Custom;
+                e.Graphics?.DrawRectangle(pen, rect);
             }
 
             //if (field != null)
