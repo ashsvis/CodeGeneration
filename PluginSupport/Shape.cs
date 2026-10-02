@@ -4,9 +4,9 @@ namespace PluginSupport
 {
     public abstract class Shape : ILocation
     {
-        private PointF location;
+        private Point location;
 
-        public PointF Location 
+        public Point Location 
         { 
             get => location; 
             set 
@@ -17,7 +17,7 @@ namespace PluginSupport
             } 
         }
 
-        public abstract RectangleF Bounds { get; }
+        public abstract Rectangle Bounds { get; }
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
         public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
 
@@ -61,7 +61,7 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool ContainsPoint(PointF point, float width)
+        public bool ContainsPoint(Point point, float width)
         {
             using var pen = new Pen(Foreground, width);
             foreach (var p in GetGraphicsPaths())
@@ -78,7 +78,7 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool IsPointInTargets(PointF point)
+        public bool IsPointInTargets(Point point)
         {
             foreach (var t in GetTargets())
             {
@@ -88,7 +88,7 @@ namespace PluginSupport
             return false;
         }
 
-        public bool IsOutputTargetsPoint(PointF point)
+        public bool IsOutputTargetsPoint(Point point)
         {
             foreach (var t in GetTargets().Where(x => x.IsOutput))
             {
@@ -101,11 +101,11 @@ namespace PluginSupport
         public abstract object? GetOutputValue(int index = 0);
         public abstract void SetInputValue(int index, object? value);
 
-        public abstract PointF? GetInputPinPoint(int index);
-        public abstract PointF? GetOutputPinPoint(int index = 0);
+        public abstract Point? GetInputPinPoint(int index);
+        public abstract Point? GetOutputPinPoint(int index = 0);
 
 
-        public bool IsInputTargetsPoint(PointF point, out int index)
+        public bool IsInputTargetsPoint(Point point, out int index)
         {
             index = -1;
             foreach (var t in GetTargets().Where(x => !x.IsOutput))
@@ -119,7 +119,7 @@ namespace PluginSupport
             return false;
         }
 
-        public bool IsOuputTargetsPoint(PointF point, out int index)
+        public bool IsOuputTargetsPoint(Point point, out int index)
         {
             index = -1;
             foreach (var t in GetTargets().Where(x => x.IsOutput))
@@ -139,7 +139,7 @@ namespace PluginSupport
         /// <param name="point">Точка нажатия на элементе</param>
         /// <param name="several">Признак выбора нескольких элементов</param>
         /// <returns></returns>
-        public virtual ToolStripItem[] GetContextMenuItems(PointF point, bool several)
+        public virtual ToolStripItem[] GetContextMenuItems(Point point, bool several)
         {
             List<ToolStripItem> items = [];
             //ToolStripMenuItem item;
@@ -157,7 +157,7 @@ namespace PluginSupport
             return [.. items];
         }
 
-        public abstract void Click(PointF point, Action<TargetInfo>? action = null);
+        public abstract void Click(Point point, Action<TargetInfo>? action = null);
         public abstract void Calculate();
         protected abstract void CalculateHeight();
         public abstract int CountInputs();

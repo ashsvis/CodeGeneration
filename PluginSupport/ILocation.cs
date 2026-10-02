@@ -2,14 +2,14 @@ namespace PluginSupport
 {
     public interface ILocation
     {
-        PointF Location { get; set; }
+        Point Location { get; set; }
         bool Selected { get; set; }
         event LocationChangedEventHandler? OnLocationChange;
     }
 
-    public class LocationChangedEventArgs(PointF newValue) : EventArgs
+    public class LocationChangedEventArgs(Point newValue) : EventArgs
     {
-        public PointF NewValue { get; set; } = newValue;
+        public Point NewValue { get; set; } = newValue;
 
     }
 

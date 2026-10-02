@@ -94,7 +94,7 @@ namespace CodeGenerator
                     for (var n = 0; n < shape.CountInputs(); n++)
                     {
                         var pt = shape.GetInputPinPoint(n);
-                        if (pt is PointF point)
+                        if (pt is Point point)
                         {
                             var px = ((int)point.X - rect.X) / step;
                             var py = ((int)point.Y - rect.Y) / step;
@@ -105,7 +105,7 @@ namespace CodeGenerator
                     for (var n = 0; n < shape.CountOutputs(); n++)
                     {
                         var pt = shape.GetOutputPinPoint(n);
-                        if (pt is PointF point)
+                        if (pt is Point point)
                         {
                             var px = ((int)point.X - rect.X) / step;
                             var py = ((int)point.Y - rect.Y) / step;
@@ -132,9 +132,9 @@ namespace CodeGenerator
         }
 
         //private Point? firstCurrentPoint = null;
-        private PointF? firstLinkPoint = null;
-        private PointF? currentPoint = null;
-        private PointF firstPoint = PointF.Empty;
+        private Point? firstLinkPoint = null;
+        private Point? currentPoint = null;
+        private Point firstPoint = Point.Empty;
         private Shape? firstShape = null;
         private bool linkBuilding = false;
         private bool leftPressed = false;
@@ -264,7 +264,7 @@ namespace CodeGenerator
                     foreach (var shape in shapes)
                     {
                         if (shape is ILocation item && item.Selected)
-                            item.Location = PointF.Add(item.Location, new SizeF(dx / (float)drawPanel.Zoom, dy / (float)drawPanel.Zoom));
+                            item.Location = Point.Add(item.Location, new Size((int)Math.Round(dx / drawPanel.Zoom), (int)Math.Round(dy / drawPanel.Zoom)));
                     }
                     firstPoint = e.Location;
                 }
@@ -278,9 +278,9 @@ namespace CodeGenerator
 
         private const int Step = 12; // Размер клетки
 
-        private static PointF MovePointToGrid(PointF point)
+        private static Point MovePointToGrid(Point point)
         {
-            return new PointF((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
+            return new Point((int)Math.Round((decimal)point.X / Step) * Step, (int)Math.Round((decimal)point.Y / Step) * Step);
         }
 
         private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
@@ -493,7 +493,7 @@ namespace CodeGenerator
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
                     currentPoint = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    shape.Location = (PointF)currentPoint;
+                    shape.Location = (Point)currentPoint;
                     shape.Selected = true;
                     shape.OnDeleteLink += Shape_OnDeleteLink;
                     shapes.Add(shape);
@@ -602,16 +602,16 @@ namespace CodeGenerator
                 link.Draw(e.Graphics, pen);
             }
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is PointF point)
+            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
             {
-                var cursize = (float)(50f / drawPanel.Zoom);
+                var cursize = (int)(50f / drawPanel.Zoom);
                 using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(-cursize, 0)), PointF.Add(point, new SizeF(cursize, 0)));
-                e.Graphics?.DrawLine(cursorpen, PointF.Add(point, new SizeF(0, -cursize)), PointF.Add(point, new SizeF(0, cursize)));
+                e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(-cursize, 0)), Point.Add(point, new Size(cursize, 0)));
+                e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(0, -cursize)), Point.Add(point, new Size(0, cursize)));
             }
 
             // рисуем резиновую связь в момент построения связи
-            if (linkBuilding && firstLinkPoint is PointF source && currentPoint is PointF target)
+            if (linkBuilding && firstLinkPoint is Point source && currentPoint is Point target)
             {
                 using var linkpen = new Pen(Color.Teal, 1f);
                 linkpen.StartCap = System.Drawing.Drawing2D.LineCap.RoundAnchor;
