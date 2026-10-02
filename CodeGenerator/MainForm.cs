@@ -86,7 +86,7 @@ namespace CodeGenerator
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
                         {
-                            field[i + dx, j + dy].Empty = false;
+                            field[i + dx, j + dy].Empty = ThroughPassage.None;
                         }
                     }
                     // занятие точек входов
@@ -97,7 +97,7 @@ namespace CodeGenerator
                         {
                             var px = ((int)point.X - rect.X) / step;
                             var py = ((int)point.Y - rect.Y) / step;
-                            field[px, py].Empty = false;
+                            field[px, py].Empty = ThroughPassage.None;
                         }
                     }
                     // занятие точек выходов
@@ -108,7 +108,7 @@ namespace CodeGenerator
                         {
                             var px = ((int)point.X - rect.X) / step;
                             var py = ((int)point.Y - rect.Y) / step;
-                            field[px, py].Empty = false;
+                            field[px, py].Empty = ThroughPassage.None;
                         }
                     }
                 }
@@ -122,7 +122,7 @@ namespace CodeGenerator
                         if (px >= 0 && px < field.GetLength(0) &&
                             py >= 0 && py < field.GetLength(1))
                         {
-                            field[px, py].Empty = false;
+                            field[px, py].Empty = ThroughPassage.None;
                         }
                     }
                 }
@@ -151,7 +151,7 @@ namespace CodeGenerator
                 py >= 0 && py < field.GetLength(1))
             {
                 field[px, py].Wave = n;
-                field[px, py].Empty = false;
+                field[px, py].Empty = ThroughPassage.None;
             }
             // поиск других связей из этого же выхода
             foreach (var other in links.Where(x => x != link && x.StartPoint == link.StartPoint))
@@ -165,7 +165,7 @@ namespace CodeGenerator
                         oy >= 0 && oy < field.GetLength(1))
                     {
                         field[ox, oy].Wave = n;
-                        field[ox, oy].Empty = false;
+                        field[ox, oy].Empty = ThroughPassage.None;
                     }
                 }
             }
@@ -176,7 +176,7 @@ namespace CodeGenerator
             if (gx >= 0 && gx < field.GetLength(0) &&
                 gy >= 0 && gy < field.GetLength(1))
             {
-                field[gx, gy].Empty = true;
+                field[gx, gy].Empty = ThroughPassage.Both;
             }           
             // заполнение свободных ячеек номером волны
             var found = false;
@@ -189,34 +189,34 @@ namespace CodeGenerator
                     {
                         if (field[i, j].Wave == n)
                         {
-                            if (i - 1 >= 0 && field[i - 1, j].Empty)
+                            if (i - 1 >= 0 && field[i - 1, j].Empty == ThroughPassage.Both)
                             {
                                 field[i - 1, j].Wave = n + 1;
-                                field[i - 1, j].Empty = false;
+                                field[i - 1, j].Empty = ThroughPassage.None;
                                 changed = true;
                                 if (!found)
                                     found = gx == i - 1 && gy == j;
                             }
-                            if (j - 1 >= 0 && field[i, j - 1].Empty)
+                            if (j - 1 >= 0 && field[i, j - 1].Empty == ThroughPassage.Both)
                             {
                                 field[i, j - 1].Wave = n + 1;
-                                field[i, j - 1].Empty = false;
+                                field[i, j - 1].Empty = ThroughPassage.None;
                                 changed = true;
                                 if (!found)
                                     found = gx == i && gy == j - 1;
                             }
-                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty)
+                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Empty == ThroughPassage.Both)
                             {
                                 field[i + 1, j].Wave = n + 1;
-                                field[i + 1, j].Empty = false;
+                                field[i + 1, j].Empty = ThroughPassage.None;
                                 changed = true;
                                 if (!found)
                                     found = gx == i + 1 && gy == j;
                             }
-                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty)
+                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Empty == ThroughPassage.Both)
                             {
                                 field[i, j + 1].Wave = n + 1;
-                                field[i, j + 1].Empty = false;
+                                field[i, j + 1].Empty = ThroughPassage.None;
                                 changed = true;
                                 if (!found)
                                     found = gx == i && gy == j + 1;

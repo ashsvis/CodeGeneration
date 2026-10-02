@@ -21,7 +21,7 @@ namespace CodeGenerator
             }
         }
 
-        public bool Empty { get; set; } = true;
+        public ThroughPassage Empty { get; set; } = ThroughPassage.Both;
 
         public int Wave { get; set; }
 
@@ -41,7 +41,7 @@ namespace CodeGenerator
         {
             if (Wave == 0)
             {
-                using Pen pen = new(Empty ? SystemColors.ControlDarkDark : Color.Red, 0);
+                using Pen pen = new(Empty == ThroughPassage.Both ? SystemColors.ControlDarkDark : Color.Red, 0);
                 g?.DrawLines(pen, hori);
                 g?.DrawLines(pen, vert);
             }
