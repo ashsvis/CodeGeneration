@@ -7,7 +7,7 @@ namespace PluginOne
         static partial void AddTreeNodeItems(List<TreeNode> items)
         {
             TreeNode nodesGroup;
-            nodesGroup = new TreeNode("Дизъюнкция");
+            nodesGroup = new TreeNode("Дизъюнкция") { Tag = typeof(Or2) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("OR2") { Tag = typeof(Or2) });
             nodesGroup.Nodes.Add(new TreeNode("OR3") { Tag = typeof(Or3) });
@@ -16,7 +16,7 @@ namespace PluginOne
             nodesGroup.Nodes.Add(new TreeNode("OR6") { Tag = typeof(Or6) });
             nodesGroup.Nodes.Add(new TreeNode("OR7") { Tag = typeof(Or7) });
             nodesGroup.Nodes.Add(new TreeNode("OR8") { Tag = typeof(Or8) });
-            nodesGroup = new TreeNode("Конъюнкция");
+            nodesGroup = new TreeNode("Конъюнкция") { Tag = typeof(And2) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("AND2") { Tag = typeof(And2) });
             nodesGroup.Nodes.Add(new TreeNode("AND3") { Tag = typeof(And3) });

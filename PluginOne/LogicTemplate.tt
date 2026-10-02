@@ -19,7 +19,7 @@ namespace PluginOne
     foreach (var type in types)
     {
 #>
-            nodesGroup = new TreeNode("<#= type.Item3 #>");
+            nodesGroup = new TreeNode("<#= type.Item3 #>") { Tag = typeof(<#= type.Item1 #>2) };
             items.Add(nodesGroup);
 <#
         for (var i = 2; i <= inputCount; i++)
