@@ -11,7 +11,18 @@ namespace PluginOne
         public override Point StartPoint { get; set; }
         public override Point EndPoint { get; set; }
         public override int Length => Math.Abs(EndPoint.X - StartPoint.X) + Math.Abs(EndPoint.Y - StartPoint.Y);
-
+        
+        public override Rectangle Bounds
+        {
+            get
+            {
+                var minX = linkPoints.Min(x => x.X);
+                var maxX = linkPoints.Max(x => x.X);
+                var minY = linkPoints.Min(y => y.Y);
+                var maxY = linkPoints.Max(y => y.Y);
+                return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+            }
+        }
 
         private Size StartShift { get; set; }
         private Size EndShift { get; set; }

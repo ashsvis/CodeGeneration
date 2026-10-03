@@ -1,4 +1,3 @@
-using Microsoft.VisualBasic.Devices;
 using PluginSupport;
 
 namespace CodeGenerator
@@ -293,7 +292,6 @@ namespace CodeGenerator
             return points;
         }
 
-        //private Point? firstCurrentPoint = null;
         private Point? firstLinkPoint = null;
         private Point? currentPoint = null;
         private Point firstPoint = Point.Empty;
@@ -314,6 +312,11 @@ namespace CodeGenerator
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
             shapes.ForEach(shape => shape.Hover = false);
+            links.ForEach(link =>
+            {
+                link.Hover = false;
+                link.Selected = false;
+            });
             if (!ctrl && shapes.Count(x => x.Selected) == 1)
                 shapes.ForEach(shape => shape.Selected = false);
             firstShape = null;
@@ -377,6 +380,15 @@ namespace CodeGenerator
                     }
                     break;
                 }
+                var selected = shapes.Where(x => x.Selected).ToList();
+                foreach (var link in links)
+                {
+                    if (selected.Any(x => x == link.Source && x == link.Target))
+                    {
+                        link.Selected = true;
+                        link.Hover = true;
+                    }
+                }
             }
             if (!shapeFound)
             {
@@ -384,6 +396,11 @@ namespace CodeGenerator
                 {
                     shape.Selected = false;
                     shape.Hover = false;
+                });
+                links.ForEach(link => 
+                {
+                    link.Hover = false;
+                    link.Selected = false;
                 });
                 //ничего не выбрано, рисуем рамку выбора
                 frameBuilding = true;
@@ -403,6 +420,7 @@ namespace CodeGenerator
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
             }
+            links.ForEach(link => link.Hover = false);
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -440,6 +458,16 @@ namespace CodeGenerator
                         if (shape is ILocation item && item.Selected)
                             item.Location = Point.Add(item.Location, new Size(dx, dy));
                     }
+                    foreach (var link in links)
+                    {
+                        if (link.Selected)
+                        {
+                            var pts = link.GetPoints();
+                            for (var i = 0; i < pts.Length; i++)
+                                pts[i] = Point.Add(pts[i], new Size(dx, dy));
+                            link.SetPoints(pts);
+                        }
+                    }
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 }
                 else if (linkBuilding)
@@ -466,6 +494,12 @@ namespace CodeGenerator
                             {
                                 shape.Hover = true;
                             }
+                        }
+                        var selected = shapes.Where(x => x.Selected).ToList();
+                        foreach (var link in links)
+                        {
+                            if (selected.Any(x => x == link.Source && x == link.Target))
+                                link.Hover = true;
                         }
                     }
                 }
@@ -545,6 +579,7 @@ namespace CodeGenerator
                     {
                         frameBuilding = false;
                         shapes.ForEach(shape => shape.Selected = false);
+                        links.ForEach(link => link.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
                         foreach(var shape in shapes)
@@ -554,6 +589,12 @@ namespace CodeGenerator
                             {
                                 shape.Selected = true;
                             }
+                        }
+                        var selected = shapes.Where(x => x.Selected).ToList();
+                        foreach (var link in links)
+                        {
+                            if (selected.Any(x => x == link.Source && x == link.Target))
+                                link.Selected = true;
                         }
                         ribbonRect = Rectangle.Empty;
                         drawPanel.Invalidate();
@@ -690,29 +731,17 @@ namespace CodeGenerator
             using var selecthoverpen = new Pen(Color.CadetBlue);
             foreach (var shape in shapes)
             {
+                using var brush = new SolidBrush(shape.Background);
                 if (shape.Hover && shape.Selected)
-                {
-                    using var brush = new SolidBrush(shape.Background);
                     shape.Draw(e.Graphics, selecthoverpen, brush);
-                }
                 else if (shape.Hover)
-                {
-                    using var brush = new SolidBrush(shape.Background);
                     shape.Draw(e.Graphics, hoverpen, brush);
-                }
                 else if (shape.CanOutputLink || shape.CanInputLink)
-                {
-                    using var brush = new SolidBrush(Color.Teal);
                     shape.Draw(e.Graphics, hoverpen, brush);
-                }
                 else if (shape.Selected)
-                {
-                    using var brush = new SolidBrush(shape.Background);
                     shape.Draw(e.Graphics, selectpen, brush);
-                }
                 else
                 {
-                    using var brush = new SolidBrush(shape.Background);
                     using var defaultpen = new Pen(shape.Foreground);
                     shape.Draw(e.Graphics, defaultpen, brush);
                 }
@@ -720,8 +749,17 @@ namespace CodeGenerator
             // рисуем связи фигур из списка
             foreach (var link in links)
             {
-                using var pen = new Pen(link.Foreground);
-                link.DrawLines(e.Graphics, pen);
+                if (link.Hover && link.Selected)
+                    link.DrawLines(e.Graphics, selecthoverpen);
+                else if (link.Hover)
+                    link.DrawLines(e.Graphics, hoverpen);
+                else if (link.Selected)
+                    link.DrawLines(e.Graphics, selectpen);
+                else
+                {
+                    using var pen = new Pen(link.Foreground);
+                    link.DrawLines(e.Graphics, pen);
+                }
             }
             if (!dragShapes)
             {

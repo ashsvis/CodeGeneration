@@ -13,7 +13,10 @@ namespace PluginSupport
         public abstract Point[] GetPoints();
         public abstract void SetPoints(Point[] points);
         public abstract void Rebuild();
+        public abstract Rectangle Bounds { get; }
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
+        public bool Selected { get; set; }
+        public bool Hover { get; set; }
 
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();
