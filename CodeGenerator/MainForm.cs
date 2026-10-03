@@ -370,6 +370,11 @@ namespace CodeGenerator
                     shape.Hover = true;
                     shapeFound = true;
                     dragShapes = true;
+                    if (e.Button == MouseButtons.Right)
+                    {
+                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                        contextMenu.Show(drawPanel, e.Location);
+                    }
                     break;
                 }
             }

@@ -128,6 +128,7 @@ namespace PluginOne
                     return [.. items];
                 }
             }
+            items.AddRange(base.GetContextMenuItems(point, several));
             return [.. items];
         }
 

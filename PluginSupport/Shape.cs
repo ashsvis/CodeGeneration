@@ -142,18 +142,15 @@ namespace PluginSupport
         public virtual ToolStripItem[] GetContextMenuItems(Point point, bool several)
         {
             List<ToolStripItem> items = [];
-            //ToolStripMenuItem item;
-            //item = new ToolStripMenuItem() { Text = "Поднять наверх" };
-            //items.Add(item);
-            //item = new ToolStripMenuItem() { Text = "Поднять выше" };
-            //items.Add(item);
-            //item = new ToolStripMenuItem() { Text = "Опустить ниже" };
-            //items.Add(item);
-            //item = new ToolStripMenuItem() { Text = "Опустить вниз" };
-            //items.Add(item);
-            //items.Add((ToolStripItem)new ToolStripSeparator());
-            //item = new ToolStripMenuItem() { Text = "Удалить" };
-            //items.Add(item);
+            ToolStripMenuItem item;
+            item = new ToolStripMenuItem() { Text = "Свойства..." };
+            items.Add(item);
+            items.Add(new ToolStripSeparator());
+            item = new ToolStripMenuItem() { Text = "Дублировать" };
+            items.Add(item);
+            items.Add(new ToolStripSeparator());
+            item = new ToolStripMenuItem() { Text = "Удалить" };
+            items.Add(item);
             return [.. items];
         }
 

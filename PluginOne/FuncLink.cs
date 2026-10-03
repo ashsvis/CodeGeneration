@@ -29,6 +29,9 @@ namespace PluginOne
             if (linkPoints.Length > 1)
             {
                 path.AddLines(linkPoints);
+                var lmp = new Point(linkPoints.Last().X, EndPoint.Y);
+                path.AddLine(linkPoints.Last(), lmp);
+                path.AddLine(lmp, EndPoint);
                 paths.Add(path);
             }
             else
