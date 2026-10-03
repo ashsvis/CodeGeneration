@@ -380,24 +380,22 @@ namespace CodeGenerator
                     }
                     break;
                 }
-                var selected = shapes.Where(x => x.Selected).ToList();
-                foreach (var link in links)
+            }
+            if (shapeFound)
+            {
+                if (e.Button == MouseButtons.Left)
                 {
-                    if (selected.Any(x => x == link.Source && x == link.Target))
-                    {
-                        link.Selected = true;
-                        link.Hover = true;
-                    }
+                    SelectLinksForBothSelectedShapes();
                 }
             }
-            if (!shapeFound)
+            else
             {
                 shapes.ForEach(shape =>
                 {
                     shape.Selected = false;
                     shape.Hover = false;
                 });
-                links.ForEach(link => 
+                links.ForEach(link =>
                 {
                     link.Hover = false;
                     link.Selected = false;
@@ -406,6 +404,26 @@ namespace CodeGenerator
                 frameBuilding = true;
             }
             drawPanel.Invalidate();
+        }
+
+        private void SelectLinksForBothSelectedShapes()
+        {
+            links.ForEach(link =>
+            {
+                link.Hover = false;
+                link.Selected = false;
+            });
+            var selected = shapes.OfType<ILocation>().Where(x => x.Selected).ToList();
+            foreach (var link in links)
+            {
+                var sourceShape = selected.FirstOrDefault(x => x is ILocation source && source == link.Source);
+                var targetShape = selected.FirstOrDefault(x => x is ILocation target && target == link.Target);
+                if (sourceShape != null && targetShape != null)
+                {
+                    link.Selected = true;
+                    link.Hover = true;
+                }
+            }
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
@@ -495,12 +513,6 @@ namespace CodeGenerator
                                 shape.Hover = true;
                             }
                         }
-                        var selected = shapes.Where(x => x.Selected).ToList();
-                        foreach (var link in links)
-                        {
-                            if (selected.Any(x => x == link.Source && x == link.Target))
-                                link.Hover = true;
-                        }
                     }
                 }
             }
@@ -579,7 +591,6 @@ namespace CodeGenerator
                     {
                         frameBuilding = false;
                         shapes.ForEach(shape => shape.Selected = false);
-                        links.ForEach(link => link.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
                         foreach(var shape in shapes)
@@ -590,12 +601,7 @@ namespace CodeGenerator
                                 shape.Selected = true;
                             }
                         }
-                        var selected = shapes.Where(x => x.Selected).ToList();
-                        foreach (var link in links)
-                        {
-                            if (selected.Any(x => x == link.Source && x == link.Target))
-                                link.Selected = true;
-                        }
+                        SelectLinksForBothSelectedShapes();
                         ribbonRect = Rectangle.Empty;
                         drawPanel.Invalidate();
                     }
@@ -737,7 +743,10 @@ namespace CodeGenerator
                 else if (shape.Hover)
                     shape.Draw(e.Graphics, hoverpen, brush);
                 else if (shape.CanOutputLink || shape.CanInputLink)
-                    shape.Draw(e.Graphics, hoverpen, brush);
+                {
+                    using var hoverbrush = new SolidBrush(Color.Teal);
+                    shape.Draw(e.Graphics, hoverpen, hoverbrush);
+                }
                 else if (shape.Selected)
                     shape.Draw(e.Graphics, selectpen, brush);
                 else
