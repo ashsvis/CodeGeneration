@@ -903,6 +903,11 @@ namespace CodeGenerator
         {
             foreach (var shape in shapes)
                 shape.Calculate();
+            foreach (var shape in shapes)
+            {
+                if (shape is ICycle cycle)
+                    cycle.SwitchOffSubscibers();
+            }
             drawPanel.Invalidate();
         }
 

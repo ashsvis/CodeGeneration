@@ -16,6 +16,11 @@ namespace PluginOne
 
         public event OutputChangedEventHandler? OnOutputChange;
 
+        public virtual void UpdateLinked(bool result)
+        {
+            OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
+        }
+
         public override void Calculate()
         {
             if (Inputs.Length > 0)
