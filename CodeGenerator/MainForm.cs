@@ -855,7 +855,7 @@ namespace CodeGenerator
             graphics?.DrawRectangle(borderPen, borderRect);
             var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf,
                             borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
-            graphics?.DrawRectangles(borderPen, [borderRect, outRect]);
+            graphics?.DrawRectangle(borderPen, outRect);
             if (bigStamp)
                 DrawBigStamp(graphics, borderPen, outRect, kf);
             else
