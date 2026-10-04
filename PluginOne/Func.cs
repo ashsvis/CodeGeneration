@@ -103,8 +103,7 @@ namespace PluginOne
             {
                 if (target.Target.Contains(point))
                 {
-                    var io = target.IsOutput ? "выход" : "выход";
-                    var item = new ToolStripMenuItem() { Text = $"Инвертировать {io} {target.PinIndex + 1}" };
+                    var item = new ToolStripMenuItem("Инвертировать");
                     item.Click += (s, e) => 
                     {
                         if (target.IsOutput)
@@ -116,7 +115,7 @@ namespace PluginOne
                     // если это вход и он связан, то
                     if (!target.IsOutput && Inputs[target.PinIndex].IsLinked)
                     {
-                        item = new ToolStripMenuItem() { Text = $"Удалить связь по входу {target.PinIndex + 1}" };
+                        item = new ToolStripMenuItem("Удалить связь");
                         item.Click += (s, e) =>
                         {
                             var link = Inputs[target.PinIndex].Link;

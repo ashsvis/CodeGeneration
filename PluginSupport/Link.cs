@@ -17,6 +17,7 @@ namespace PluginSupport
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
         public bool Selected { get; set; }
         public bool Hover { get; set; }
+        public bool IsShort { get; set; }
 
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();

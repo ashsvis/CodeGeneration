@@ -39,6 +39,12 @@ namespace PluginOne
             var path = new GraphicsPath();
             if (linkPoints.Length > 1)
             {
+                if (!IsShort)
+                {
+                    var fmp = new Point(StartPoint.X, linkPoints.First().Y);
+                    path.AddLine(StartPoint, fmp);
+                    path.AddLine(fmp, linkPoints.First());
+                }
                 path.AddLines(linkPoints);
                 var lmp = new Point(linkPoints.Last().X, EndPoint.Y);
                 path.AddLine(linkPoints.Last(), lmp);
@@ -81,7 +87,7 @@ namespace PluginOne
             StartShift = new Size(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new Size(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
 
-            linkPoints = [.. points];
+            SetPoints([.. points]);
 
             source.OnLocationChange += MakeChangesForFirst;
             target.OnLocationChange += MakeChangesForLast;
@@ -116,6 +122,7 @@ namespace PluginOne
         public override void SetPoints(Point[] points)
         {
             linkPoints = points;
+            IsShort = linkPoints.Length > 0 && linkPoints[0] != StartPoint;
         }
 
         public override void Rebuild()

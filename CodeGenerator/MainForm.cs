@@ -735,6 +735,9 @@ namespace CodeGenerator
             using var hoverpen = new Pen(Color.White);
             using var selectpen = new Pen(Color.Teal);
             using var selecthoverpen = new Pen(Color.CadetBlue);
+            using var hoverbrush = new SolidBrush(Color.Teal);
+            using var selectbrush = new SolidBrush(Color.Teal);
+            using var selecthoverbrush = new SolidBrush(Color.CadetBlue);
             foreach (var shape in shapes)
             {
                 using var brush = new SolidBrush(shape.Background);
@@ -744,7 +747,7 @@ namespace CodeGenerator
                     shape.Draw(e.Graphics, hoverpen, brush);
                 else if (shape.CanOutputLink || shape.CanInputLink)
                 {
-                    using var hoverbrush = new SolidBrush(Color.Teal);
+                    //using var hoverbrush = new SolidBrush(Color.Teal);
                     shape.Draw(e.Graphics, hoverpen, hoverbrush);
                 }
                 else if (shape.Selected)
@@ -775,8 +778,17 @@ namespace CodeGenerator
                 // рисуем присоединения связей фигур из списка
                 foreach (var link in links)
                 {
-                    using var brush = new SolidBrush(link.Foreground);
-                    link.DrawDots(e.Graphics, brush);
+                    if (link.Hover && link.Selected)
+                        link.DrawDots(e.Graphics, selecthoverbrush);
+                    else if (link.Hover)
+                        link.DrawDots(e.Graphics, hoverbrush);
+                    else if (link.Selected)
+                        link.DrawDots(e.Graphics, selectbrush);
+                    else
+                    {
+                        using var brush = new SolidBrush(link.Foreground);
+                        link.DrawDots(e.Graphics, brush);
+                    }
                 }
             }
             // рисование курсора при свободном движении указателя мыши
