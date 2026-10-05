@@ -304,6 +304,7 @@ namespace CodeGenerator
         private bool linkBuilding = false;
         private bool leftPressed = false;
         private bool dragShapes = false;
+        private bool dragCopiedShapes = false;
         private bool frameBuilding = false;
         private Rectangle ribbonRect = Rectangle.Empty;
 
@@ -378,6 +379,7 @@ namespace CodeGenerator
                     shape.Hover = true;
                     shapeFound = true;
                     dragShapes = true;
+                    dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
                     if (e.Button == MouseButtons.Right)
                     {
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
@@ -470,11 +472,33 @@ namespace CodeGenerator
             {
                 if (dragShapes)
                 {
+                    var ctrl = ModifierKeys.HasFlag(Keys.Control);
                     // начинам перемещение фигур
                     var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     var dx = ePoint.X - firstPoint.X;
                     var dy = ePoint.Y - firstPoint.Y;
                     currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    if (dragCopiedShapes)
+                    {
+                        List<Shape> copied = [];
+                        foreach (var shape in shapes)
+                        {
+                            if (shape is ILocation item && item.Selected)
+                                copied.Add(shape.DeepClone());
+                        }
+                        shapes.ForEach(shape => shape.Selected = false);
+                        links.ForEach(link => link.Selected = false);
+                        foreach (var shape in copied)
+                        {
+                            shape.Selected = true;
+                            shape.OnDelete += Shape_OnDelete;
+                            shape.OnDeleteLink += Shape_OnDeleteLink;
+                            shape.OnMakeCopy += Shape_OnMakeCopy;
+                            shape.Index = shapes.Count;
+                            shapes.Add(shape);
+                        }
+                        dragCopiedShapes = false;
+                    }
                     // перемещаем только выбранные фигуры
                     foreach (var shape in shapes)
                     {
