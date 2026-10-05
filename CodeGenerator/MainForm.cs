@@ -473,7 +473,7 @@ namespace CodeGenerator
                 if (dragShapes)
                 {
                     var ctrl = ModifierKeys.HasFlag(Keys.Control);
-                    // начинам перемещение фигур
+                    // начинаем перемещение фигур
                     var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     var dx = ePoint.X - firstPoint.X;
                     var dy = ePoint.Y - firstPoint.Y;

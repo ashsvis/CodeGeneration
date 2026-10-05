@@ -2,12 +2,12 @@ using PluginSupport;
 
 namespace PluginOne
 {
-    public class DigitalOutputTag : DigitalInputTag
+    public class AnalogOutputTag : DigitalInputTag
     {
-        public DigitalOutputTag()
+        public AnalogOutputTag()
         {
-            FuncDesc = "Тег дискретного выхода";
-            FuncName = "TAG_DO";
+            FuncDesc = "Тег аналогового выхода";
+            FuncName = "TAG_AO";
             Width = 48 * 3;
             Inputs = [new() { }];
             Outputs = [];

@@ -25,15 +25,12 @@ namespace PluginOne
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
                 Inputs = [..Inputs.Select(x => x.DeepClone())],
-                Outputs = [..Outputs.Select(x => x.DeepClone())]
+                Outputs = [..Outputs.Select(x => x.DeepClone())],
+                AllowedFuncProperties = AllowedFuncProperties,
             };
         }
 
-        protected bool AllowedPinInverted { get; set; } = true;
-        protected bool AllowedShowBorder { get; set; } = true;
-        protected bool AllowedShowPins { get; set; } = true;
-        protected bool AllowedShowFuncName { get; set; } = true;
-        protected bool AllowedShowLabelNumber { get; set; } = true;
+        public AllowedFuncProperties AllowedFuncProperties { get; set; } = AllowedFuncProperties.All;
 
         protected override void CalculateHeight()
         {
@@ -53,13 +50,13 @@ namespace PluginOne
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
             var path = new GraphicsPath();
-            if (AllowedShowBorder)
+            if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowBorder))
             {
                 // вывод бокса
                 path.AddRectangle(rect);
             }
             int hi, ho;
-            if (AllowedShowPins)
+            if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowPins))
             {
                 // вывод входов
                 hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
@@ -131,7 +128,7 @@ namespace PluginOne
             {
                 if (target.Target.Contains(point))
                 {
-                    if (AllowedPinInverted)
+                    if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.PinInverted))
                     {
                         var item = new ToolStripMenuItem("Инвертировать");
                         item.Click += (s, e) =>
@@ -167,7 +164,7 @@ namespace PluginOne
             List<GraphicsPath> paths = [];
             // вывод обозначения логической функции
             var path = new GraphicsPath();
-            if (AllowedShowFuncName)
+            if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowFuncName))
             {
                 var fname = FuncName ?? "";
                 using var fontFunc = new Font("Segoe UI", 12f);
@@ -179,7 +176,7 @@ namespace PluginOne
                 path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
                 paths.Add(path);
             }
-            if (AllowedShowLabelNumber)
+            if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowLabelNumber))
             {
                 // вывод номера по порядку выполнения
                 path = new GraphicsPath();
@@ -193,7 +190,7 @@ namespace PluginOne
                 path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontNumber.Size, trect, sf);
                 paths.Add(path);
             }
-            if (AllowedShowPins)
+            if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowPins))
             {
                 // значения входов или выходов
                 var targets = GetTargets();

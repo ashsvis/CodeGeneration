@@ -1,3 +1,5 @@
+using PluginSupport;
+
 namespace PluginOne
 {
     public class AnalogInput : DigitalInput
@@ -8,7 +10,8 @@ namespace PluginOne
             FuncDesc = "Аналоговый ввод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
-            AllowedPinInverted = false;
+            AllowedFuncProperties = AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
     }

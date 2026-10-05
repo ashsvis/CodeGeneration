@@ -1,3 +1,5 @@
+using PluginSupport;
+
 namespace PluginOne
 {
     public class AnalogInputTag : DigitalInputTag
@@ -9,10 +11,9 @@ namespace PluginOne
             Width = 48 * 3;
             Inputs = [];
             Outputs = [new() { }];
-            AllowedPinInverted = false;
-            AllowedShowBorder = false;
-            AllowedShowFuncName = false;
-            AllowedShowLabelNumber = false;
+            AllowedFuncProperties = AllowedFuncProperties.All ^ 
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | 
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
     }

@@ -13,11 +13,25 @@ namespace PluginOne
             Inputs = [];
             Outputs = [new() { }];
             Background = SystemColors.Control;
-            AllowedPinInverted = false;
-            AllowedShowBorder = false;
-            AllowedShowFuncName = false;
-            AllowedShowLabelNumber = false;
+            AllowedFuncProperties = AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
+        }
+
+        public override Shape DeepClone()
+        {
+            return new DigitalInputTag()
+            {
+                Location = Location,
+                Width = Width,
+                Height = Height,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+                AllowedFuncProperties = AllowedFuncProperties,
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
