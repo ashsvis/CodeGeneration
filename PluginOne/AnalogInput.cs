@@ -1,11 +1,11 @@
 namespace PluginOne
 {
-    public class DigitalOutput : DigitalInput
+    public class AnalogInput : DigitalInput
     {
-        public DigitalOutput()
+        public AnalogInput()
         {
-            FuncName = "#/D";
-            FuncDesc = "Дискретный вывод сигнала";
+            FuncName = "A/#";
+            FuncDesc = "Аналоговый ввод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
             AllowedPinInverted = false;

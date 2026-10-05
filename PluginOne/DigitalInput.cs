@@ -9,7 +9,7 @@ namespace PluginOne
         public DigitalInput()
         {
             FuncName = "D/#";
-            FuncDesc = "¬вод дискретного сигнала";
+            FuncDesc = "ƒискретный ввод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
             AllowedPinInverted = false;

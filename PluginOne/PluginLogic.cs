@@ -13,6 +13,7 @@ namespace PluginOne
             nodesGroup = new TreeNode("Ввод сигнала") { Tag = typeof(DigitalInput) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
+            nodesGroup.Nodes.Add(new TreeNode("Аналоговый ввод") { Tag = typeof(AnalogInput) });
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
@@ -27,6 +28,7 @@ namespace PluginOne
             nodesGroup = new TreeNode("Вывод сигнала") { Tag = typeof(DigitalOutput) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Аналоговый вывод") { Tag = typeof(AnalogOutput) });
             return [.. items];
         }
 
