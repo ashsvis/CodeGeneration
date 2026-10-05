@@ -39,5 +39,14 @@ namespace PluginOne
 
         static partial void AddTreeNodeItems(List<TreeNode> items);
 
+        public object? CreateByName(string name)
+        {
+            switch (name)
+            {
+                case "TAG_DESCRITION":
+                    return new DescriptionBox();
+            }
+            return null;
+        }
     }
 }

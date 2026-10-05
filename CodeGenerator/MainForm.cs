@@ -1,5 +1,6 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace CodeGenerator
 {
@@ -34,7 +35,7 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
-            //drawPanel.MouseEnter += (o, e) => Cursor.Hide();
+            drawPanel.MouseEnter += (o, e) => Cursor.Hide();
             drawPanel.MouseLeave += (o, e) =>
             {
                 currentPoint = null;
@@ -55,6 +56,38 @@ namespace CodeGenerator
                 tvLibrary.Nodes.Add(rootNode);
                 rootNode.Nodes.AddRange(plugin.TreeNodeItems());
             }
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            this.CenterToScreen();
+            panLeft.Width = Properties.Settings.Default.leftpan;
+            panRight.Width = Properties.Settings.Default.rightpan;
+            drawPanel.RestoreWheelData(
+                Properties.Settings.Default.m11,
+                Properties.Settings.Default.m12,
+                Properties.Settings.Default.m21,
+                Properties.Settings.Default.m22,
+                Properties.Settings.Default.dx,
+                Properties.Settings.Default.dy,
+                Properties.Settings.Default.origin,
+                Properties.Settings.Default.zoom);
+            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
+        }
+
+        public void SaveXml(string filename)
+        {
+            var root = new XElement("Document");
+            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
+            var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
+            var xmodel = new XElement("Model");
+            root.Add(xmodel);
+            foreach (var shape in shapes)
+            {
+                var xshape = shape.WriteContent();
+                xmodel.Add(xshape);
+            }
+            doc.Save(filename);
         }
 
         /// <summary>
@@ -83,7 +116,7 @@ namespace CodeGenerator
                     var bounds = shape.Bounds;
                     var dx = (bounds.X - rect.X) / step;
                     var dy = (bounds.Y - rect.Y) / step;
-                    for (int i = -1; i < bounds.Width / step + 2; i++) //for (int i = -1; i < bounds.Width / step + 2; i++)
+                    for (int i = -1; i < bounds.Width / step + 2; i++)
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
                         {
@@ -197,7 +230,7 @@ namespace CodeGenerator
                 gy >= 0 && gy < field.GetLength(1))
             {
                 field[gx, gy].Empty = ThroughPassage.Both;
-            }           
+            }
             // заполнение свободных ячеек номером волны
             var found = false;
             while (!found)
@@ -209,7 +242,7 @@ namespace CodeGenerator
                     {
                         if (field[i, j].Wave == n)
                         {
-                            if (i - 1 >= 0 && 
+                            if (i - 1 >= 0 &&
                                 (field[i - 1, j].Empty == ThroughPassage.Both ||
                                  field[i - 1, j].Empty == ThroughPassage.Vertical))
                             {
@@ -219,7 +252,7 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i - 1 && gy == j;
                             }
-                            if (j - 1 >= 0 && 
+                            if (j - 1 >= 0 &&
                                 (field[i, j - 1].Empty == ThroughPassage.Both ||
                                  field[i, j - 1].Empty == ThroughPassage.Horizontal))
                             {
@@ -229,7 +262,7 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i && gy == j - 1;
                             }
-                            if (i + 1 < field.GetLength(0) && 
+                            if (i + 1 < field.GetLength(0) &&
                                 (field[i + 1, j].Empty == ThroughPassage.Both ||
                                  field[i + 1, j].Empty == ThroughPassage.Vertical))
                             {
@@ -239,7 +272,7 @@ namespace CodeGenerator
                                 if (!found)
                                     found = gx == i + 1 && gy == j;
                             }
-                            if (j + 1 < field.GetLength(1) && 
+                            if (j + 1 < field.GetLength(1) &&
                                 (field[i, j + 1].Empty == ThroughPassage.Both ||
                                  field[i, j + 1].Empty == ThroughPassage.Horizontal))
                             {
@@ -360,7 +393,7 @@ namespace CodeGenerator
                         shapeFound = true;
                         if (e.Button == MouseButtons.Left)
                         {
-                            shape.Click(point, (targetInfo) => {});
+                            shape.Click(point, (targetInfo) => { });
                         }
                         else if (e.Button == MouseButtons.Right)
                         {
@@ -622,7 +655,7 @@ namespace CodeGenerator
                         shapes.ForEach(shape => shape.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
-                        foreach(var shape in shapes)
+                        foreach (var shape in shapes)
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -1079,23 +1112,6 @@ namespace CodeGenerator
             graphics?.FillPath(brush, path);
         }
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            this.CenterToScreen();
-            panLeft.Width = Properties.Settings.Default.leftpan;
-            panRight.Width = Properties.Settings.Default.rightpan;
-            drawPanel.RestoreWheelData(
-                Properties.Settings.Default.m11,
-                Properties.Settings.Default.m12,
-                Properties.Settings.Default.m21,
-                Properties.Settings.Default.m22,
-                Properties.Settings.Default.dx,
-                Properties.Settings.Default.dy,
-                Properties.Settings.Default.origin,
-                Properties.Settings.Default.zoom);
-            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
-        }
-
         private void TsmiExit_Click(object sender, EventArgs e)
         {
             this.Close();
@@ -1262,6 +1278,80 @@ namespace CodeGenerator
                 finally
                 {
                     timerCalculate.Enabled = true;
+                }
+            }
+        }
+
+        private void tsmiSaveAs_Click(object sender, EventArgs e)
+        {
+            var dlg = new SaveFileDialog()
+            {
+                Title = "Сохранение модели",
+                FileName = "",
+                DefaultExt = "xml",
+                Filter = "Файл модели (*.xml)|*.xml"
+            };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    SaveXml(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Сохранение модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void tsmiOpenFile_Click(object sender, EventArgs e)
+        {
+            var dlg = new OpenFileDialog()
+            {
+                Title = "Загрузка ранее сохранённой модели",
+                FileName = "",
+                DefaultExt = "xml",
+                Filter = "Файл модели (*.xml)|*.xml",
+                Multiselect = false,
+            };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    LoadXml(dlg.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Загрузка модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void LoadXml(string filename)
+        {
+            var xdoc = XDocument.Load(filename);
+            var root = xdoc.Element("Document");
+            if (root == null) return;
+            var name = root.Attribute("Name")?.Value;
+            var xmodel = root.Element("Model");
+            if (xmodel == null) return;
+            //foreach (var xelement in xmodel.Descendants())
+            //{
+            //    switch ($"{xelement.Name}")
+            //    {
+            //        case "Func":
+            //            break;
+            //    }
+            //}
+            foreach (var xfunc in xmodel.Elements("Func"))
+            {
+                Shape? shape = null;
+                var xname = xfunc.Attribute("Name")?.Value;
+                switch (xname)
+                {
+                    case "TAG_DESCRITION":
+                        shape = new Shape();
+                        break;
                 }
             }
         }

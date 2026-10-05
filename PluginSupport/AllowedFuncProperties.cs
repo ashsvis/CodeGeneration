@@ -13,6 +13,6 @@ namespace PluginSupport
         ShowFuncName = 0x8,     // может показывать текстовое обозначение функции
         ShowLabelNumber = 0x10, // может показывать номер метки фигуры
         // новые режимы добавлять здесь
-        All = 0xffffffff,       // всё можно
+        All = 0xfffffff,        // всё можно
     }
 }

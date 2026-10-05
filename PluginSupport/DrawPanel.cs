@@ -49,7 +49,6 @@ namespace PluginSupport
                     Zoom = zoomScale,
                     Origin = origin
                 });
-                return;
             }
         }
 
@@ -69,6 +68,11 @@ namespace PluginSupport
             transformation = new Matrix(m11, m12, m21, m22, dx, dy);
             origin = point;
             zoomScale = zoom;
+            OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
+            {
+                Zoom = zoomScale,
+                Origin = origin
+            });
             Invalidate();
         }
 

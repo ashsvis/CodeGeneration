@@ -1,5 +1,6 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace PluginOne
 {
@@ -28,6 +29,45 @@ namespace PluginOne
                 Outputs = [..Outputs.Select(x => x.DeepClone())],
                 AllowedFuncProperties = AllowedFuncProperties,
             };
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = new XElement("Func");
+            if (!string.IsNullOrEmpty(FuncName))
+                xfunc.Add(new XAttribute("Name", FuncName));
+            if (!string.IsNullOrEmpty(FuncDesc))
+                xfunc.Add(new XAttribute("Description", FuncDesc));
+            xfunc.Add(new XAttribute("Location", Location));
+            xfunc.Add(new XAttribute("Width", Width));
+            xfunc.Add(new XAttribute("Height", Height));            
+            xfunc.Add(new XAttribute("Allowed", AllowedFuncProperties));
+            foreach (var input in Inputs)
+                xfunc.Add(input.WriteContent());
+            foreach (var output in Outputs)
+                xfunc.Add(output.WriteContent());
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            if (xfunc == null || xfunc.Name != "Func") return;
+            FuncName = xfunc.Attribute("Name")?.Value;
+            FuncDesc = xfunc.Attribute("Description")?.Value;
+            var slocation = xfunc.Attribute("Location")?.Value;
+            var swidth = xfunc.Attribute("Width")?.Value;
+            var sheight = xfunc.Attribute("Height")?.Value;
+            var sallowed = xfunc.Attribute("Allowed")?.Value;
+            if (!string.IsNullOrWhiteSpace(slocation) && 
+                !string.IsNullOrWhiteSpace(swidth) &&
+                !string.IsNullOrWhiteSpace(sheight) &&
+                !string.IsNullOrWhiteSpace(sallowed))
+            {
+                Location = ParseHelper.ParsePoint(slocation, Point.Empty);
+                Width = ParseHelper.ParseInteger(swidth, 0);
+                Height = ParseHelper.ParseInteger(sheight, 0);
+                AllowedFuncProperties = (AllowedFuncProperties)ParseHelper.ParseInteger(sheight, 0xfffffff);
+            }
         }
 
         public AllowedFuncProperties AllowedFuncProperties { get; set; } = AllowedFuncProperties.All;

@@ -1,8 +1,9 @@
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace PluginSupport
 {
-    public abstract class Shape : ILocation, IDeepCloneable<Shape>
+    public abstract class Shape : ILocation, IDeepCloneable<Shape>, IPersistent<Shape>
     {
         private Point location;
 
@@ -179,6 +180,10 @@ namespace PluginSupport
         }
 
         public abstract Shape DeepClone();
+
+        public abstract XElement WriteContent();
+
+        public abstract void ReadContent(XElement element);
     }
 
     public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target, int targetPinIndex) : EventArgs
