@@ -9,10 +9,13 @@ namespace PluginOne
         public TreeNode[] TreeNodeItems()
         {
             List<TreeNode> items = [];
+            TreeNode nodesGroup;
+            nodesGroup = new TreeNode("Ввод сигнала") { Tag = typeof(DigitalInput) };
+            items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
-            TreeNode nodesGroup;
             nodesGroup = new TreeNode("Триггер") { Tag = typeof(Rs) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("RS-триггер") { Tag = typeof(Rs) });
@@ -21,6 +24,9 @@ namespace PluginOne
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) });
             nodesGroup.Nodes.Add(new TreeNode("Детектор спада") { Tag = typeof(Ftrig) });
+            nodesGroup = new TreeNode("Вывод сигнала") { Tag = typeof(DigitalOutput) };
+            items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
             return [.. items];
         }
 

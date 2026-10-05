@@ -13,7 +13,9 @@ namespace PluginOne
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
-        protected bool AllowPinInverted { get; set; } = true;
+        protected bool AllowedPinInverted { get; set; } = true;
+        protected bool AllowedShowFuncName { get; set; } = true;
+        protected bool AllowedShowLabelNumber { get; set; } = true;
 
         protected override void CalculateHeight()
         {
@@ -105,7 +107,7 @@ namespace PluginOne
             {
                 if (target.Target.Contains(point))
                 {
-                    if (AllowPinInverted)
+                    if (AllowedPinInverted)
                     {
                         var item = new ToolStripMenuItem("Инвертировать");
                         item.Click += (s, e) =>
@@ -141,26 +143,32 @@ namespace PluginOne
             List<GraphicsPath> paths = [];
             // вывод обозначения логической функции
             var path = new GraphicsPath();
-            var fname = FuncName ?? "";
-            using var fontFunc = new Font("Segoe UI", 12f);
-            var sz = TextRenderer.MeasureText(fname, fontFunc);
-            var trect = new Rectangle(Location, new Size(Width, sz.Height));
-            using var sf = new StringFormat();
-            sf.Alignment = StringAlignment.Center;
-            sf.LineAlignment = StringAlignment.Center;
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
-            paths.Add(path);
-            // вывод номера по порядку выполнения
-            path = new GraphicsPath();
-            var fnumber = $"L{Index + 1}";
-            using var fontNumber = new Font("Segoe UI", 12f);
-            sz = TextRenderer.MeasureText(fnumber, fontNumber);
-            trect = new Rectangle(Location, new Size(Width, CalcHeight));
-            using var sf1 = new StringFormat();
-            sf1.Alignment = StringAlignment.Center;
-            sf1.LineAlignment = StringAlignment.Far;
-            path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf1);
-            paths.Add(path);
+            if (AllowedShowFuncName)
+            {
+                var fname = FuncName ?? "";
+                using var fontFunc = new Font("Segoe UI", 12f);
+                var sz = TextRenderer.MeasureText(fname, fontFunc);
+                var trect = new Rectangle(Location, new Size(Width, sz.Height));
+                using var sf = new StringFormat();
+                sf.Alignment = StringAlignment.Center;
+                sf.LineAlignment = StringAlignment.Center;
+                path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
+                paths.Add(path);
+            }
+            if (AllowedShowLabelNumber)
+            {
+                // вывод номера по порядку выполнения
+                path = new GraphicsPath();
+                var fnumber = $"L{Index + 1}";
+                using var fontNumber = new Font("Segoe UI", 12f);
+                var sz = TextRenderer.MeasureText(fnumber, fontNumber);
+                var trect = new Rectangle(Location, new Size(Width, CalcHeight));
+                using var sf = new StringFormat();
+                sf.Alignment = StringAlignment.Center;
+                sf.LineAlignment = StringAlignment.Far;
+                path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontNumber.Size, trect, sf);
+                paths.Add(path);
+            }
             // значения входов или выходов
             var targets = GetTargets();
             foreach (var target in targets)
@@ -169,6 +177,10 @@ namespace PluginOne
                 var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
                 var t = target.Target;
                 t.Offset(0f, -t.Height / 4);
+                using var fontFunc = new Font("Segoe UI", 12f);
+                using var sf = new StringFormat();
+                sf.Alignment = StringAlignment.Center;
+                sf.LineAlignment = StringAlignment.Center;
                 p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                 paths.Add(p);
             }
