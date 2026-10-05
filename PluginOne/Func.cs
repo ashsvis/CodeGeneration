@@ -15,8 +15,23 @@ namespace PluginOne
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
+        public override Shape DeepClone()
+        {
+            return new Func()
+            {
+                Location = Location,
+                Width = Width,
+                Height = Height,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [..Inputs.Select(x => x.DeepClone())],
+                Outputs = [..Outputs.Select(x => x.DeepClone())]
+            };
+        }
+
         protected bool AllowedPinInverted { get; set; } = true;
         protected bool AllowedShowBorder { get; set; } = true;
+        protected bool AllowedShowPins { get; set; } = true;
         protected bool AllowedShowFuncName { get; set; } = true;
         protected bool AllowedShowLabelNumber { get; set; } = true;
 
@@ -24,7 +39,7 @@ namespace PluginOne
         {
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
+            CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
         }
 
         public override Rectangle Bounds => new(Location.X, Location.Y, Width, CalcHeight);
@@ -43,29 +58,32 @@ namespace PluginOne
                 // вывод бокса
                 path.AddRectangle(rect);
             }
-            // вывод входов
-            int hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            int hi, ho;
+            if (AllowedShowPins)
             {
-                path.AddLine(rect.Left, rect.Top + hi, rect.Left - BaseWidth / 4f, rect.Top + hi);
-                path.CloseFigure();
-                hi += step;
-            }
-            // вывод выходов
-            int ho;
-            if (Outputs.Length == 1)
-            {
-                path.AddLine(rect.Right, rect.Top + rect.Height / 2, rect.Right + BaseWidth / 4, rect.Top + rect.Height / 2);
-                path.CloseFigure();
-            }
-            else
-            {
-                ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2 : step;
-                for (int i = 0; i < Outputs.Length; i++)
+                // вывод входов
+                hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
+                for (int i = 0; i < Inputs.Length; i++)
                 {
-                    path.AddLine(rect.Right, rect.Top + ho, rect.Right + BaseWidth / 4, rect.Top + ho);
+                    path.AddLine(rect.Left, rect.Top + hi, rect.Left - BaseWidth / 4f, rect.Top + hi);
                     path.CloseFigure();
-                    ho += step;
+                    hi += step;
+                }
+                // вывод выходов
+                if (Outputs.Length == 1)
+                {
+                    path.AddLine(rect.Right, rect.Top + rect.Height / 2, rect.Right + BaseWidth / 4, rect.Top + rect.Height / 2);
+                    path.CloseFigure();
+                }
+                else
+                {
+                    ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2 : step;
+                    for (int i = 0; i < Outputs.Length; i++)
+                    {
+                        path.AddLine(rect.Right, rect.Top + ho, rect.Right + BaseWidth / 4, rect.Top + ho);
+                        path.CloseFigure();
+                        ho += step;
+                    }
                 }
             }
             paths.Add(path);
@@ -175,20 +193,23 @@ namespace PluginOne
                 path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontNumber.Size, trect, sf);
                 paths.Add(path);
             }
-            // значения входов или выходов
-            var targets = GetTargets();
-            foreach (var target in targets)
+            if (AllowedShowPins)
             {
-                var p = new GraphicsPath();
-                var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
-                var t = target.Target;
-                t.Offset(0f, -t.Height / 4);
-                using var fontFunc = new Font("Segoe UI", 12f);
-                using var sf = new StringFormat();
-                sf.Alignment = StringAlignment.Center;
-                sf.LineAlignment = StringAlignment.Center;
-                p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
-                paths.Add(p);
+                // значения входов или выходов
+                var targets = GetTargets();
+                foreach (var target in targets)
+                {
+                    var p = new GraphicsPath();
+                    var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
+                    var t = target.Target;
+                    t.Offset(0f, -t.Height / 4);
+                    using var fontFunc = new Font("Segoe UI", 12f);
+                    using var sf = new StringFormat();
+                    sf.Alignment = StringAlignment.Center;
+                    sf.LineAlignment = StringAlignment.Center;
+                    p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                    paths.Add(p);
+                }
             }
             return [.. paths];
         }
@@ -202,7 +223,7 @@ namespace PluginOne
             List<TargetInfo> items = [];
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = BaseWidth / 4;
             // вывод целей входов
@@ -244,7 +265,7 @@ namespace PluginOne
             List<PinInfo> items = [];
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = BaseWidth / 4;
             // вывод целей входов

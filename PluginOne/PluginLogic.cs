@@ -9,6 +9,7 @@ namespace PluginOne
         public TreeNode[] TreeNodeItems()
         {
             List<TreeNode> items = [];
+            items.Add(new TreeNode("Дескриптор сигнала") { Tag = typeof(DescriptionBox) });
             TreeNode nodesGroup;
             nodesGroup = new TreeNode("Ввод сигнала") { Tag = typeof(DigitalInputTag) };
             items.Add(nodesGroup);

@@ -3,18 +3,19 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class DigitalInputTag : Func, ILink
+    public class DescriptionBox : Func, ILink
     {
-        public DigitalInputTag()
+        public DescriptionBox()
         {
-            FuncDesc = "Тег дискретного входа";
-            FuncName = "TAG_DI";
-            Width = 48 * 3;
-            Inputs = [];
+            FuncDesc = "Описание параметра";
+            FuncName = "TAG_DESCRITION";
+            Width = 48 * 5;
+            Height = 48 * 2;
+            Inputs = [new() { }];
             Outputs = [new() { }];
             Background = SystemColors.Control;
             AllowedPinInverted = false;
-            AllowedShowBorder = false;
+            AllowedShowPins = false;
             AllowedShowFuncName = false;
             AllowedShowLabelNumber = false;
             CalculateHeight();
@@ -22,23 +23,10 @@ namespace PluginOne
 
         public event OutputChangedEventHandler? OnOutputChange;
 
-        public override GraphicsPath[] GetGraphicsPaths()
-        {
-            var paths = base.GetGraphicsPaths().ToList();
-            var rect = Bounds;
-            var path = new GraphicsPath();
-            path.AddArc(new Rectangle(rect.X, rect.Y, rect.Height, rect.Height), 90f, 180f);
-            path.AddArc(new Rectangle(rect.X + rect.Width - rect.Height, rect.Y, rect.Height, rect.Height), 270f, 180f);
-            path.CloseFigure();
-            paths.Add(path);
-            return [.. paths];
-        }
-
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
             var rect = Bounds;
-            rect.Inflate(rect.Height / 4, 0);
             var fname = FuncName ?? "";
             using var fontFunc = new Font("Segoe UI", 12f);
             var sz = TextRenderer.MeasureText(fname, fontFunc);
@@ -88,6 +76,20 @@ namespace PluginOne
         public void MakeChanges(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0].Value = e.NewValue;
+        }
+
+        public override PinInfo[] GetPinPoints()
+        {
+            var infos = base.GetPinPoints();
+            var sizeTarget = BaseWidth / 4;
+            foreach (var pin in infos)
+            {
+                if (pin.IsOutput)
+                    pin.PinPoint = Point.Subtract(pin.PinPoint, new Size(sizeTarget, 0));
+                else
+                    pin.PinPoint = Point.Add(pin.PinPoint, new Size(sizeTarget, 0));
+            }
+            return infos;
         }
     }
 }

@@ -83,7 +83,7 @@ namespace CodeGenerator
                     var bounds = shape.Bounds;
                     var dx = (bounds.X - rect.X) / step;
                     var dy = (bounds.Y - rect.Y) / step;
-                    for (int i = -1; i < bounds.Width / step + 2; i++)
+                    for (int i = -1; i < bounds.Width / step + 2; i++) //for (int i = -1; i < bounds.Width / step + 2; i++)
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
                         {
@@ -98,7 +98,9 @@ namespace CodeGenerator
                         {
                             var px = (point.X - rect.X) / step;
                             var py = (point.Y - rect.Y) / step;
-                            field[px, py].Empty = ThroughPassage.None;
+                            field[px, py].Empty = ThroughPassage.Vertical;
+                            if (px - 1 >= 0)
+                                field[px - 1, py].Empty = ThroughPassage.Both;
                         }
                     }
                     // занятие точек выходов
@@ -109,7 +111,9 @@ namespace CodeGenerator
                         {
                             var px = (point.X - rect.X) / step;
                             var py = (point.Y - rect.Y) / step;
-                            field[px, py].Empty = ThroughPassage.None;
+                            field[px, py].Empty = ThroughPassage.Vertical;
+                            if (px + 1 < field.GetLength(0))
+                                field[px + 1, py].Empty = ThroughPassage.Both;
                         }
                     }
                 }
@@ -656,11 +660,30 @@ namespace CodeGenerator
                     shape.Selected = true;
                     shape.OnDelete += Shape_OnDelete;
                     shape.OnDeleteLink += Shape_OnDeleteLink;
+                    shape.OnMakeCopy += Shape_OnMakeCopy;
                     shapes.Add(shape);
                     SortIndexByLocation();
                     InitField();
                     drawPanel.Invalidate();
                 }
+            }
+        }
+
+        private void Shape_OnMakeCopy(object? sender, EventArgs e)
+        {
+            if (sender is Shape source)
+            {
+                shapes.ForEach(shape => shape.Selected = false);
+                var shape = source.DeepClone();
+                shape.Location = Point.Add(shape.Location, new Size(12, 12));
+                shape.Selected = true;
+                shape.OnDelete += Shape_OnDelete;
+                shape.OnDeleteLink += Shape_OnDeleteLink;
+                shape.OnMakeCopy += Shape_OnMakeCopy;
+                shapes.Add(shape);
+                SortIndexByLocation();
+                InitField();
+                drawPanel.Invalidate();
             }
         }
 
@@ -844,7 +867,7 @@ namespace CodeGenerator
 
         private static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, bool bigStamp = false)
         {
-            int kf = 4;
+            int kf = 5;
             var borderPen = new Pen(Color.FromArgb(127, Color.Gray), 0)
             {
                 DashStyle = DashStyle.Dash
@@ -1155,6 +1178,8 @@ namespace CodeGenerator
                                         item.UnlinkOutputFor(link);
                                 }
                                 shape.OnDeleteLink -= Shape_OnDeleteLink;
+                                shape.OnDelete -= Shape_OnDelete;
+                                shape.OnMakeCopy -= Shape_OnMakeCopy;
                             }
                             foreach (var shape in shapesForDelete)
                                 shapes.Remove(shape);
@@ -1204,6 +1229,7 @@ namespace CodeGenerator
                     }
                     shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
                     shapeForDelete.OnDelete -= Shape_OnDelete;
+                    shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
                     shapes.Remove(shapeForDelete);
                     SortIndexByLocation();
                     InitField();

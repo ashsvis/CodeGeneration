@@ -2,7 +2,7 @@ using System.Drawing.Drawing2D;
 
 namespace PluginSupport
 {
-    public abstract class Shape : ILocation
+    public abstract class Shape : ILocation, IDeepCloneable<Shape>
     {
         private Point location;
 
@@ -177,6 +177,8 @@ namespace PluginSupport
         {
             OnDeleteLink?.Invoke(this, new DeleteLinkFromTargetEventArgs(source, target, pinIndex));
         }
+
+        public abstract Shape DeepClone();
     }
 
     public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target, int targetPinIndex) : EventArgs
