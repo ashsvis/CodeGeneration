@@ -33,7 +33,7 @@ namespace PluginOne
 
         public override XElement WriteContent()
         {
-            var xfunc = new XElement("Func");
+            var xfunc = new XElement($"{this.GetType().FullName}");
             if (!string.IsNullOrEmpty(FuncName))
                 xfunc.Add(new XAttribute("Name", FuncName));
             if (!string.IsNullOrEmpty(FuncDesc))
@@ -51,7 +51,7 @@ namespace PluginOne
 
         public override void ReadContent(XElement xfunc)
         {
-            if (xfunc == null || xfunc.Name != "Func") return;
+            if (xfunc == null || xfunc.Name != $"{this.GetType().FullName}") return;
             FuncName = xfunc.Attribute("Name")?.Value;
             FuncDesc = xfunc.Attribute("Description")?.Value;
             var slocation = xfunc.Attribute("Location")?.Value;

@@ -4,6 +4,5 @@
     {
         string Name { get; }
         TreeNode[] TreeNodeItems();
-        object? CreateByName(string name);
     }
 }

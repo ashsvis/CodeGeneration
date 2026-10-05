@@ -16,6 +16,8 @@ namespace CodeGenerator
         private readonly List<PluginSupport.Link> links = [];
         private Cell[,]? field;
 
+        private Dictionary<string, Type> types = [];
+
         public MainForm()
         {
             InitializeComponent();
@@ -54,7 +56,18 @@ namespace CodeGenerator
                 var rootNode = new TreeNode(plugin.Name);
                 rootNode.Expand();
                 tvLibrary.Nodes.Add(rootNode);
-                rootNode.Nodes.AddRange(plugin.TreeNodeItems());
+                var range = plugin.TreeNodeItems();
+                foreach (var category in range)
+                {
+                    foreach (var node in category.Nodes.Cast<TreeNode>())
+                    {
+                        if (node.Tag is Type type && !string.IsNullOrEmpty(type.FullName))
+                        {
+                            types.Add(type.FullName, type);
+                        }
+                    }
+                }
+                rootNode.Nodes.AddRange(range);
             }
         }
 
@@ -1335,23 +1348,18 @@ namespace CodeGenerator
             var name = root.Attribute("Name")?.Value;
             var xmodel = root.Element("Model");
             if (xmodel == null) return;
-            //foreach (var xelement in xmodel.Descendants())
-            //{
-            //    switch ($"{xelement.Name}")
-            //    {
-            //        case "Func":
-            //            break;
-            //    }
-            //}
-            foreach (var xfunc in xmodel.Elements("Func"))
+            shapes.Clear();
+            foreach (var xelement in xmodel.Descendants())
             {
-                Shape? shape = null;
-                var xname = xfunc.Attribute("Name")?.Value;
-                switch (xname)
+                if (types.ContainsKey($"{xelement.Name}"))
                 {
-                    case "TAG_DESCRITION":
-                        shape = new Shape();
-                        break;
+                    var type = types[$"{xelement.Name}"];
+                    var shape = (Shape?)Activator.CreateInstance(type);
+                    if (shape != null)
+                    {
+                        shape.ReadContent(xelement);
+                        shapes.Add(shape);
+                    }
                 }
             }
         }
