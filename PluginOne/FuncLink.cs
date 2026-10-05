@@ -68,7 +68,7 @@ namespace PluginOne
                 var pt = linkPoints[0];
                 if (pt != StartPoint)
                 {
-                    var rect = new Rectangle(pt.X - 3, pt.Y - 3, 6, 6);
+                    var rect = new Rectangle(pt.X - 2, pt.Y - 2, 4, 4);
                     path.AddEllipse(rect);
                     paths.Add(path);
                 }

@@ -846,7 +846,7 @@ namespace CodeGenerator
 
         private static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, bool bigStamp = false)
         {
-            int kf = 5;
+            int kf = 4;
             var borderPen = new Pen(Color.FromArgb(127, Color.Gray), 0)
             {
                 DashStyle = DashStyle.Dash

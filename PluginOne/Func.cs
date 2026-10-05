@@ -13,6 +13,8 @@ namespace PluginOne
         public string? FuncName { get; set; }
         public string? FuncDesc { get; set; }
 
+        protected bool AllowPinInverted { get; set; } = true;
+
         protected override void CalculateHeight()
         {
             var step = Height / 2;
@@ -59,7 +61,7 @@ namespace PluginOne
                 }
             }
             paths.Add(path);
-            var sizeInvertRing = Width / 6;
+            var sizeInvertRing = Width / 8;
             // вывод инверсий входов
             hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
@@ -103,19 +105,22 @@ namespace PluginOne
             {
                 if (target.Target.Contains(point))
                 {
-                    var item = new ToolStripMenuItem("Инвертировать");
-                    item.Click += (s, e) => 
+                    if (AllowPinInverted)
                     {
-                        if (target.IsOutput)
-                            Outputs[target.PinIndex].IsInverted = !Outputs[target.PinIndex].IsInverted;
-                        else
-                            Inputs[target.PinIndex].IsInverted = !Inputs[target.PinIndex].IsInverted;
-                    };
-                    items.Add(item);
+                        var item = new ToolStripMenuItem("Инвертировать");
+                        item.Click += (s, e) =>
+                        {
+                            if (target.IsOutput)
+                                Outputs[target.PinIndex].IsInverted = !Outputs[target.PinIndex].IsInverted;
+                            else
+                                Inputs[target.PinIndex].IsInverted = !Inputs[target.PinIndex].IsInverted;
+                        };
+                        items.Add(item);
+                    }
                     // если это вход и он связан, то
                     if (!target.IsOutput && Inputs[target.PinIndex].IsLinked)
                     {
-                        item = new ToolStripMenuItem("Удалить связь");
+                        var item = new ToolStripMenuItem("Удалить связь");
                         item.Click += (s, e) =>
                         {
                             var link = Inputs[target.PinIndex].Link;
@@ -163,7 +168,7 @@ namespace PluginOne
                 var p = new GraphicsPath();
                 var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
                 var t = target.Target;
-                t.Offset(0f, -t.Height / 4f);
+                t.Offset(0f, -t.Height / 4);
                 p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                 paths.Add(p);
             }

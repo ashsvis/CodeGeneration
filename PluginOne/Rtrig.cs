@@ -12,6 +12,7 @@ namespace PluginOne
             FuncDesc = "Детектор фронта";
             Inputs = [new() { }];
             Outputs = [new() { }];
+            AllowPinInverted = false;
             CalculateHeight();
         }
 
