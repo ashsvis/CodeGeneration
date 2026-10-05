@@ -29,6 +29,9 @@ namespace PluginSupport
 
         public event LocationChangedEventHandler? OnLocationChange;
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
+        public event EventHandler? OnShowProperties;
+        public event EventHandler? OnDelete;
+        public event EventHandler? OnMakeCopy;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -144,12 +147,15 @@ namespace PluginSupport
             List<ToolStripItem> items = [];
             ToolStripMenuItem item;
             item = new ToolStripMenuItem() { Text = "Свойства..." };
+            item.Click += (s, e) => OnShowProperties?.Invoke(this, EventArgs.Empty);
             items.Add(item);
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Дублировать" };
+            item.Click += (s, e) => OnMakeCopy?.Invoke(this, EventArgs.Empty);
             items.Add(item);
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Удалить" };
+            item.Click += (s, e) => OnDelete?.Invoke(this, EventArgs.Empty);  
             items.Add(item);
             return [.. items];
         }
