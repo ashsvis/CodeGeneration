@@ -5,8 +5,10 @@ namespace PluginOne
 {
     public class Func : Shape
     {
-        public int Width { get; set; } = 48;
-        public int Height { get; set; } = 48;
+        public const int BaseWidth = 48;
+        public const int BaseHeight = 48;
+        public int Width { get; set; } = BaseWidth;
+        public int Height { get; set; } = BaseHeight;
         private int CalcHeight { get; set; }
         protected FuncInput[] Inputs = [];
         protected FuncOutput[] Outputs = [];
@@ -14,6 +16,7 @@ namespace PluginOne
         public string? FuncDesc { get; set; }
 
         protected bool AllowedPinInverted { get; set; } = true;
+        protected bool AllowedShowBorder { get; set; } = true;
         protected bool AllowedShowFuncName { get; set; } = true;
         protected bool AllowedShowLabelNumber { get; set; } = true;
 
@@ -21,7 +24,7 @@ namespace PluginOne
         {
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
         }
 
         public override Rectangle Bounds => new(Location.X, Location.Y, Width, CalcHeight);
@@ -31,17 +34,20 @@ namespace PluginOne
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
             if (CalcHeight == 0f)
-                CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+                CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             List<GraphicsPath> paths = [];
-            // вывод бокса
             var path = new GraphicsPath();
-            path.AddRectangle(rect);
+            if (AllowedShowBorder)
+            {
+                // вывод бокса
+                path.AddRectangle(rect);
+            }
             // вывод входов
             int hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
             {
-                path.AddLine(rect.Left, rect.Top + hi, rect.Left - Width / 4f, rect.Top + hi);
+                path.AddLine(rect.Left, rect.Top + hi, rect.Left - BaseWidth / 4f, rect.Top + hi);
                 path.CloseFigure();
                 hi += step;
             }
@@ -49,7 +55,7 @@ namespace PluginOne
             int ho;
             if (Outputs.Length == 1)
             {
-                path.AddLine(rect.Right, rect.Top + rect.Height / 2, rect.Right + Width / 4, rect.Top + rect.Height / 2);
+                path.AddLine(rect.Right, rect.Top + rect.Height / 2, rect.Right + BaseWidth / 4, rect.Top + rect.Height / 2);
                 path.CloseFigure();
             }
             else
@@ -57,7 +63,7 @@ namespace PluginOne
                 ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2 : step;
                 for (int i = 0; i < Outputs.Length; i++)
                 {
-                    path.AddLine(rect.Right, rect.Top + ho, rect.Right + Width / 4, rect.Top + ho);
+                    path.AddLine(rect.Right, rect.Top + ho, rect.Right + BaseWidth / 4, rect.Top + ho);
                     path.CloseFigure();
                     ho += step;
                 }
@@ -196,9 +202,9 @@ namespace PluginOne
             List<TargetInfo> items = [];
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
-            var sizeTarget = Width / 4;
+            var sizeTarget = BaseWidth / 4;
             // вывод целей входов
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
@@ -238,9 +244,9 @@ namespace PluginOne
             List<PinInfo> items = [];
             var step = Height / 2;
             var maxPins = Math.Max(Inputs.Length, Outputs.Length);
-            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
+            var CalcHeight = maxPins > 1 ? step * (maxPins + 1) : BaseHeight;
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
-            var sizeTarget = Width / 4;
+            var sizeTarget = BaseWidth / 4;
             // вывод целей входов
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
