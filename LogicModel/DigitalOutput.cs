@@ -8,8 +8,8 @@ namespace LogicModel
         {
             FuncName = "#/D";
             FuncDesc = "Дискретный вывод сигнала";
-            Inputs = [new() { }];
-            Outputs = [new() { }];
+            Inputs = [new FuncDigitalInput { }];
+            Outputs = [new FuncDigitalOutput { }];
             //AllowedFuncProperties = AllowedFuncProperties.All ^
             //    (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();

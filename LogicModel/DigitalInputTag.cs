@@ -10,7 +10,7 @@ namespace LogicModel
             FuncDesc = "Тег дискретного входа";
             FuncName = "TAG_DI";
             Inputs = [];
-            Outputs = [new() { }];
+            Outputs = [new FuncDigitalOutput { }];
             Background = SystemColors.Control;
             Width = 48 * 3;
             CalculateHeight();

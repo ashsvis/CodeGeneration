@@ -8,9 +8,8 @@ namespace LogicModel
         {
             FuncName = "=1";
             FuncDesc = "Исключающее ИЛИ";
-            Inputs = [new() { }, new() { }];
-            Outputs = [new() { }];
-            //AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
+            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }];
+            Outputs = [new FuncDigitalOutput { }];
             CalculateHeight();
         }
 

@@ -3,19 +3,19 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class FuncOutput : IDeepCloneable<FuncOutput>, IPersistent<FuncOutput>
+    public class FuncDigitalOutput : Output
     {
-        public int Index { get; set; }
-        public string? Name { get; set; }
-        public bool Value { get; set; }
-        public bool IsInverted { get; set; }
+        public override int Index { get; set; }
+        public override string? Name { get; internal set; }
+        public override bool Value { get; set; }
+        public override bool IsInverted { get; set; }
 
-        public FuncOutput DeepClone()
+        public override FuncDigitalOutput DeepClone()
         {
-            return new FuncOutput { Value = Value, IsInverted = IsInverted };
+            return new FuncDigitalOutput { Value = Value, IsInverted = IsInverted };
         }
 
-        public void ReadContent(XElement xoutput)
+        public override void ReadContent(XElement xoutput)
         {
             if (xoutput == null || xoutput.Name != "Output") return;
             var sindex = xoutput.Attribute("Index")?.Value;
@@ -29,12 +29,12 @@ namespace LogicModel
                 IsInverted = ParseHelper.ParseBoolean(sinverted, false);
         }
 
-        public bool NoDataToWrite()
+        public override bool NoDataToWrite()
         {
             return !Value && !IsInverted;
         }
 
-        public XElement WriteContent()
+        public override XElement WriteContent()
         {
             var xfunc = new XElement("Output");
             if (!NoDataToWrite())

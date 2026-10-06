@@ -44,7 +44,7 @@ namespace LogicModel
         for (var j = 1; j <= i; j++)
         {
             holderValues.Add("false");
-            holderInits.Add("new() { }");
+            holderInits.Add("new FuncInput { }");
             holderInputNames.Add("\"\"");
         }
 #>
@@ -55,7 +55,7 @@ namespace LogicModel
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
             Inputs = [<#= string.Join(", ", holderInits) #>];
-            Outputs = [new() { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 

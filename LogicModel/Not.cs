@@ -8,9 +8,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Инверсия";
-            Inputs = [new() { }];
-            Outputs = [new() { IsInverted = true }];
-            //AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
+            Inputs = [new FuncDigitalInput { }];
+            Outputs = [new FuncDigitalOutput { IsInverted = true }];
             CalculateHeight();
         }
 

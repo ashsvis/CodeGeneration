@@ -11,8 +11,8 @@ namespace LogicModel
             FuncName = "TAG_DESCRIPTION";
             Width = 48 * 5;
             Height = 48 * 2;
-            Inputs = [new() { }];
-            Outputs = [new() { }];
+            Inputs = [new FuncDigitalInput { }];
+            Outputs = [new FuncDigitalOutput { }];
             Background = SystemColors.Control;
             CalculateHeight();
         }

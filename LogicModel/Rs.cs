@@ -9,8 +9,8 @@ namespace LogicModel
         {
             FuncName = "RS";
             FuncDesc = "RS-ענטדדונ";
-            Inputs = [new() { Name = "S" }, new() { Name = "R" }];
-            Outputs = [new() { Name = "Q" }];
+            Inputs = [new FuncDigitalInput { Name = "S" }, new FuncDigitalInput { Name = "R" }];
+            Outputs = [new FuncDigitalOutput { Name = "Q" }];
             CalculateHeight();
         }
 

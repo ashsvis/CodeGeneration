@@ -11,8 +11,8 @@ namespace LogicModel
         public int Width { get; set; } = BaseWidth;
         public int Height { get; set; } = BaseHeight;
         private int CalcHeight { get; set; }
-        protected FuncInput[] Inputs = [];
-        protected FuncOutput[] Outputs = [];
+        protected Input[] Inputs = [];
+        protected Output[] Outputs = [];
         public string? FuncName { get; protected set; }
         public string? FuncDesc { get; protected set; }
 
