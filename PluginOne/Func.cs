@@ -215,7 +215,7 @@ namespace PluginOne
                         {
                             var link = Inputs[target.PinIndex].Link;
                             UnlinkInput(link, target.PinIndex);
-                            DeleteLinkFromTarget(link, (ILink)this, target.PinIndex);
+                            DeleteLinkFromTarget(link, (ILinked)this, target.PinIndex);
                         };
                         items.Add(item);
                     }
@@ -360,8 +360,8 @@ namespace PluginOne
         }
 
         public override void Calculate() { }
-        public override void LinkInput(ILink? link, int index) { }
-        public override void UnlinkInput(ILink? link, int index) { }
+        public override void LinkInput(ILinked? link, int index) { }
+        public override void UnlinkInput(ILinked? link, int index) { }
 
         public override void UnlinkAllInputs() 
         { 
@@ -369,7 +369,7 @@ namespace PluginOne
                 UnlinkInput(Inputs[i].Link, i);
         }
 
-        public override void UnlinkOutputFor(ILink? link)
+        public override void UnlinkOutputFor(ILinked? link)
         {
             foreach (var input in Inputs.Where(x => x.Link == link))
             {

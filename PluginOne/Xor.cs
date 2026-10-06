@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace PluginOne
 {
-    public class Xor : Func, ILink
+    public class Xor : Func, ILinked
     {
         public Xor()
         {
@@ -32,7 +32,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -48,7 +48,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
         }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)

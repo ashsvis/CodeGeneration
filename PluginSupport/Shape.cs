@@ -166,15 +166,15 @@ namespace PluginSupport
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
         public abstract int CountOutputs();
-        public abstract void LinkInput(ILink? link, int index);
-        public abstract void UnlinkInput(ILink? link, int index);
+        public abstract void LinkInput(ILinked? link, int index);
+        public abstract void UnlinkInput(ILinked? link, int index);
         public abstract bool IsLinked(int index);
         public abstract void UnlinkAllInputs();
-        public abstract void UnlinkOutputFor(ILink? link);
+        public abstract void UnlinkOutputFor(ILinked? link);
 
         public abstract Type GetLinkTypeToCreate();
 
-        public void DeleteLinkFromTarget(ILink? source, ILink target, int pinIndex)
+        public void DeleteLinkFromTarget(ILinked? source, ILinked target, int pinIndex)
         {
             OnDeleteLink?.Invoke(this, new DeleteLinkFromTargetEventArgs(source, target, pinIndex));
         }
@@ -186,10 +186,10 @@ namespace PluginSupport
         public abstract bool NoDataToWrite();
     }
 
-    public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target, int targetPinIndex) : EventArgs
+    public class DeleteLinkFromTargetEventArgs(ILinked? source, ILinked? target, int targetPinIndex) : EventArgs
     {
-        public ILink? Source { get; set; } = source;
-        public ILink? Target { get; set; } = target;
+        public ILinked? Source { get; set; } = source;
+        public ILinked? Target { get; set; } = target;
         public int TargetPinIndex { get; set; } = targetPinIndex;
     }
 

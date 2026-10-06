@@ -4,6 +4,8 @@ namespace PluginSupport
     {
         Point Location { get; set; }
         bool Selected { get; set; }
+        int Index { get; set; }
+
         event LocationChangedEventHandler? OnLocationChange;
     }
 

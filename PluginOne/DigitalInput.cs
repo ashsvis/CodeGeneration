@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class DigitalInput : Func, ILink
+    public class DigitalInput : Func, ILinked
     {
         public DigitalInput()
         {
@@ -22,8 +22,6 @@ namespace PluginOne
             return new DigitalInput()
             {
                 Location = Location,
-                //Width = Width,
-                //Height = Height,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
@@ -85,7 +83,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange += MakeChanges;
@@ -93,7 +91,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
         }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange -= MakeChanges;

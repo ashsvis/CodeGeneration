@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class Rs : Func, ILink
+    public class Rs : Func, ILinked
     {
         public Rs()
         {
@@ -72,7 +72,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -88,7 +88,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
         }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)

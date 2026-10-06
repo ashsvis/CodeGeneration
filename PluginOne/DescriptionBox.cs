@@ -3,12 +3,12 @@ using System.Drawing.Drawing2D;
 
 namespace PluginOne
 {
-    public class DescriptionBox : Func, ILink
+    public class DescriptionBox : Func, ILinked
     {
         public DescriptionBox()
         {
             FuncDesc = "Описание параметра";
-            FuncName = "TAG_DESCRITION";
+            FuncName = "TAG_DESCRIPTION";
             Width = 48 * 5;
             Height = 48 * 2;
             Inputs = [new() { }];
@@ -69,7 +69,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange += MakeChanges;
@@ -77,7 +77,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
         }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             link.OnOutputChange -= MakeChanges;

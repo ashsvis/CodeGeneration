@@ -28,7 +28,7 @@ namespace PluginOne
         }
     }
 
-    public class Or2 : Func, ILink
+    public class Or2 : Func, ILinked
     {
         public Or2()
         {
@@ -57,7 +57,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -73,7 +73,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -100,7 +100,7 @@ namespace PluginOne
         }
    }
 
-    public class Or3 : Func, ILink
+    public class Or3 : Func, ILinked
     {
         public Or3()
         {
@@ -129,7 +129,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -148,7 +148,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -183,7 +183,7 @@ namespace PluginOne
         }
    }
 
-    public class Or4 : Func, ILink
+    public class Or4 : Func, ILinked
     {
         public Or4()
         {
@@ -212,7 +212,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -234,7 +234,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -277,7 +277,7 @@ namespace PluginOne
         }
    }
 
-    public class Or5 : Func, ILink
+    public class Or5 : Func, ILinked
     {
         public Or5()
         {
@@ -306,7 +306,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -331,7 +331,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -382,7 +382,7 @@ namespace PluginOne
         }
    }
 
-    public class Or6 : Func, ILink
+    public class Or6 : Func, ILinked
     {
         public Or6()
         {
@@ -411,7 +411,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -439,7 +439,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -498,7 +498,7 @@ namespace PluginOne
         }
    }
 
-    public class Or7 : Func, ILink
+    public class Or7 : Func, ILinked
     {
         public Or7()
         {
@@ -527,7 +527,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -558,7 +558,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -625,7 +625,7 @@ namespace PluginOne
         }
    }
 
-    public class Or8 : Func, ILink
+    public class Or8 : Func, ILinked
     {
         public Or8()
         {
@@ -654,7 +654,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -688,7 +688,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -763,7 +763,7 @@ namespace PluginOne
         }
    }
 
-    public class And2 : Func, ILink
+    public class And2 : Func, ILinked
     {
         public And2()
         {
@@ -792,7 +792,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -808,7 +808,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -835,7 +835,7 @@ namespace PluginOne
         }
    }
 
-    public class And3 : Func, ILink
+    public class And3 : Func, ILinked
     {
         public And3()
         {
@@ -864,7 +864,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -883,7 +883,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -918,7 +918,7 @@ namespace PluginOne
         }
    }
 
-    public class And4 : Func, ILink
+    public class And4 : Func, ILinked
     {
         public And4()
         {
@@ -947,7 +947,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -969,7 +969,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1012,7 +1012,7 @@ namespace PluginOne
         }
    }
 
-    public class And5 : Func, ILink
+    public class And5 : Func, ILinked
     {
         public And5()
         {
@@ -1041,7 +1041,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1066,7 +1066,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1117,7 +1117,7 @@ namespace PluginOne
         }
    }
 
-    public class And6 : Func, ILink
+    public class And6 : Func, ILinked
     {
         public And6()
         {
@@ -1146,7 +1146,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1174,7 +1174,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1233,7 +1233,7 @@ namespace PluginOne
         }
    }
 
-    public class And7 : Func, ILink
+    public class And7 : Func, ILinked
     {
         public And7()
         {
@@ -1262,7 +1262,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1293,7 +1293,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1360,7 +1360,7 @@ namespace PluginOne
         }
    }
 
-    public class And8 : Func, ILink
+    public class And8 : Func, ILinked
     {
         public And8()
         {
@@ -1389,7 +1389,7 @@ namespace PluginOne
             }
         }
 
-        public override void LinkInput(ILink? link, int index)
+        public override void LinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)
@@ -1423,7 +1423,7 @@ namespace PluginOne
             Inputs[index].IsLinked = true;
        }
 
-        public override void UnlinkInput(ILink? link, int index)
+        public override void UnlinkInput(ILinked? link, int index)
         {
             if (link == null) return;
             switch (index)

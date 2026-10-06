@@ -1,8 +1,10 @@
+using System.Xml.Linq;
+
 namespace PluginSupport
 {
-    public interface ILink
+    public interface ILinked
     {
-        event OutputChangedEventHandler? OnOutputChange;
+         event OutputChangedEventHandler? OnOutputChange;
     }
 
     public class OutputChangedEventArgs(bool newValue) : EventArgs

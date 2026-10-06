@@ -1,5 +1,8 @@
 using PluginSupport;
+using System;
+using System.Collections;
 using System.Drawing.Drawing2D;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace CodeGenerator
@@ -56,18 +59,10 @@ namespace CodeGenerator
                 var rootNode = new TreeNode(plugin.Name);
                 rootNode.Expand();
                 tvLibrary.Nodes.Add(rootNode);
-                var range = plugin.TreeNodeItems();
-                foreach (var category in range)
-                {
-                    if (category.Tag is Type type && !string.IsNullOrEmpty(type.FullName))
-                        types.TryAdd(type.FullName, type);
-                    foreach (var node in category.Nodes.Cast<TreeNode>())
-                    {
-                        if (node.Tag is Type childType && !string.IsNullOrEmpty(childType.FullName))
-                            types.TryAdd(childType.FullName, childType);
-                    }
-                }
-                rootNode.Nodes.AddRange(range);
+                rootNode.Nodes.AddRange(plugin.TreeNodeItems());
+                var dict = plugin.GetTypes();
+                foreach (var key in dict.Keys)
+                    types.TryAdd(key, dict[key]);
             }
         }
 
@@ -86,21 +81,6 @@ namespace CodeGenerator
                 Properties.Settings.Default.origin,
                 Properties.Settings.Default.zoom);
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
-        }
-
-        public void SaveXml(string filename)
-        {
-            var root = new XElement("Document");
-            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
-            var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
-            var xmodel = new XElement("Model");
-            root.Add(xmodel);
-            foreach (var shape in shapes)
-            {
-                var xshape = shape.WriteContent();
-                xmodel.Add(xshape);
-            }
-            doc.Save(filename);
         }
 
         /// <summary>
@@ -629,7 +609,7 @@ namespace CodeGenerator
                         foreach (var shape in shapes.Select(x => x).Reverse())
                         {
                             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                            if (firstShape is ILink link &&
+                            if (firstShape is ILinked link &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index))
                             {
@@ -776,7 +756,7 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void UpdateOtherLinks(Link link)
+        private void UpdateOtherLinks(PluginSupport.Link link)
         {
             // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
             // очищаем массив внутренних точек
@@ -1227,7 +1207,7 @@ namespace CodeGenerator
                                 // ищем элементы, у которых были связаны выходы
                                 foreach (var item in shapes)
                                 {
-                                    if (shape is ILink link)
+                                    if (shape is ILinked link)
                                         item.UnlinkOutputFor(link);
                                 }
                                 shape.OnDeleteLink -= Shape_OnDeleteLink;
@@ -1277,7 +1257,7 @@ namespace CodeGenerator
                     // ищем элементы, у которых были связаны выходы
                     foreach (var item in shapes)
                     {
-                        if (shapeForDelete is ILink link)
+                        if (shapeForDelete is ILinked link)
                             item.UnlinkOutputFor(link);
                     }
                     shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
@@ -1345,28 +1325,66 @@ namespace CodeGenerator
             var xdoc = XDocument.Load(filename);
             var root = xdoc.Element("Document");
             if (root == null) return;
-            //var name = root.Attribute("Name")?.Value;
+            var name = root.Attribute("Name")?.Value;
             var xmodel = root.Element("Model");
             if (xmodel == null) return;
             shapes.Clear();
+            int n = 0;
             foreach (var xelement in xmodel.Descendants())
             {
                 if (types.ContainsKey($"{xelement.Name}"))
                 {
                     var type = types[$"{xelement.Name}"];
-                    var shape = (Shape?)Activator.CreateInstance(type);
-                    if (shape != null)
+                    var obj = Activator.CreateInstance(type);
+                    if (obj is Shape shape)
                     {
+                        shape.Index = n++;
                         shape.ReadContent(xelement);
                         shape.OnDelete += Shape_OnDelete;
                         shape.OnDeleteLink += Shape_OnDeleteLink;
                         shape.OnMakeCopy += Shape_OnMakeCopy;
                         shapes.Add(shape);
                     }
+                    else if (obj is Link link)
+                    {
+                        link.ReadContent(xelement);
+                        if (link.SourceIndex >= 0 && link.SourceIndex < shapes.Count &&
+                            link.TargetIndex >= 0 && link.TargetIndex < shapes.Count)
+                        {
+                            if (shapes[link.SourceIndex] is ILocation source && 
+                                shapes[link.TargetIndex] is ILocation target)
+                            {
+                                link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                                links.Add(link);
+                                shapes[link.TargetIndex].LinkInput((ILinked?)shapes[link.SourceIndex], link.TargetPinIndex);
+                                link.OnRebuildLink += CellLink_OnRebuildLink;
+                            }
+                        }
+                    }
                 }
             }
             InitField();
             drawPanel.Invalidate();
+        }
+
+        public void SaveXml(string filename)
+        {
+            var root = new XElement("Document");
+            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
+            var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
+            var xmodel = new XElement("Model");
+            root.Add(xmodel);
+            foreach (var shape in shapes)
+            {
+                var xshape = shape.WriteContent();
+                xmodel.Add(xshape);
+            }
+            foreach (var link in links)
+            {
+                var xlink = link.WriteContent();
+                xmodel.Add(xlink);
+            }
+            doc.Save(filename);
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1399,7 +1417,7 @@ namespace CodeGenerator
                     // ищем элементы, у которых были связаны выходы
                     foreach (var item in shapes)
                     {
-                        if (shape is ILink link)
+                        if (shape is ILinked link)
                             item.UnlinkOutputFor(link);
                     }
                     shape.OnDeleteLink -= Shape_OnDeleteLink;

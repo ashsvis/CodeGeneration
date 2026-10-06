@@ -11,7 +11,7 @@ namespace PluginOne
         public bool Value { get; set; }
         public bool IsInverted { get; set; }
         public bool IsLinked { get; set; }
-        public ILink? Link { get; set; }
+        public ILinked? Link { get; set; }
 
         public FuncInput DeepClone()
         {

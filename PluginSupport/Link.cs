@@ -1,11 +1,14 @@
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace PluginSupport
 {
-    public abstract class Link
+    public abstract class Link : IPersistent<Link>
     {
         public abstract ILocation? Source { get; set; }
+        public abstract int SourceIndex { get; set; }
         public abstract ILocation? Target { get; set; }
+        public abstract int TargetIndex { get; set; }
         public abstract int TargetPinIndex { get; set; }
         public abstract Point StartPoint { get; set; }
         public abstract Point EndPoint { get; set; }
@@ -50,6 +53,10 @@ namespace PluginSupport
         {
             OnRebuildLink?.Invoke(this, new RebuildLinkFromTargetEventArgs(link));
         }
+
+        public abstract XElement WriteContent();
+        public abstract void ReadContent(XElement element);
+        public abstract bool NoDataToWrite();
     }
 
     public class RebuildLinkFromTargetEventArgs(PluginSupport.Link link) : EventArgs

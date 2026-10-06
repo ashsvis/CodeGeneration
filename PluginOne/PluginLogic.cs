@@ -38,5 +38,25 @@ namespace PluginOne
         }
 
         static partial void AddTreeNodeItems(List<TreeNode> items);
+
+        public Dictionary<string, Type> GetTypes()
+        {
+            Dictionary<string, Type> types = [];
+            var range = this.TreeNodeItems();
+            foreach (var category in range)
+            {
+                if (category.Tag is Type type && !string.IsNullOrEmpty(type.FullName))
+                    types.TryAdd(type.FullName, type);
+                foreach (var node in category.Nodes.Cast<TreeNode>())
+                {
+                    if (node.Tag is Type childType && !string.IsNullOrEmpty(childType.FullName))
+                        types.TryAdd(childType.FullName, childType);
+                }
+            }
+            var linkType = typeof(FuncLink);
+            if (!string.IsNullOrEmpty(linkType.FullName))
+                types.Add(linkType.FullName, linkType);
+            return types;
+        }
     }
 }

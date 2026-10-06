@@ -1,12 +1,15 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace PluginOne
 {
     public class FuncLink : PluginSupport.Link
     {
         public override ILocation? Source { get; set; }
+        public override int SourceIndex { get; set; }
         public override ILocation? Target { get; set; }
+        public override int TargetIndex { get; set; }
         public override int TargetPinIndex { get; set; }
         public override Point StartPoint { get; set; }
         public override Point EndPoint { get; set; }
@@ -32,6 +35,70 @@ namespace PluginOne
 
         public bool MustRebuild => mustRebuild;
 
+        public override bool NoDataToWrite()
+        {
+            return false;
+        }
+
+        public override XElement WriteContent()
+        {
+            var xlink = new XElement($"{this.GetType().FullName}");
+            if (Source is ILocation souloc)
+                xlink.Add(new XAttribute("Source", souloc.Index));
+            if (Target is ILocation tarloc)
+            {
+                xlink.Add(new XAttribute("Target", tarloc.Index));
+                xlink.Add(new XAttribute("Pin", TargetPinIndex));
+            }
+            xlink.Add(new XAttribute("Start", $"{StartPoint.X},{StartPoint.Y}"));
+            xlink.Add(new XAttribute("End", $"{EndPoint.X},{EndPoint.Y}"));
+            xlink.Add(new XAttribute("Points", string.Join(" ", linkPoints.Select(p => $"{p.X},{p.Y}"))));
+            return xlink;
+        }
+
+        public override void ReadContent(XElement xlink)
+        {
+            if (xlink == null || xlink.Name != $"{this.GetType().FullName}") return;
+            var sSource = xlink.Attribute("Source")?.Value;
+            if (!string.IsNullOrWhiteSpace(sSource))
+                SourceIndex = ParseHelper.ParseInteger(sSource, 0);
+            var sTarget = xlink.Attribute("Target")?.Value;
+            if (!string.IsNullOrWhiteSpace(sTarget))
+                TargetIndex = ParseHelper.ParseInteger(sTarget, 0);
+            var sPin = xlink.Attribute("Pin")?.Value;
+            if (!string.IsNullOrWhiteSpace(sPin))
+                TargetPinIndex = ParseHelper.ParseInteger(sPin, 0);
+            var sStart = xlink.Attribute("Start")?.Value;
+            if (!string.IsNullOrWhiteSpace(sStart))
+            {
+                var vals = sStart.Split(',');
+                if (vals.Length == 2)
+                    StartPoint = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
+            }
+            var sEnd = xlink.Attribute("End")?.Value;
+            if (!string.IsNullOrWhiteSpace(sEnd))
+            {
+                var vals = sEnd.Split(',');
+                if (vals.Length == 2)
+                    EndPoint = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
+            }
+            var sPoints = xlink.Attribute("Points")?.Value;
+            if (!string.IsNullOrWhiteSpace(sPoints))
+            {
+                var pvals = sPoints.Split(' ');
+                List<Point> points = [];
+                foreach (var p in pvals)
+                {
+                    var vals = p.Split(',');
+                    if (vals.Length == 2)
+                    {
+                        var point = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
+                        points.Add(point);
+                    }
+                }
+                SetPoints([.. points]);
+            }
+        }
 
         public override GraphicsPath[] GetLinesPaths()
         {

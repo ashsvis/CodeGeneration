@@ -4,5 +4,6 @@
     {
         string Name { get; }
         TreeNode[] TreeNodeItems();
+        Dictionary<string, Type> GetTypes();
     }
 }
