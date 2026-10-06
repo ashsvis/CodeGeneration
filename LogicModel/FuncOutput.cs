@@ -8,6 +8,7 @@ namespace LogicModel
         public int Index { get; set; }
         public string? Name { get; internal set; }
         public double Value { get; set; }
+        public ValueKind Kind { get; set; }
         public bool IsInverted { get; set; }
 
         public FuncOutput DeepClone()

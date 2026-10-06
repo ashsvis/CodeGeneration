@@ -14,6 +14,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
         public event OutputChangedEventHandler? OnOutputChange;
 
         public override GraphicsPath[] GetTextPaths()

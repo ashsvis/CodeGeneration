@@ -15,6 +15,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
         public override void Calculate()
         {
             var result = Inputs[0].Value;

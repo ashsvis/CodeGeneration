@@ -8,8 +8,8 @@ namespace LogicModel
         {
             FuncName = "A/#";
             FuncDesc = "Аналоговый ввод сигнала";
-            Inputs = [new FuncInput { }];
-            Outputs = [new FuncOutput { }];
+            Inputs = [new FuncInput { Kind = ValueKind.Analog }];
+            Outputs = [new FuncOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
     }

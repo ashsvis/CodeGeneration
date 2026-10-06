@@ -265,13 +265,22 @@ namespace LogicModel
                 {
                     var p = new GraphicsPath();
                     var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
+                    var kind = target.IsOutput ? Outputs[target.PinIndex].Kind : Inputs[target.PinIndex].Kind;
                     var t = target.Target;
                     t.Offset(0f, -t.Height / 4);
                     using var fontFunc = new Font("Segoe UI", 12f);
                     using var sf = new StringFormat();
                     sf.Alignment = StringAlignment.Center;
                     sf.LineAlignment = StringAlignment.Center;
-                    p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                    switch (kind)
+                    {
+                        case ValueKind.Digital:
+                            p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                            break;
+                        case ValueKind.Analog:
+                            p.AddString($"{value:0.#}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                            break;
+                    }
                     paths.Add(p);
                 }
             }

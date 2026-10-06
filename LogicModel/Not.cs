@@ -13,6 +13,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
         public event OutputChangedEventHandler? OnOutputChange;
 
         public virtual void UpdateLinked(double result)
