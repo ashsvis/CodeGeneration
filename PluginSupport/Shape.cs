@@ -102,8 +102,8 @@ namespace PluginSupport
             return false;
         }
 
-        public abstract object? GetOutputValue(int index = 0);
-        public abstract void SetInputValue(int index, object? value);
+        public abstract double GetOutputValue(int index = 0);
+        public abstract void SetInputValue(int index, double value);
 
         public abstract Point? GetInputPinPoint(int index);
         public abstract Point? GetOutputPinPoint(int index = 0);

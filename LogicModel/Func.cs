@@ -271,7 +271,7 @@ namespace LogicModel
                     using var sf = new StringFormat();
                     sf.Alignment = StringAlignment.Center;
                     sf.LineAlignment = StringAlignment.Center;
-                    p.AddString($"{(value ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                    p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                     paths.Add(p);
                 }
             }
@@ -410,7 +410,7 @@ namespace LogicModel
                         // входы
                         if (!Inputs[info.PinIndex].IsLinked)
                         {
-                            Inputs[info.PinIndex].Value = !Inputs[info.PinIndex].Value;
+                            Inputs[info.PinIndex].Value = Inputs[info.PinIndex].Value > 0 ? 0 : 1;
                         }
                     }
                 }
@@ -439,18 +439,18 @@ namespace LogicModel
             return null;
         }
 
-        public override object? GetOutputValue(int index = 0)
+        public override double GetOutputValue(int index = 0)
         {
             if (index >=0 && index < Outputs.Length)
                 return Outputs[index].Value;
-            return null;
+            return 0;
         }
 
-        public override void SetInputValue(int index, object? value)
+        public override void SetInputValue(int index, double value)
         {
             if (index >= 0 && index < Inputs.Length)
             {
-                Inputs[index].Value = Convert.ToBoolean(value);
+                Inputs[index].Value = value;
             }
         }
 

@@ -15,7 +15,7 @@ namespace LogicModel
 
         public event OutputChangedEventHandler? OnOutputChange;
 
-        public virtual void UpdateLinked(bool result)
+        public virtual void UpdateLinked(double result)
         {
             OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
         }
@@ -24,11 +24,11 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0].Value ^ Inputs[0].IsInverted ^ Outputs[0].IsInverted;
-                if (Outputs.Length > 0 && Outputs[0].Value != result)
+                var result = (Inputs[0].Value > 0) ^ Inputs[0].IsInverted ^ Outputs[0].IsInverted;
+                if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
-                    Outputs[0].Value = result;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
+                    Outputs[0].Value = result ? 1 : 0;
+                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }

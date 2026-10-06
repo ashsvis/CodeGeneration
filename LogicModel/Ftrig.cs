@@ -17,21 +17,21 @@ namespace LogicModel
 
         public override void Calculate()
         {
-            var result = !Inputs[0].Value;
-            if (result == false)
+            var result = Inputs[0].Value > 0 ? 0 : 1;
+            if (result == 0)
                 lastState = false;
             if (Outputs[0].Value != result && lastState == false)
             {
-                if (result == true && Outputs[0].Value == false)
+                if (result == 1 && Outputs[0].Value == 0)
                 {
                     Outputs[0].Value = result;
                     if (lastState == false)
                     {
                         lastState = true;
-                        UpdateLinked(true);
+                        UpdateLinked(1);
                     }
                 }
-                Outputs[0].Value = false;
+                Outputs[0].Value = 0;
             }
         }
     }

@@ -37,7 +37,7 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public virtual void UpdateLinked(bool result)
+        public virtual void UpdateLinked(double result)
         {
             OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
         }
@@ -46,27 +46,27 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                var Set = Inputs[0].Value ^ Inputs[0].IsInverted;
-                var Reset = Inputs[1].Value ^ Inputs[1].IsInverted;
+                var Set = (Inputs[0].Value > 0) ^ Inputs[0].IsInverted;
+                var Reset = (Inputs[1].Value > 0) ^ Inputs[1].IsInverted;
                 var Q = Outputs[0].Value;
                 if (Reset)
                 {
-                    if (Q)
+                    if (Q == 1)
                     {
                         var result = false;
                         result ^= Outputs[0].IsInverted;
-                        Outputs[0].Value = result;
-                        UpdateLinked(result);
+                        Outputs[0].Value = result ? 1 : 0;
+                        UpdateLinked(result ? 1 : 0);
                     }
                 }
                 else if (Set)
                 {
-                    if (!Q)
+                    if (Q == 0)
                     {
                         var result = true;
                         result ^= Outputs[0].IsInverted;
-                        Outputs[0].Value = result;
-                        UpdateLinked(result);
+                        Outputs[0].Value = result ? 1 : 0;
+                        UpdateLinked(result ? 1 : 0);
                     }
                 }
             }

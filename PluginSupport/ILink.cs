@@ -1,5 +1,3 @@
-using System.Xml.Linq;
-
 namespace PluginSupport
 {
     public interface ILinked
@@ -7,9 +5,9 @@ namespace PluginSupport
          event OutputChangedEventHandler? OnOutputChange;
     }
 
-    public class OutputChangedEventArgs(bool newValue) : EventArgs
+    public class OutputChangedEventArgs(double newValue) : EventArgs
     {
-        public bool NewValue { get; set; } = newValue;
+        public double NewValue { get; set; } = newValue;
 
     }
 

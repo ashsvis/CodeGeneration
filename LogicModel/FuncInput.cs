@@ -7,7 +7,7 @@ namespace LogicModel
     {
         public int Index { get; set; }
         public string? Name { get; internal set; }
-        public bool Value { get; set; }
+        public double Value { get; set; }
         public bool IsInverted { get; set; }
         public bool IsLinked { get; set; }
         public ILinked? Link { get; set; }
@@ -25,7 +25,7 @@ namespace LogicModel
                 Index = ParseHelper.ParseInteger(sindex, 0);
             var svalue = xinput.Attribute("Value")?.Value;
             if (!string.IsNullOrWhiteSpace(svalue))
-                Value = ParseHelper.ParseBoolean(svalue, false);
+                Value = ParseHelper.ParseBoolean(svalue, false) ? 1 : 0;
             var sinverted = xinput.Attribute("IsInverted")?.Value;
             if (!string.IsNullOrWhiteSpace(sinverted))
                 IsInverted = ParseHelper.ParseBoolean(sinverted, false);
@@ -36,7 +36,7 @@ namespace LogicModel
 
         public bool NoDataToWrite()
         {
-            return !Value && !IsInverted && !IsLinked;
+            return Value == 0 && !IsInverted && !IsLinked;
         }
 
         public XElement WriteContent()
@@ -44,7 +44,7 @@ namespace LogicModel
             var xfunc = new XElement("Input");
             if (!NoDataToWrite())
                 xfunc.Add(new XAttribute("Index", Index));
-            if (Value)
+            if (Value != 0)
                 xfunc.Add(new XAttribute("Value", Value));
             if (IsInverted)
                 xfunc.Add(new XAttribute("IsInverted", IsInverted));

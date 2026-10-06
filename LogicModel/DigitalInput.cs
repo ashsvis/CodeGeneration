@@ -65,7 +65,7 @@ namespace LogicModel
             return [..paths];
         }
 
-        public virtual void UpdateLinked(bool result)
+        public virtual void UpdateLinked(double result)
         {
             OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
         }
