@@ -9,7 +9,7 @@ namespace LogicModel
             FuncDesc = "Тег аналогового входа";
             FuncName = "TAG_AI";
             Inputs = [];
-            Outputs = [new FuncDigitalOutput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
     }

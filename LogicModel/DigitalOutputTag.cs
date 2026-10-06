@@ -8,7 +8,7 @@ namespace LogicModel
         {
             FuncDesc = "Тег дискретного выхода";
             FuncName = "TAG_DO";
-            Inputs = [new FuncDigitalInput { }];
+            Inputs = [new FuncInput { }];
             Outputs = [];
             CalculateHeight();
         }

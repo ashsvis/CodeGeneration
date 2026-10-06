@@ -10,8 +10,8 @@ namespace LogicModel
         {
             FuncName = "Rtrig";
             FuncDesc = "Детектор фронта";
-            Inputs = [new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 

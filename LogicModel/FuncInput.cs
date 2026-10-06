@@ -3,21 +3,21 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class FuncDigitalInput : Input
+    public class FuncInput : IDeepCloneable<FuncInput>, IPersistent<FuncInput>
     {
-        public override int Index { get; set; }
-        public override string? Name { get; internal set; }
-        public override bool Value { get; set; }
-        public override bool IsInverted { get; set; }
-        public override bool IsLinked { get; set; }
-        public override ILinked? Link { get; set; }
+        public int Index { get; set; }
+        public string? Name { get; internal set; }
+        public bool Value { get; set; }
+        public bool IsInverted { get; set; }
+        public bool IsLinked { get; set; }
+        public ILinked? Link { get; set; }
 
-        public override FuncDigitalInput DeepClone()
+        public FuncInput DeepClone()
         {
-            return new FuncDigitalInput { Index = Index, Value = Value, IsInverted = IsInverted, Link = null };
+            return new FuncInput { Index = Index, Value = Value, IsInverted = IsInverted, Link = null };
         }
 
-        public override void ReadContent(XElement xinput)
+        public void ReadContent(XElement xinput)
         {
             if (xinput == null || xinput.Name != "Input") return;
             var sindex = xinput.Attribute("Index")?.Value;
@@ -34,12 +34,12 @@ namespace LogicModel
                 IsLinked = ParseHelper.ParseBoolean(slinked, false);
         }
 
-        public override bool NoDataToWrite()
+        public bool NoDataToWrite()
         {
             return !Value && !IsInverted && !IsLinked;
         }
 
-        public override XElement WriteContent()
+        public XElement WriteContent()
         {
             var xfunc = new XElement("Input");
             if (!NoDataToWrite())

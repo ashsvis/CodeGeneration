@@ -34,8 +34,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -106,8 +106,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -189,8 +189,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -283,8 +283,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -388,8 +388,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -504,8 +504,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -631,8 +631,8 @@ namespace LogicModel
         {
             FuncName = "1";
             FuncDesc = "Дизъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -769,8 +769,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -841,8 +841,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -924,8 +924,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -1018,8 +1018,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -1123,8 +1123,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -1239,8 +1239,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
@@ -1366,8 +1366,8 @@ namespace LogicModel
         {
             FuncName = "&";
             FuncDesc = "Конъюнкция";
-            Inputs = [new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }, new FuncDigitalInput { }];
-            Outputs = [new FuncDigitalOutput { }];
+            Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
+            Outputs = [new FuncOutput { }];
             CalculateHeight();
         }
 
