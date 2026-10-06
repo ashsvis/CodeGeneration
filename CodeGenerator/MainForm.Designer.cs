@@ -86,6 +86,7 @@
             contextMenu = new ContextMenuStrip(components);
             testToolStripMenuItem = new ToolStripMenuItem();
             timerCalculate = new System.Windows.Forms.Timer(components);
+            timerInterface = new System.Windows.Forms.Timer(components);
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -537,6 +538,12 @@
             timerCalculate.Enabled = true;
             timerCalculate.Tick += TimerCalculate_Tick;
             // 
+            // timerInterface
+            // 
+            timerInterface.Enabled = true;
+            timerInterface.Interval = 50;
+            timerInterface.Tick += timerInterface_Tick;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -631,5 +638,6 @@
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem testToolStripMenuItem;
         private System.Windows.Forms.Timer timerCalculate;
+        private System.Windows.Forms.Timer timerInterface;
     }
 }

@@ -7,6 +7,7 @@ namespace CodeGenerator
     public partial class MainForm : Form, IHost
     {
         private const int step = 12;
+        private bool modelChanged = false;
 
         private readonly string dragFormat;
         private readonly DrawPanel drawPanel;
@@ -543,6 +544,7 @@ namespace CodeGenerator
                             link.SetPoints(pts);
                         }
                     }
+                    modelChanged = true;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 }
                 else if (linkBuilding)
@@ -602,6 +604,7 @@ namespace CodeGenerator
                         foreach (var link in links)
                             link.Rebuild();
                         InitField();
+                        modelChanged = true;
                         drawPanel.Invalidate();
                     }
                     else if (linkBuilding)
@@ -636,6 +639,7 @@ namespace CodeGenerator
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
                                         shape.LinkInput(link, index);
                                         cellLink.OnRebuildLink += CellLink_OnRebuildLink;
+                                        modelChanged = true;
                                     }
                                 }
                                 break;
@@ -717,6 +721,7 @@ namespace CodeGenerator
                     shapes.Add(shape);
                     SortIndexByLocation();
                     InitField();
+                    modelChanged = true;
                     drawPanel.Invalidate();
                 }
             }
@@ -736,6 +741,7 @@ namespace CodeGenerator
                 shapes.Add(shape);
                 SortIndexByLocation();
                 InitField();
+                modelChanged = true;
                 drawPanel.Invalidate();
             }
         }
@@ -754,6 +760,7 @@ namespace CodeGenerator
                 // удаляем визуальную ссылку
                 links.Remove(link);
                 UpdateOtherLinks(link);
+                modelChanged = true;
             }
             InitField();
             drawPanel.Invalidate();
@@ -1221,6 +1228,7 @@ namespace CodeGenerator
                                 shapes.Remove(shape);
                             SortIndexByLocation();
                             InitField();
+                            modelChanged = true;
                             drawPanel.Invalidate();
                         }
                         finally
@@ -1269,6 +1277,7 @@ namespace CodeGenerator
                     shapes.Remove(shapeForDelete);
                     SortIndexByLocation();
                     InitField();
+                    modelChanged = true;
                     drawPanel.Invalidate();
                 }
                 finally
@@ -1292,6 +1301,8 @@ namespace CodeGenerator
                 try
                 {
                     SaveXml(dlg.FileName);
+                    shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+                    links.ForEach(link => { link.Selected = false; link.Hover = false; });
                 }
                 catch (Exception ex)
                 {
@@ -1315,6 +1326,7 @@ namespace CodeGenerator
                 try
                 {
                     LoadXml(dlg.FileName);
+                    modelChanged = false;
                 }
                 catch (Exception ex)
                 {
@@ -1354,7 +1366,7 @@ namespace CodeGenerator
                         if (link.SourceIndex >= 0 && link.SourceIndex < shapes.Count &&
                             link.TargetIndex >= 0 && link.TargetIndex < shapes.Count)
                         {
-                            if (shapes[link.SourceIndex] is ILocation source && 
+                            if (shapes[link.SourceIndex] is ILocation source &&
                                 shapes[link.TargetIndex] is ILocation target)
                             {
                                 link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
@@ -1388,6 +1400,7 @@ namespace CodeGenerator
                 xmodel.Add(xlink);
             }
             doc.Save(filename);
+            modelChanged = false;
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1415,7 +1428,7 @@ namespace CodeGenerator
                 // для всех удаляемых элементов
                 foreach (var shape in shapesForDelete)
                 {
-                    // удаляем подписки для всех входов эелемента
+                    // удаляем подписки для всех входов элемента
                     shape.UnlinkAllInputs();
                     // ищем элементы, у которых были связаны выходы
                     foreach (var item in shapes)
@@ -1431,12 +1444,18 @@ namespace CodeGenerator
                     shapes.Remove(shape);
                 SortIndexByLocation();
                 InitField();
+                modelChanged = false;
                 drawPanel.Invalidate();
             }
             finally
             {
                 timerCalculate.Enabled = true;
             }
+        }
+
+        private void timerInterface_Tick(object sender, EventArgs e)
+        {
+            tsmiSave.Enabled = tsbSave.Enabled = modelChanged;
         }
     }
 }
