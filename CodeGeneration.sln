@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeGenerator", "CodeGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginSupport", "PluginSupport\PluginSupport.csproj", "{230410A2-C316-4CF6-A4FA-38EC7538AC2F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginOne", "PluginOne\PluginOne.csproj", "{2BAD53CA-8859-437D-99A3-62F2C13AF07F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogicModel", "LogicModel\LogicModel.csproj", "{2BAD53CA-8859-437D-99A3-62F2C13AF07F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

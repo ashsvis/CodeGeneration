@@ -1,25 +1,25 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
 
-namespace PluginOne
+namespace LogicModel
 {
-    public class DescriptionBox : Func, ILinked
+    public class DigitalInput : Func, ILinked
     {
-        public DescriptionBox()
+        public DigitalInput()
         {
-            FuncDesc = "Описание параметра";
-            FuncName = "TAG_DESCRIPTION";
-            Width = 48 * 5;
-            Height = 48 * 2;
+            FuncName = "D/#";
+            FuncDesc = "Дискретный ввод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
-            Background = SystemColors.Control;
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+
         public override Shape DeepClone()
         {
-            return new DescriptionBox()
+            return new DigitalInput()
             {
                 Location = Location,
                 FuncName = FuncName,
@@ -29,26 +29,40 @@ namespace PluginOne
             };
         }
 
-        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowPins |
-                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
-
         public event OutputChangedEventHandler? OnOutputChange;
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            var path = new GraphicsPath();
+            path.AddLine(new Point(rect.X, rect.Y + rect.Height), new Point(rect.X + rect.Width, rect.Y));
+            paths.Add(path);
+            return [..paths];
+        }
 
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
             var rect = Bounds;
-            var fname = FuncName ?? "";
+            rect.Width /= 2;
+            rect.Height /= 2;
             using var fontFunc = new Font("Segoe UI", 12f);
-            var sz = TextRenderer.MeasureText(fname, fontFunc);
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
+            var fname = (FuncName ?? "").Split('/').First();
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, rect, sf);
             paths.Add(path);
-            return [.. paths];
+            path = new GraphicsPath();
+            rect.Offset(rect.Width, rect.Height);
+            fname = (FuncName ?? "").Split('/').Last();
+            sz = TextRenderer.MeasureText(fname, fontFunc);
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, rect, sf);
+            paths.Add(path);
+            return [..paths];
         }
 
         public virtual void UpdateLinked(bool result)
@@ -88,20 +102,6 @@ namespace PluginOne
         public void MakeChanges(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0].Value = e.NewValue;
-        }
-
-        public override PinInfo[] GetPinPoints()
-        {
-            var infos = base.GetPinPoints();
-            var sizeTarget = BaseWidth / 4;
-            foreach (var pin in infos)
-            {
-                if (pin.IsOutput)
-                    pin.PinPoint = Point.Subtract(pin.PinPoint, new Size(sizeTarget, 0));
-                else
-                    pin.PinPoint = Point.Add(pin.PinPoint, new Size(sizeTarget, 0));
-            }
-            return infos;
         }
     }
 }

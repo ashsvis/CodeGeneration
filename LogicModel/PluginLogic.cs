@@ -1,6 +1,6 @@
 ﻿using PluginSupport;
 
-namespace PluginOne
+namespace LogicModel
 {
     public partial class PluginLogic : IPlugin
     {
@@ -53,7 +53,7 @@ namespace PluginOne
                         types.TryAdd(childType.FullName, childType);
                 }
             }
-            var linkType = typeof(FuncLink);
+            var linkType = typeof(Link);
             if (!string.IsNullOrEmpty(linkType.FullName))
                 types.Add(linkType.FullName, linkType);
             return types;

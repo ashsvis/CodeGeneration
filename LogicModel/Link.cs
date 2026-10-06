@@ -2,9 +2,9 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-namespace PluginOne
+namespace LogicModel
 {
-    public class FuncLink : PluginSupport.Link
+    public class Link : PluginSupport.Link
     {
         public override ILocation? Source { get; set; }
         public override int SourceIndex { get; set; }

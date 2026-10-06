@@ -2,7 +2,7 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-namespace PluginOne
+namespace LogicModel
 {
     public class Func : Shape
     {
@@ -466,7 +466,7 @@ namespace PluginOne
 
         public override Type GetLinkTypeToCreate()
         {
-            return typeof(FuncLink);
+            return typeof(Link);
         }
     }
 }

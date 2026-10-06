@@ -1,6 +1,6 @@
 using PluginSupport;
 
-namespace PluginOne
+namespace LogicModel
 {
     public class AnalogOutputTag : DigitalInputTag
     {

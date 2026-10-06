@@ -1,8 +1,5 @@
 using PluginSupport;
-using System;
-using System.Collections;
 using System.Drawing.Drawing2D;
-using System.Reflection;
 using System.Xml.Linq;
 
 namespace CodeGenerator

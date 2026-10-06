@@ -2,7 +2,7 @@ using PluginSupport;
 using System;
 using System.Xml.Linq;
 
-namespace PluginOne
+namespace LogicModel
 {
     public class FuncInput : IDeepCloneable<FuncInput>, IPersistent<FuncInput>
     {

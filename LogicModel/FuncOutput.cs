@@ -1,7 +1,7 @@
 using PluginSupport;
 using System.Xml.Linq;
 
-namespace PluginOne
+namespace LogicModel
 {
     public class FuncOutput : IDeepCloneable<FuncOutput>, IPersistent<FuncOutput>
     {

@@ -1,4 +1,4 @@
-namespace PluginOne
+namespace LogicModel
 {
     public class Sr : Rs
     {

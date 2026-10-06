@@ -1,13 +1,13 @@
 using PluginSupport;
 
-namespace PluginOne
+namespace LogicModel
 {
-    public class AnalogOutput : DigitalInput
+    public class DigitalOutput : DigitalInput
     {
-        public AnalogOutput()
+        public DigitalOutput()
         {
-            FuncName = "#/A";
-            FuncDesc = "Аналоговый вывод сигнала";
+            FuncName = "#/D";
+            FuncDesc = "Дискретный вывод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
             //AllowedFuncProperties = AllowedFuncProperties.All ^

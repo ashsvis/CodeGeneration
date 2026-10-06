@@ -1,25 +1,28 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
 
-namespace PluginOne
+namespace LogicModel
 {
-    public class DigitalInput : Func, ILinked
+    public class DigitalInputTag : Func, ILinked
     {
-        public DigitalInput()
+        public DigitalInputTag()
         {
-            FuncName = "D/#";
-            FuncDesc = "Дискретный ввод сигнала";
-            Inputs = [new() { }];
+            FuncDesc = "Тег дискретного входа";
+            FuncName = "TAG_DI";
+            Inputs = [];
             Outputs = [new() { }];
+            Background = SystemColors.Control;
+            Width = 48 * 3;
             CalculateHeight();
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public override Shape DeepClone()
         {
-            return new DigitalInput()
+            return new DigitalInputTag()
             {
                 Location = Location,
                 FuncName = FuncName,
@@ -36,33 +39,28 @@ namespace PluginOne
             var paths = base.GetGraphicsPaths().ToList();
             var rect = Bounds;
             var path = new GraphicsPath();
-            path.AddLine(new Point(rect.X, rect.Y + rect.Height), new Point(rect.X + rect.Width, rect.Y));
+            path.AddArc(new Rectangle(rect.X, rect.Y, rect.Height, rect.Height), 90f, 180f);
+            path.AddArc(new Rectangle(rect.X + rect.Width - rect.Height, rect.Y, rect.Height, rect.Height), 270f, 180f);
+            path.CloseFigure();
             paths.Add(path);
-            return [..paths];
+            return [.. paths];
         }
 
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
             var rect = Bounds;
-            rect.Width /= 2;
-            rect.Height /= 2;
+            rect.Inflate(rect.Height / 4, 0);
+            var fname = FuncName ?? "";
             using var fontFunc = new Font("Segoe UI", 12f);
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = (FuncName ?? "").Split('/').First();
-            var sz = TextRenderer.MeasureText(fname, fontFunc);
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, rect, sf);
             paths.Add(path);
-            path = new GraphicsPath();
-            rect.Offset(rect.Width, rect.Height);
-            fname = (FuncName ?? "").Split('/').Last();
-            sz = TextRenderer.MeasureText(fname, fontFunc);
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, rect, sf);
-            paths.Add(path);
-            return [..paths];
+            return [.. paths];
         }
 
         public virtual void UpdateLinked(bool result)

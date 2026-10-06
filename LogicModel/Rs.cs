@@ -1,7 +1,7 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
 
-namespace PluginOne
+namespace LogicModel
 {
     public class Rs : Func, ILinked
     {
