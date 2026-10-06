@@ -455,6 +455,20 @@ namespace LogicModel
             return 0;
         }
 
+        public override ValueKind GetInputValueKnd(int index)
+        {
+            if (index >= 0 && index < Inputs.Length)
+                return Inputs[index].Kind;
+            return ValueKind.Digital;
+        }
+
+        public override ValueKind GetOutputValueKind(int index = 0)
+        {
+            if (index >= 0 && index < Outputs.Length)
+                return Outputs[index].Kind;
+            return ValueKind.Digital;
+        }
+
         public override void SetInputValue(int index, double value)
         {
             if (index >= 0 && index < Inputs.Length)

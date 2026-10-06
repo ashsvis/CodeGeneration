@@ -103,6 +103,7 @@ namespace PluginSupport
         }
 
         public abstract double GetOutputValue(int index = 0);
+        public abstract ValueKind GetOutputValueKind(int index = 0);
         public abstract void SetInputValue(int index, double value);
 
         public abstract Point? GetInputPinPoint(int index);
@@ -184,6 +185,7 @@ namespace PluginSupport
         public abstract XElement WriteContent();
         public abstract void ReadContent(XElement element);
         public abstract bool NoDataToWrite();
+        public abstract ValueKind GetInputValueKnd(int index);
     }
 
     public class DeleteLinkFromTargetEventArgs(ILinked? source, ILinked? target, int targetPinIndex) : EventArgs

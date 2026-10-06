@@ -481,7 +481,12 @@ namespace CodeGenerator
                 else if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
-                    shape.CanInputLink = !shape.IsLinked(index) && linkBuilding;
+                    if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
+                    {
+                        shape.CanInputLink = firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                    }
+                    else
+                        shape.CanInputLink = false;
                     shape.Hover = !linkBuilding;
                     drawPanel.Invalidate();
                 }
@@ -608,7 +613,8 @@ namespace CodeGenerator
                             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                             if (firstShape is ILinked link &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
-                                !shape.IsLinked(index))
+                                !shape.IsLinked(index) &&
+                                firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index))
                             {
                                 // создание представления связи
                                 var type = shape.GetLinkTypeToCreate();
