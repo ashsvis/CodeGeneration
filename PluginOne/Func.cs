@@ -13,64 +13,89 @@ namespace PluginOne
         private int CalcHeight { get; set; }
         protected FuncInput[] Inputs = [];
         protected FuncOutput[] Outputs = [];
-        public string? FuncName { get; set; }
-        public string? FuncDesc { get; set; }
+        public string? FuncName { get; protected set; }
+        public string? FuncDesc { get; protected set; }
 
         public override Shape DeepClone()
         {
             return new Func()
             {
                 Location = Location,
-                Width = Width,
-                Height = Height,
                 FuncName = FuncName,
-                FuncDesc = FuncDesc,
                 Inputs = [..Inputs.Select(x => x.DeepClone())],
                 Outputs = [..Outputs.Select(x => x.DeepClone())],
-                AllowedFuncProperties = AllowedFuncProperties,
             };
+        }
+
+        public override bool NoDataToWrite()
+        {
+            return string.IsNullOrEmpty(FuncName) && string.IsNullOrEmpty(FuncDesc) &&
+                Location == Point.Empty && Inputs.All(x => x.NoDataToWrite()) && Outputs.All(x => x.NoDataToWrite());
         }
 
         public override XElement WriteContent()
         {
             var xfunc = new XElement($"{this.GetType().FullName}");
-            if (!string.IsNullOrEmpty(FuncName))
-                xfunc.Add(new XAttribute("Name", FuncName));
-            if (!string.IsNullOrEmpty(FuncDesc))
-                xfunc.Add(new XAttribute("Description", FuncDesc));
-            xfunc.Add(new XAttribute("Location", Location));
-            xfunc.Add(new XAttribute("Width", Width));
-            xfunc.Add(new XAttribute("Height", Height));            
-            xfunc.Add(new XAttribute("Allowed", AllowedFuncProperties));
+            xfunc.Add(new XAttribute("X", Location.X));
+            xfunc.Add(new XAttribute("Y", Location.Y));
+            var index = 0;
             foreach (var input in Inputs)
-                xfunc.Add(input.WriteContent());
+            {  
+                input.Index = index;
+                if (!input.NoDataToWrite())
+                    xfunc.Add(input.WriteContent());
+                index++;
+            }
+            index = 0;
             foreach (var output in Outputs)
-                xfunc.Add(output.WriteContent());
+            {
+                output.Index = index;
+                if (!output.NoDataToWrite())
+                    xfunc.Add(output.WriteContent());
+                index++;
+            }
             return xfunc;
         }
 
         public override void ReadContent(XElement xfunc)
         {
             if (xfunc == null || xfunc.Name != $"{this.GetType().FullName}") return;
-            FuncName = xfunc.Attribute("Name")?.Value;
-            FuncDesc = xfunc.Attribute("Description")?.Value;
-            var slocation = xfunc.Attribute("Location")?.Value;
-            var swidth = xfunc.Attribute("Width")?.Value;
-            var sheight = xfunc.Attribute("Height")?.Value;
-            var sallowed = xfunc.Attribute("Allowed")?.Value;
-            if (!string.IsNullOrWhiteSpace(slocation) && 
-                !string.IsNullOrWhiteSpace(swidth) &&
-                !string.IsNullOrWhiteSpace(sheight) &&
-                !string.IsNullOrWhiteSpace(sallowed))
+            var sLeft = xfunc.Attribute("X")?.Value;
+            var sTop = xfunc.Attribute("Y")?.Value;
+            if (!string.IsNullOrWhiteSpace(sLeft) && !string.IsNullOrWhiteSpace(sTop))
+                Location = new Point(ParseHelper.ParseInteger(sLeft, 0), ParseHelper.ParseInteger(sTop, 0));
+            foreach (var xelement in xfunc.Descendants())
             {
-                Location = ParseHelper.ParsePoint(slocation, Point.Empty);
-                Width = ParseHelper.ParseInteger(swidth, 0);
-                Height = ParseHelper.ParseInteger(sheight, 0);
-                AllowedFuncProperties = (AllowedFuncProperties)ParseHelper.ParseInteger(sheight, 0xfffffff);
+                string? sindex;
+                switch ($"{xelement.Name}")
+                {
+                    case "Input":
+                        sindex = xelement.Attribute("Index")?.Value;
+                        if (!string.IsNullOrWhiteSpace(sindex))
+                        {
+                            var index = ParseHelper.ParseInteger(sindex, 0);
+                            if (index >= 0 && index < Inputs.Length)
+                                Inputs[index].ReadContent(xelement);
+                        }
+                        break;
+                    case "Output":
+                        sindex = xelement.Attribute("Index")?.Value;
+                        if (!string.IsNullOrWhiteSpace(sindex))
+                        {
+                            var index = ParseHelper.ParseInteger(sindex, 0);
+                            if (index >= 0 && index < Outputs.Length)
+                                Outputs[index].ReadContent(xelement);
+                        }
+                        break;
+                }
             }
+
+            //foreach (var input in Inputs)
+            //    input.ReadContent(xfunc);
+            //foreach (var output in Outputs)
+            //    output.ReadContent(xfunc);
         }
 
-        public AllowedFuncProperties AllowedFuncProperties { get; set; } = AllowedFuncProperties.All;
 
         protected override void CalculateHeight()
         {
@@ -80,6 +105,8 @@ namespace PluginOne
         }
 
         public override Rectangle Bounds => new(Location.X, Location.Y, Width, CalcHeight);
+        
+        public virtual AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All;
 
         public override GraphicsPath[] GetGraphicsPaths()
         {

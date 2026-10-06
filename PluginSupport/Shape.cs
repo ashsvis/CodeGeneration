@@ -182,8 +182,8 @@ namespace PluginSupport
         public abstract Shape DeepClone();
 
         public abstract XElement WriteContent();
-
         public abstract void ReadContent(XElement element);
+        public abstract bool NoDataToWrite();
     }
 
     public class DeleteLinkFromTargetEventArgs(ILink? source, ILink? target, int targetPinIndex) : EventArgs

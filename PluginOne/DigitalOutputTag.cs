@@ -8,12 +8,8 @@ namespace PluginOne
         {
             FuncDesc = "Тег дискретного выхода";
             FuncName = "TAG_DO";
-            Width = 48 * 3;
             Inputs = [new() { }];
             Outputs = [];
-            AllowedFuncProperties = AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
-                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
     }

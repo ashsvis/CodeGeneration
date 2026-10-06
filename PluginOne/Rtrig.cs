@@ -12,7 +12,7 @@ namespace PluginOne
             FuncDesc = "Детектор фронта";
             Inputs = [new() { }];
             Outputs = [new() { }];
-            AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
+            //AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
             CalculateHeight();
         }
 

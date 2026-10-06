@@ -11,7 +11,7 @@
         {
             if (string.IsNullOrWhiteSpace(line)) return defaultValue;
             // Разбиваем по запятым и убираем пустые элементы
-            string[] tokens = line.Trim('{', '}').Split([", "], StringSplitOptions.RemoveEmptyEntries);
+            string[] tokens = line.Trim('{', '}').Split([","], StringSplitOptions.RemoveEmptyEntries);
             if (tokens.Length == 2)
             {
                 string valueX = tokens[0].Split('=').Last();

@@ -14,9 +14,6 @@ namespace PluginOne
             Inputs = [new() { }];
             Outputs = [new() { }];
             Background = SystemColors.Control;
-            AllowedFuncProperties = AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowPins |
-                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
 
@@ -25,15 +22,16 @@ namespace PluginOne
             return new DescriptionBox()
             {
                 Location = Location,
-                Width = Width,
-                Height = Height,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
-                AllowedFuncProperties = AllowedFuncProperties,
             };
         }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowPins |
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public event OutputChangedEventHandler? OnOutputChange;
 

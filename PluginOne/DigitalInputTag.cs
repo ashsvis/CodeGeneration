@@ -9,28 +9,26 @@ namespace PluginOne
         {
             FuncDesc = "Тег дискретного входа";
             FuncName = "TAG_DI";
-            Width = 48 * 3;
             Inputs = [];
             Outputs = [new() { }];
             Background = SystemColors.Control;
-            AllowedFuncProperties = AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
-                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+            Width = 48 * 3;
             CalculateHeight();
         }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public override Shape DeepClone()
         {
             return new DigitalInputTag()
             {
                 Location = Location,
-                Width = Width,
-                Height = Height,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
-                AllowedFuncProperties = AllowedFuncProperties,
             };
         }
 

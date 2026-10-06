@@ -6,7 +6,8 @@ namespace PluginOne
 {
     public class FuncInput : IDeepCloneable<FuncInput>, IPersistent<FuncInput>
     {
-        public string? Name { get; set; }
+        public int Index { get; set; }
+        public string? Name { get; internal set; }
         public bool Value { get; set; }
         public bool IsInverted { get; set; }
         public bool IsLinked { get; set; }
@@ -14,34 +15,42 @@ namespace PluginOne
 
         public FuncInput DeepClone()
         {
-            return new FuncInput { Name = Name, Value = Value, IsInverted = IsInverted, Link = null };
+            return new FuncInput { Index = Index, Value = Value, IsInverted = IsInverted, Link = null };
         }
 
         public void ReadContent(XElement xinput)
         {
             if (xinput == null || xinput.Name != "Input") return;
-            Name = xinput.Attribute("Name")?.Value;
+            var sindex = xinput.Attribute("Index")?.Value;
+            if (!string.IsNullOrWhiteSpace(sindex))
+                Index = ParseHelper.ParseInteger(sindex, 0);
             var svalue = xinput.Attribute("Value")?.Value;
-            var sinverted = xinput.Attribute("IsInverted")?.Value;
-            var slinked = xinput.Attribute("IsLinked")?.Value;
-            if (!string.IsNullOrWhiteSpace(svalue) &&
-                !string.IsNullOrWhiteSpace(sinverted) &&
-                !string.IsNullOrWhiteSpace(slinked))
-            {
+            if (!string.IsNullOrWhiteSpace(svalue))
                 Value = ParseHelper.ParseBoolean(svalue, false);
+            var sinverted = xinput.Attribute("IsInverted")?.Value;
+            if (!string.IsNullOrWhiteSpace(sinverted))
                 IsInverted = ParseHelper.ParseBoolean(sinverted, false);
+            var slinked = xinput.Attribute("IsLinked")?.Value;
+            if (!string.IsNullOrWhiteSpace(slinked))
                 IsLinked = ParseHelper.ParseBoolean(slinked, false);
-            }
+        }
+
+        public bool NoDataToWrite()
+        {
+            return !Value && !IsInverted && !IsLinked;
         }
 
         public XElement WriteContent()
         {
             var xfunc = new XElement("Input");
-            if (!string.IsNullOrEmpty(Name))
-                xfunc.Add(new XAttribute("Name", Name));
-            xfunc.Add(new XAttribute("Value", Value));
-            xfunc.Add(new XAttribute("IsInverted", IsInverted));
-            xfunc.Add(new XAttribute("IsLinked", IsLinked));
+            if (!NoDataToWrite())
+                xfunc.Add(new XAttribute("Index", Index));
+            if (Value)
+                xfunc.Add(new XAttribute("Value", Value));
+            if (IsInverted)
+                xfunc.Add(new XAttribute("IsInverted", IsInverted));
+            if (IsLinked)
+                xfunc.Add(new XAttribute("IsLinked", IsLinked));
             return xfunc;
         }
     }

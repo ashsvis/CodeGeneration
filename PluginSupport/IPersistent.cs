@@ -7,5 +7,6 @@ namespace PluginSupport
     {
         XElement WriteContent();
         void ReadContent(XElement element);
+        bool NoDataToWrite();
     }
 }

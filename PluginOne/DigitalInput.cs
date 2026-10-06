@@ -11,23 +11,23 @@ namespace PluginOne
             FuncDesc = "Дискретный ввод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
-            AllowedFuncProperties = AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public override Shape DeepClone()
         {
             return new DigitalInput()
             {
                 Location = Location,
-                Width = Width,
-                Height = Height,
+                //Width = Width,
+                //Height = Height,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
-                AllowedFuncProperties = AllowedFuncProperties,
             };
         }
 

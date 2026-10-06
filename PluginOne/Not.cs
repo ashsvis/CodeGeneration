@@ -10,7 +10,7 @@ namespace PluginOne
             FuncDesc = "Инверсия";
             Inputs = [new() { }];
             Outputs = [new() { IsInverted = true }];
-            AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
+            //AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
             CalculateHeight();
         }
 

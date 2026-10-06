@@ -10,7 +10,7 @@ namespace PluginOne
             FuncDesc = "Исключающее ИЛИ";
             Inputs = [new() { }, new() { }];
             Outputs = [new() { }];
-            AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
+            //AllowedFuncProperties = AllowedFuncProperties.All ^ AllowedFuncProperties.PinInverted;
             CalculateHeight();
         }
 

@@ -14,8 +14,8 @@ namespace PluginOne
             nodesGroup = new TreeNode("Ввод сигнала") { Tag = typeof(DigitalInputTag) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Тег входной дискретный") { Tag = typeof(DigitalInputTag) });
-            nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
             nodesGroup.Nodes.Add(new TreeNode("Тег входной аналоговый") { Tag = typeof(AnalogInputTag) });
+            nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговый ввод") { Tag = typeof(AnalogInput) });
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
@@ -31,22 +31,12 @@ namespace PluginOne
             nodesGroup = new TreeNode("Вывод сигнала") { Tag = typeof(DigitalOutput) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
-            nodesGroup.Nodes.Add(new TreeNode("Тег выходной дискретный") { Tag = typeof(DigitalOutputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговый вывод") { Tag = typeof(AnalogOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Тег выходной дискретный") { Tag = typeof(DigitalOutputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной аналоговый") { Tag = typeof(AnalogOutputTag) });
             return [.. items];
         }
 
         static partial void AddTreeNodeItems(List<TreeNode> items);
-
-        public object? CreateByName(string name)
-        {
-            switch (name)
-            {
-                case "TAG_DESCRITION":
-                    return new DescriptionBox();
-            }
-            return null;
-        }
     }
 }

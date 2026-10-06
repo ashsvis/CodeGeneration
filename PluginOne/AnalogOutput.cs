@@ -10,8 +10,8 @@ namespace PluginOne
             FuncDesc = "Аналоговый вывод сигнала";
             Inputs = [new() { }];
             Outputs = [new() { }];
-            AllowedFuncProperties = AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+            //AllowedFuncProperties = AllowedFuncProperties.All ^
+            //    (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
             CalculateHeight();
         }
     }

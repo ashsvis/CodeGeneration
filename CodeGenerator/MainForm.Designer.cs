@@ -32,10 +32,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             menuStrip1 = new MenuStrip();
             tsmiFile = new ToolStripMenuItem();
-            создатьToolStripMenuItem = new ToolStripMenuItem();
+            tsmiCreate = new ToolStripMenuItem();
             tsmiOpenFile = new ToolStripMenuItem();
             toolStripSeparator = new ToolStripSeparator();
-            сохранитьToolStripMenuItem = new ToolStripMenuItem();
+            tsmiSave = new ToolStripMenuItem();
             tsmiSaveAs = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             печатьToolStripMenuItem = new ToolStripMenuItem();
@@ -61,9 +61,9 @@
             toolStripSeparator5 = new ToolStripSeparator();
             опрограммеToolStripMenuItem = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
-            создатьToolStripButton = new ToolStripButton();
-            открытьToolStripButton = new ToolStripButton();
-            сохранитьToolStripButton = new ToolStripButton();
+            tsbCreate = new ToolStripButton();
+            tsbOpen = new ToolStripButton();
+            tsbSave = new ToolStripButton();
             печатьToolStripButton = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
             вырезатьToolStripButton = new ToolStripButton();
@@ -107,19 +107,20 @@
             // 
             // tsmiFile
             // 
-            tsmiFile.DropDownItems.AddRange(new ToolStripItem[] { создатьToolStripMenuItem, tsmiOpenFile, toolStripSeparator, сохранитьToolStripMenuItem, tsmiSaveAs, toolStripSeparator1, печатьToolStripMenuItem, предварительныйпросмотрToolStripMenuItem, toolStripSeparator2, tsmiExit });
+            tsmiFile.DropDownItems.AddRange(new ToolStripItem[] { tsmiCreate, tsmiOpenFile, toolStripSeparator, tsmiSave, tsmiSaveAs, toolStripSeparator1, печатьToolStripMenuItem, предварительныйпросмотрToolStripMenuItem, toolStripSeparator2, tsmiExit });
             tsmiFile.Name = "tsmiFile";
             tsmiFile.Size = new Size(48, 20);
             tsmiFile.Text = "&Файл";
             // 
-            // создатьToolStripMenuItem
+            // tsmiCreate
             // 
-            создатьToolStripMenuItem.Image = (Image)resources.GetObject("создатьToolStripMenuItem.Image");
-            создатьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            создатьToolStripMenuItem.Name = "создатьToolStripMenuItem";
-            создатьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
-            создатьToolStripMenuItem.Size = new Size(233, 22);
-            создатьToolStripMenuItem.Text = "&Создать";
+            tsmiCreate.Image = (Image)resources.GetObject("tsmiCreate.Image");
+            tsmiCreate.ImageTransparentColor = Color.Magenta;
+            tsmiCreate.Name = "tsmiCreate";
+            tsmiCreate.ShortcutKeys = Keys.Control | Keys.N;
+            tsmiCreate.Size = new Size(233, 22);
+            tsmiCreate.Text = "&Создать";
+            tsmiCreate.Click += TsmiCreate_Click;
             // 
             // tsmiOpenFile
             // 
@@ -129,28 +130,28 @@
             tsmiOpenFile.ShortcutKeys = Keys.Control | Keys.O;
             tsmiOpenFile.Size = new Size(233, 22);
             tsmiOpenFile.Text = "&Открыть";
-            tsmiOpenFile.Click += tsmiOpenFile_Click;
+            tsmiOpenFile.Click += TsmiOpenFile_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
             toolStripSeparator.Size = new Size(230, 6);
             // 
-            // сохранитьToolStripMenuItem
+            // tsmiSave
             // 
-            сохранитьToolStripMenuItem.Image = (Image)resources.GetObject("сохранитьToolStripMenuItem.Image");
-            сохранитьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            сохранитьToolStripMenuItem.Name = "сохранитьToolStripMenuItem";
-            сохранитьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
-            сохранитьToolStripMenuItem.Size = new Size(233, 22);
-            сохранитьToolStripMenuItem.Text = "&Сохранить";
+            tsmiSave.Image = (Image)resources.GetObject("tsmiSave.Image");
+            tsmiSave.ImageTransparentColor = Color.Magenta;
+            tsmiSave.Name = "tsmiSave";
+            tsmiSave.ShortcutKeys = Keys.Control | Keys.S;
+            tsmiSave.Size = new Size(233, 22);
+            tsmiSave.Text = "&Сохранить";
             // 
             // tsmiSaveAs
             // 
             tsmiSaveAs.Name = "tsmiSaveAs";
             tsmiSaveAs.Size = new Size(233, 22);
             tsmiSaveAs.Text = "Сохранить &как";
-            tsmiSaveAs.Click += tsmiSaveAs_Click;
+            tsmiSaveAs.Click += TsmiSaveAs_Click;
             // 
             // toolStripSeparator1
             // 
@@ -307,41 +308,42 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { создатьToolStripButton, открытьToolStripButton, сохранитьToolStripButton, печатьToolStripButton, toolStripSeparator6, вырезатьToolStripButton, копироватьToolStripButton, вставитьToolStripButton, toolStripSeparator7, справкаToolStripButton });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, печатьToolStripButton, toolStripSeparator6, вырезатьToolStripButton, копироватьToolStripButton, вставитьToolStripButton, toolStripSeparator7, справкаToolStripButton });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
             toolStrip1.TabIndex = 1;
             toolStrip1.Text = "toolStrip1";
             // 
-            // создатьToolStripButton
+            // tsbCreate
             // 
-            создатьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            создатьToolStripButton.Image = (Image)resources.GetObject("создатьToolStripButton.Image");
-            создатьToolStripButton.ImageTransparentColor = Color.Magenta;
-            создатьToolStripButton.Name = "создатьToolStripButton";
-            создатьToolStripButton.Size = new Size(23, 22);
-            создатьToolStripButton.Text = "&Создать";
+            tsbCreate.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCreate.Image = (Image)resources.GetObject("tsbCreate.Image");
+            tsbCreate.ImageTransparentColor = Color.Magenta;
+            tsbCreate.Name = "tsbCreate";
+            tsbCreate.Size = new Size(23, 22);
+            tsbCreate.Text = "&Создать";
+            tsbCreate.Click += TsmiCreate_Click;
             // 
-            // открытьToolStripButton
+            // tsbOpen
             // 
-            открытьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            открытьToolStripButton.Image = (Image)resources.GetObject("открытьToolStripButton.Image");
-            открытьToolStripButton.ImageTransparentColor = Color.Magenta;
-            открытьToolStripButton.Name = "открытьToolStripButton";
-            открытьToolStripButton.Size = new Size(23, 22);
-            открытьToolStripButton.Text = "&Открыть";
-            открытьToolStripButton.Click += tsmiOpenFile_Click;
+            tsbOpen.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbOpen.Image = (Image)resources.GetObject("tsbOpen.Image");
+            tsbOpen.ImageTransparentColor = Color.Magenta;
+            tsbOpen.Name = "tsbOpen";
+            tsbOpen.Size = new Size(23, 22);
+            tsbOpen.Text = "&Открыть";
+            tsbOpen.Click += TsmiOpenFile_Click;
             // 
-            // сохранитьToolStripButton
+            // tsbSave
             // 
-            сохранитьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            сохранитьToolStripButton.Image = (Image)resources.GetObject("сохранитьToolStripButton.Image");
-            сохранитьToolStripButton.ImageTransparentColor = Color.Magenta;
-            сохранитьToolStripButton.Name = "сохранитьToolStripButton";
-            сохранитьToolStripButton.Size = new Size(23, 22);
-            сохранитьToolStripButton.Text = "&Сохранить";
-            сохранитьToolStripButton.Click += tsmiSaveAs_Click;
+            tsbSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbSave.Image = (Image)resources.GetObject("tsbSave.Image");
+            tsbSave.ImageTransparentColor = Color.Magenta;
+            tsbSave.Name = "tsbSave";
+            tsbSave.Size = new Size(23, 22);
+            tsbSave.Text = "&Сохранить";
+            tsbSave.Click += TsmiSaveAs_Click;
             // 
             // печатьToolStripButton
             // 
@@ -575,10 +577,10 @@
 
         private MenuStrip menuStrip1;
         private ToolStripMenuItem tsmiFile;
-        private ToolStripMenuItem создатьToolStripMenuItem;
+        private ToolStripMenuItem tsmiCreate;
         private ToolStripMenuItem tsmiOpenFile;
         private ToolStripSeparator toolStripSeparator;
-        private ToolStripMenuItem сохранитьToolStripMenuItem;
+        private ToolStripMenuItem tsmiSave;
         private ToolStripMenuItem tsmiSaveAs;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripMenuItem печатьToolStripMenuItem;
@@ -604,9 +606,9 @@
         private ToolStripSeparator toolStripSeparator5;
         private ToolStripMenuItem опрограммеToolStripMenuItem;
         private ToolStrip toolStrip1;
-        private ToolStripButton создатьToolStripButton;
-        private ToolStripButton открытьToolStripButton;
-        private ToolStripButton сохранитьToolStripButton;
+        private ToolStripButton tsbCreate;
+        private ToolStripButton tsbOpen;
+        private ToolStripButton tsbSave;
         private ToolStripButton печатьToolStripButton;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripButton вырезатьToolStripButton;

@@ -16,7 +16,7 @@ namespace CodeGenerator
         private readonly List<PluginSupport.Link> links = [];
         private Cell[,]? field;
 
-        private Dictionary<string, Type> types = [];
+        private readonly Dictionary<string, Type> types = [];
 
         public MainForm()
         {
@@ -59,12 +59,12 @@ namespace CodeGenerator
                 var range = plugin.TreeNodeItems();
                 foreach (var category in range)
                 {
+                    if (category.Tag is Type type && !string.IsNullOrEmpty(type.FullName))
+                        types.TryAdd(type.FullName, type);
                     foreach (var node in category.Nodes.Cast<TreeNode>())
                     {
-                        if (node.Tag is Type type && !string.IsNullOrEmpty(type.FullName))
-                        {
-                            types.Add(type.FullName, type);
-                        }
+                        if (node.Tag is Type childType && !string.IsNullOrEmpty(childType.FullName))
+                            types.TryAdd(childType.FullName, childType);
                     }
                 }
                 rootNode.Nodes.AddRange(range);
@@ -1295,7 +1295,7 @@ namespace CodeGenerator
             }
         }
 
-        private void tsmiSaveAs_Click(object sender, EventArgs e)
+        private void TsmiSaveAs_Click(object sender, EventArgs e)
         {
             var dlg = new SaveFileDialog()
             {
@@ -1317,7 +1317,7 @@ namespace CodeGenerator
             }
         }
 
-        private void tsmiOpenFile_Click(object sender, EventArgs e)
+        private void TsmiOpenFile_Click(object sender, EventArgs e)
         {
             var dlg = new OpenFileDialog()
             {
@@ -1345,7 +1345,7 @@ namespace CodeGenerator
             var xdoc = XDocument.Load(filename);
             var root = xdoc.Element("Document");
             if (root == null) return;
-            var name = root.Attribute("Name")?.Value;
+            //var name = root.Attribute("Name")?.Value;
             var xmodel = root.Element("Model");
             if (xmodel == null) return;
             shapes.Clear();
@@ -1358,9 +1358,63 @@ namespace CodeGenerator
                     if (shape != null)
                     {
                         shape.ReadContent(xelement);
+                        shape.OnDelete += Shape_OnDelete;
+                        shape.OnDeleteLink += Shape_OnDeleteLink;
+                        shape.OnMakeCopy += Shape_OnMakeCopy;
                         shapes.Add(shape);
                     }
                 }
+            }
+            InitField();
+            drawPanel.Invalidate();
+        }
+
+        private void TsmiCreate_Click(object sender, EventArgs e)
+        {
+            timerCalculate.Enabled = false;
+            try
+            {
+                // сбор элементов для удаления на основании их выбранности
+                var shapesForDelete = shapes.ToList();
+                // сбор связей, которые используются удаляемыми элементами
+                var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
+                foreach (var link in linksForDelete)
+                {
+                    // ищем источник и цель
+                    var source = shapes.FirstOrDefault(x => x == link.Source);
+                    var target = shapes.FirstOrDefault(x => x == link.Target);
+                    // если найдены оба, то отписывается
+                    if (source != null && target != null)
+                        link.UnlinkToLocation(source, target);
+                    link.OnRebuildLink -= CellLink_OnRebuildLink;
+                    // удаляем визуальную ссылку
+                    links.Remove(link);
+                    UpdateOtherLinks(link);
+                }
+                // для всех удаляемых элементов
+                foreach (var shape in shapesForDelete)
+                {
+                    // удаляем подписки для всех входов эелемента
+                    shape.UnlinkAllInputs();
+                    // ищем элементы, у которых были связаны выходы
+                    foreach (var item in shapes)
+                    {
+                        if (shape is ILink link)
+                            item.UnlinkOutputFor(link);
+                    }
+                    shape.OnDeleteLink -= Shape_OnDeleteLink;
+                    shape.OnDelete -= Shape_OnDelete;
+                    shape.OnMakeCopy -= Shape_OnMakeCopy;
+                }
+                foreach (var shape in shapesForDelete)
+                    shapes.Remove(shape);
+                SortIndexByLocation();
+                InitField();
+                drawPanel.Invalidate();
+            }
+            finally
+            {
+                timerCalculate.Enabled = true;
             }
         }
     }
