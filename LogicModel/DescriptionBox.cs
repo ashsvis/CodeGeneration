@@ -17,7 +17,7 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public override Shape DeepClone()
+        public override DescriptionBox DeepClone()
         {
             return new DescriptionBox()
             {

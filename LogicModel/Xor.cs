@@ -13,6 +13,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Xor DeepClone()
+        {
+            return new Xor()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
 

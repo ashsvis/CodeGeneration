@@ -13,6 +13,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Mul DeepClone()
+        {
+            return new Mul()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public override void Calculate()
         {
             if (Inputs.Length > 0)

@@ -11,6 +11,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Dt DeepClone()
+        {
+            return new Dt()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public override void Calculate()
         {
             if (Inputs.Length > 0)

@@ -16,7 +16,7 @@ namespace LogicModel
         public string? FuncName { get; protected set; }
         public string? FuncDesc { get; protected set; }
 
-        public override Shape DeepClone()
+        public override Func DeepClone()
         {
             return new Func()
             {
@@ -376,7 +376,6 @@ namespace LogicModel
             return [.. items];
         }
 
-        public override void Calculate() { }
         public override void LinkInput(ILinked? link, int index) { }
         public override void UnlinkInput(ILinked? link, int index) { }
 

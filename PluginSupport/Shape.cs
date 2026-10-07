@@ -163,7 +163,7 @@ namespace PluginSupport
         }
 
         public abstract void Click(Point point, Action<TargetInfo>? action = null);
-        public abstract void Calculate();
+        public virtual void Calculate() { }
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
         public abstract int CountOutputs();

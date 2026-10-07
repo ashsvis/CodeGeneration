@@ -24,6 +24,19 @@ namespace LogicModel
             timer.Elapsed += OnTimedEvent;
         }
 
+        public override Ton DeepClone()
+        {
+            return new Ton()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+                MilliSeconds = MilliSeconds,
+            };
+        }
+
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
 

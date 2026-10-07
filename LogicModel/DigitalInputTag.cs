@@ -20,7 +20,7 @@ namespace LogicModel
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
-        public override Shape DeepClone()
+        public override DigitalInputTag DeepClone()
         {
             return new DigitalInputTag()
             {

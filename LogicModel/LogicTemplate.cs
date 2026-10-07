@@ -39,6 +39,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Or2 DeepClone()
+        {
+            return new Or2()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public event OutputChangedEventHandler? OnOutputChange;
 
         public override void Calculate()
@@ -109,6 +121,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or3 DeepClone()
+        {
+            return new Or3()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -192,6 +216,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or4 DeepClone()
+        {
+            return new Or4()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -286,6 +322,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or5 DeepClone()
+        {
+            return new Or5()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -391,6 +439,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or6 DeepClone()
+        {
+            return new Or6()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -507,6 +567,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or7 DeepClone()
+        {
+            return new Or7()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -634,6 +706,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override Or8 DeepClone()
+        {
+            return new Or8()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -774,6 +858,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override And2 DeepClone()
+        {
+            return new And2()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public event OutputChangedEventHandler? OnOutputChange;
 
         public override void Calculate()
@@ -844,6 +940,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And3 DeepClone()
+        {
+            return new And3()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -927,6 +1035,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And4 DeepClone()
+        {
+            return new And4()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1021,6 +1141,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And5 DeepClone()
+        {
+            return new And5()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1126,6 +1258,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And6 DeepClone()
+        {
+            return new And6()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1242,6 +1386,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And7 DeepClone()
+        {
+            return new And7()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;
@@ -1369,6 +1525,18 @@ namespace LogicModel
             Inputs = [new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }, new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
+        }
+
+        public override And8 DeepClone()
+        {
+            return new And8()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
         }
 
         public event OutputChangedEventHandler? OnOutputChange;

@@ -17,7 +17,7 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
-        public override Shape DeepClone()
+        public override DigitalInput DeepClone()
         {
             return new DigitalInput()
             {

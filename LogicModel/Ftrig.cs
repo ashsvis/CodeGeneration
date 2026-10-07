@@ -15,6 +15,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Ftrig DeepClone()
+        {
+            return new Ftrig()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public override void Calculate()
         {
             var result = Inputs[0].Value > 0 ? 0 : 1;

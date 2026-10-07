@@ -15,6 +15,18 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override Sela DeepClone()
+        {
+            return new Sela()
+            {
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
         public override void Calculate()
         {
             if (Inputs.Length > 0)
