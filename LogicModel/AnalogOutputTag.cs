@@ -8,7 +8,7 @@ namespace LogicModel
         {
             FuncDesc = "Тег аналогового выхода";
             FuncName = "TAG_AO";
-            Inputs = [new FuncInput { Kind = ValueKind.Analog }];
+            Inputs = [new FuncInput { Kind = ValueKind.AO }];
             Outputs = [];
             CalculateHeight();
         }

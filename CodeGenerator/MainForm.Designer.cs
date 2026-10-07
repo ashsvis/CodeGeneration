@@ -563,6 +563,7 @@
             Name = "MainForm";
             StartPosition = FormStartPosition.WindowsDefaultBounds;
             Text = "Генераторы контента";
+            WindowState = FormWindowState.Maximized;
             FormClosing += MainForm_FormClosing;
             Load += MainForm_Load;
             KeyDown += MainForm_KeyDown;

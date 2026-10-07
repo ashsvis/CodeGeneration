@@ -73,7 +73,6 @@ namespace CodeGenerator
             this.CenterToScreen();
             panLeft.Width = Properties.Settings.Default.leftpan;
             panRight.Width = Properties.Settings.Default.rightpan;
-            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
         }
 
         /// <summary>
@@ -456,7 +455,6 @@ namespace CodeGenerator
         {
             // передача положения текущего положения курсора
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
-            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, текущая точка: {e.Location}, зум: {drawPanel.GetLocation(drawPanel.PointToScreen(e.Location))}";
             Cursor = Cursors.Default;
             foreach (var shape in shapes)
             {
@@ -806,7 +804,7 @@ namespace CodeGenerator
         /// <param name="e"></param>
         private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
         {
-            tsslStatus.Text = $"Смещение базовой точки: {e.Origin}, зум: {e.Zoom}";
+            //tsslStatus.Text = $"Смещение базовой точки: {e.Origin}, зум: {e.Zoom}";
         }
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
