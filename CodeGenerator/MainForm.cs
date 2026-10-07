@@ -325,6 +325,8 @@ namespace CodeGenerator
         private bool dragCopiedShapes = false;
         private bool frameBuilding = false;
         private Rectangle ribbonRect = Rectangle.Empty;
+        private bool addShapes = false;
+        private Shape? addShape;
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -703,6 +705,8 @@ namespace CodeGenerator
             {
                 if (e.Data.GetData(dragFormat) is DragedInfo draged)
                 {
+                    addShapes = false;
+                    addShape = null;
                     shapes.ForEach(shape => shape.Selected = false);
                     var shape = draged.Shape;
                     currentPoint = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
@@ -827,7 +831,6 @@ namespace CodeGenerator
                     shape.Draw(e.Graphics, hoverpen, brush);
                 else if (shape.CanOutputLink || shape.CanInputLink)
                 {
-                    //using var hoverbrush = new SolidBrush(Color.Teal);
                     shape.Draw(e.Graphics, hoverpen, hoverbrush);
                 }
                 else if (shape.Selected)
@@ -871,8 +874,17 @@ namespace CodeGenerator
                     }
                 }
             }
+            if (addShapes && addShape is Shape added && currentPoint is Point addpoint)
+            {
+                // рисуем перетягиваемую из библиотеки фигуру
+                added.Location = drawPanel.GetLocation(MousePosition);
+                using var defaultpen = new Pen(added.Foreground);
+                using var brush = new SolidBrush(added.Background);
+                addShape.Draw(e.Graphics, defaultpen, brush);
+            }
+
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point)
+            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point && !addShapes)
             {
                 var cursize = (int)(50f / drawPanel.Zoom);
                 using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
@@ -1131,13 +1143,16 @@ namespace CodeGenerator
                 {
                     try
                     {
-                        var module = (Shape?)Activator.CreateInstance(type);
-                        if (module != null)
+                        addShape = (Shape?)Activator.CreateInstance(type);
+                        if (addShape != null)
                         {
                             tvLibrary.SelectedNode = node;
-                            var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = module }, DragDropEffects.Copy);
+                            addShapes = true;
+                            var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = addShape }, DragDropEffects.Copy);
                             if (ret == DragDropEffects.None)
                             {
+                                addShapes = false;
+                                addShape = null;
                                 Cursor = Cursors.Default;
                             }
                         }

@@ -273,7 +273,7 @@ namespace LogicModel
                             p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                             break;
                         case ValueKind.Analog:
-                            var text = double.IsNaN(value) ? "N" : $"{value:0.#}";
+                            var text = double.IsNaN(value) ? "?" : $"{value:0.#}";
                             if (target.IsOutput)
                             {
                                 sf.Alignment = StringAlignment.Near;

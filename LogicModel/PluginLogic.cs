@@ -12,7 +12,7 @@ namespace LogicModel
             items.Add(new TreeNode("Дескриптор сигнала") { Tag = typeof(DescriptionBox) });
             TreeNode nodesGroup;
             //
-            nodesGroup = new TreeNode("Ввод сигнала") { Tag = typeof(DigitalInputTag) };
+            nodesGroup = new TreeNode("Ввод сигнала");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Тег входной дискретный") { Tag = typeof(DigitalInputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Тег входной аналоговый") { Tag = typeof(AnalogInputTag) });
@@ -22,7 +22,7 @@ namespace LogicModel
             AddTreeNodeItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
             //
-            nodesGroup = new TreeNode("Триггеры") { Tag = typeof(Rs) };
+            nodesGroup = new TreeNode("Триггеры");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("RS-триггер") { Tag = typeof(Rs) });
             nodesGroup.Nodes.Add(new TreeNode("SR-триггер") { Tag = typeof(Sr) });
@@ -51,7 +51,7 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Умножение") { Tag = typeof(Mul) });
             nodesGroup.Nodes.Add(new TreeNode("Деление") { Tag = typeof(Div) });
             //
-            nodesGroup = new TreeNode("Вывод сигнала") { Tag = typeof(DigitalOutput) };
+            nodesGroup = new TreeNode("Вывод сигнала");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговый вывод") { Tag = typeof(AnalogOutput) });
