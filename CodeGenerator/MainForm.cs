@@ -504,15 +504,38 @@ namespace CodeGenerator
                     currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     if (dragCopiedShapes)
                     {
-                        List<Shape> copied = [];
+                        List<Shape> copiedShapes = [];
+                        List<Link> copiedLinks = [];
                         foreach (var shape in shapes)
                         {
                             if (shape is ILocation item && item.Selected)
-                                copied.Add(shape.DeepClone());
+                                copiedShapes.Add(shape.DeepClone());
+                        }
+                        foreach (var link in links)
+                        {
+                            if (link.Selected)
+                                copiedLinks.Add(link.DeepClone());
                         }
                         shapes.ForEach(shape => shape.Selected = false);
                         links.ForEach(link => link.Selected = false);
-                        foreach (var shape in copied)
+                        foreach (var link in copiedLinks)
+                        {
+                            link.Selected = true;
+                            link.OnRebuildLink += Link_OnRebuildLink;
+                            if (copiedShapes.FirstOrDefault(x => x.Index == link.SourceIndex) is ILocation source &&
+                                copiedShapes.FirstOrDefault(x => x.Index == link.TargetIndex) is ILocation target)
+                            {
+                                link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                                links.Add(link);
+                                //copiedShapes[link.TargetIndex].LinkInput((ILinked?)copiedShapes[link.SourceIndex], link.TargetPinIndex);
+
+                                //if (copiedShapes.FirstOrDefault(x => x.Index == link.SourceIndex) is ILinked linkedSource)
+                                //    target.LinkInput(linkedSource, link.TargetPinIndex);
+
+                                link.OnRebuildLink += CellLink_OnRebuildLink;
+                            }
+                        }
+                        foreach (var shape in copiedShapes)
                         {
                             shape.Selected = true;
                             shape.OnDelete += Shape_OnDelete;
@@ -521,7 +544,7 @@ namespace CodeGenerator
                             shape.Index = shapes.Count;
                             shapes.Add(shape);
                         }
-                        dragCopiedShapes = false;
+                       dragCopiedShapes = false;
                     }
                     // перемещаем только выбранные фигуры
                     foreach (var shape in shapes)
@@ -571,6 +594,11 @@ namespace CodeGenerator
                 }
             }
             drawPanel.Invalidate();
+        }
+
+        private void Link_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
+        {
+            //throw new NotImplementedException();
         }
 
         private const int Step = 12; // Размер клетки

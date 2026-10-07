@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace PluginSupport
 {
-    public abstract class Link : IPersistent<Link>
+    public abstract class Link : IPersistent<Link>, IDeepCloneable<Link>
     {
         public abstract ILocation? Source { get; set; }
         public abstract int SourceIndex { get; set; }
@@ -21,6 +21,8 @@ namespace PluginSupport
         public bool Selected { get; set; }
         public bool Hover { get; set; }
         public bool IsShort { get; set; }
+
+        public abstract Link DeepClone();
 
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();

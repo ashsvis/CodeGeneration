@@ -20,10 +20,11 @@ namespace LogicModel
         {
             return new Func()
             {
-                Location = Location,
-                FuncName = FuncName,
-                Inputs = [..Inputs.Select(x => x.DeepClone())],
-                Outputs = [..Outputs.Select(x => x.DeepClone())],
+                Index = this.Index,
+                Location = this.Location,
+                FuncName = this.FuncName,
+                Inputs = [.. this.Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. this.Outputs.Select(x => x.DeepClone())],
             };
         }
 

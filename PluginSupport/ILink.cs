@@ -2,7 +2,7 @@ namespace PluginSupport
 {
     public interface ILinked
     {
-         event OutputChangedEventHandler? OnOutputChange;
+        event OutputChangedEventHandler? OnOutputChange;
     }
 
     public class OutputChangedEventArgs(double newValue) : EventArgs

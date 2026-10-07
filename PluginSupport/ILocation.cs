@@ -5,6 +5,7 @@ namespace PluginSupport
         Point Location { get; set; }
         bool Selected { get; set; }
         int Index { get; set; }
+        void LinkInput(ILinked? link, int index);
 
         event LocationChangedEventHandler? OnLocationChange;
     }

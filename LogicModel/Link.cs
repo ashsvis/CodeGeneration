@@ -14,7 +14,7 @@ namespace LogicModel
         public override Point StartPoint { get; set; }
         public override Point EndPoint { get; set; }
         public override int Length => Math.Abs(EndPoint.X - StartPoint.X) + Math.Abs(EndPoint.Y - StartPoint.Y);
-        
+
         public override Rectangle Bounds
         {
             get
@@ -25,6 +25,25 @@ namespace LogicModel
                 var maxY = linkPoints.Max(y => y.Y);
                 return new Rectangle(minX, minY, maxX - minX, maxY - minY);
             }
+        }
+
+        public override PluginSupport.Link DeepClone()
+        {
+            if (Source is ILocation souloc)
+                this.SourceIndex = souloc.Index;
+            if (Target is ILocation tarloc)
+                this.TargetIndex = tarloc.Index;
+            var link = new LogicModel.Link()
+            {
+                SourceIndex = this.SourceIndex,
+                TargetIndex = this.TargetIndex,
+                TargetPinIndex = this.TargetPinIndex,
+                StartPoint = this.StartPoint,
+                EndPoint = this.EndPoint,
+            };
+            link.SetPoints(linkPoints);
+
+            return link;
         }
 
         private Size StartShift { get; set; }
