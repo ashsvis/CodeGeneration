@@ -20,18 +20,16 @@ namespace LogicModel
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
             AddTreeNodeItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
-            nodesGroup = new TreeNode("Триггер") { Tag = typeof(Rs) };
+            nodesGroup = new TreeNode("Триггеры") { Tag = typeof(Rs) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("RS-триггер") { Tag = typeof(Rs) });
             nodesGroup.Nodes.Add(new TreeNode("SR-триггер") { Tag = typeof(Sr) });
             nodesGroup.Nodes.Add(new TreeNode("D-триггер") { Tag = typeof(Dt) });
-
-            nodesGroup = new TreeNode("Задержка включения") { Tag = typeof(Ton) };
+            nodesGroup = new TreeNode("Таймеры");
             items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Одновибратор") { Tag = typeof(Pulse) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка включения") { Tag = typeof(Ton) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка выключения") { Tag = typeof(Toff) });
-            nodesGroup.Nodes.Add(new TreeNode("Одновибратор") { Tag = typeof(Pulse) });
-
             nodesGroup = new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) });
