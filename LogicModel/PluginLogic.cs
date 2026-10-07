@@ -24,11 +24,13 @@ namespace LogicModel
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("RS-триггер") { Tag = typeof(Rs) });
             nodesGroup.Nodes.Add(new TreeNode("SR-триггер") { Tag = typeof(Sr) });
+            nodesGroup.Nodes.Add(new TreeNode("D-триггер") { Tag = typeof(Dt) });
 
             nodesGroup = new TreeNode("Задержка включения") { Tag = typeof(Ton) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Задержка включения") { Tag = typeof(Ton) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка выключения") { Tag = typeof(Toff) });
+            nodesGroup.Nodes.Add(new TreeNode("Одновибратор") { Tag = typeof(Pulse) });
 
             nodesGroup = new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) };
             items.Add(nodesGroup);

@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing.Drawing2D;
 using System.Timers;
 
 namespace LogicModel
@@ -8,8 +9,9 @@ namespace LogicModel
         private readonly System.Timers.Timer timer;
 
         private bool input;
+        private uint time;
 
-        public uint MilliSeconds { private get; set; } = 1000;
+        public uint MilliSeconds { private get; set; } = 3000;
 
         public Ton()
         {
@@ -36,6 +38,7 @@ namespace LogicModel
         {
             timer.Enabled = false;
             Outputs[0].Value = 1;
+            time = 0;
             OnOutputChange?.Invoke(this, new OutputChangedEventArgs(1));
         }
 
@@ -43,6 +46,7 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
+                if (time > 0 && timer.Enabled) time -= 100;
                 var input = Inputs[0].Value > 0;
                 if (this.input == input) return;
                 this.input = input;
@@ -50,12 +54,14 @@ namespace LogicModel
                 {
                     timer.Interval = MilliSeconds;
                     timer.Enabled = true;
+                    time = MilliSeconds;
                 }
                 else if (!input)
                 {
                     if (timer.Enabled)
                         timer.Enabled = false;
                     Outputs[0].Value = 0;
+                    time = 0;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(0));
                 }
             }
@@ -80,6 +86,23 @@ namespace LogicModel
         public void MakeChanges(object? sender, OutputChangedEventArgs e)
         {
             Inputs[0].Value = e.NewValue;
+        }
+
+        public override GraphicsPath[] GetTextPaths()
+        {
+            List<GraphicsPath> paths = [.. base.GetTextPaths()];
+            // вывод времени задержки
+            var path = new GraphicsPath();
+            var fnumber = time > 0 ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
+            using var fontNumber = new Font("Segoe UI", 10f);
+            var sz = TextRenderer.MeasureText(fnumber, fontNumber);
+            var trect = new Rectangle(Location, new Size(Width, Height));
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
+            path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Regular, fontNumber.Size, trect, sf);
+            paths.Add(path);
+            return [.. paths];
         }
     }
 }

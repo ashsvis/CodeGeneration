@@ -1,23 +1,22 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Timers;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace LogicModel
 {
-    public class Toff : Func, ILinked
+    public class Pulse : Func, ILinked
     {
         private readonly System.Timers.Timer timer;
 
         private bool input;
-        private uint time;
 
         public uint MilliSeconds { private get; set; } = 3000;
 
-        public Toff()
+        public Pulse()
         {
-            FuncName = "TOF";
-            FuncDesc = "Задержка выключения";
+            FuncName = "TP";
+            FuncDesc = "Одновибратор";
             Inputs = [new FuncInput { }];
             Outputs = [new FuncOutput { }];
             CalculateHeight();
@@ -39,7 +38,6 @@ namespace LogicModel
         {
             timer.Enabled = false;
             Outputs[0].Value = 0;
-            time = 0;
             OnOutputChange?.Invoke(this, new OutputChangedEventArgs(0));
         }
 
@@ -47,30 +45,17 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                if (time > 0 && timer.Enabled) time -= 100;
                 var input = Inputs[0].Value > 0;
                 if (this.input == input) return;
                 this.input = input;
                 if (input)
                 {
-                    timer.Enabled = false;
                     Outputs[0].Value = 1;
-                    time = 0;
                     OnOutputChange?.Invoke(this, new OutputChangedEventArgs(1));
-                }
-                else
-                {
                     if (!timer.Enabled)
                     {
                         timer.Interval = MilliSeconds;
                         timer.Enabled = true;
-                        time = MilliSeconds;
-                    }
-                    else
-                    {
-                        Outputs[0].Value = 0;
-                        time = 0;
-                        OnOutputChange?.Invoke(this, new OutputChangedEventArgs(0));
                     }
                 }
             }
@@ -102,7 +87,7 @@ namespace LogicModel
             List<GraphicsPath> paths = [.. base.GetTextPaths()];
             // вывод времени задержки
             var path = new GraphicsPath();
-            var fnumber = time > 0 ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
+            var fnumber = $"{MilliSeconds / 1000f:0.#} с";
             using var fontNumber = new Font("Segoe UI", 10f);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
