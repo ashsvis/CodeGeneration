@@ -36,6 +36,30 @@
         }
 
         /// <summary>
+        /// Разбор символьной записи для получения float значения
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static float ParseSingle(string line, IFormatProvider fp, float defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(line)) return defaultValue;
+            var value = line;
+            return float.TryParse(value, fp, out float x) ? x : defaultValue;
+        }
+
+        /// <summary>
+        /// Разбор символьной записи для получения double значения
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static double ParseDouble(string line, IFormatProvider fp, double defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(line)) return defaultValue;
+            var value = line;
+            return double.TryParse(value, fp, out double x) ? x : defaultValue;
+        }
+
+        /// <summary>
         /// Разбор символьной записи для получения bool значения
         /// </summary>
         /// <param name="line"></param>

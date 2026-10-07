@@ -1,5 +1,6 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace CodeGenerator
@@ -18,10 +19,13 @@ namespace CodeGenerator
         private Cell[,]? field;
 
         private readonly Dictionary<string, Type> types = [];
+        private readonly string caption = string.Empty;
+        private string fileName = string.Empty;
 
         public MainForm()
         {
             InitializeComponent();
+            caption = Text;
             dragFormat = $"{typeof(DragedInfo).FullName}";
             drawPanel = new DrawPanel
             {
@@ -69,15 +73,6 @@ namespace CodeGenerator
             this.CenterToScreen();
             panLeft.Width = Properties.Settings.Default.leftpan;
             panRight.Width = Properties.Settings.Default.rightpan;
-            drawPanel.RestoreWheelData(
-                Properties.Settings.Default.m11,
-                Properties.Settings.Default.m12,
-                Properties.Settings.Default.m21,
-                Properties.Settings.Default.m22,
-                Properties.Settings.Default.dx,
-                Properties.Settings.Default.dy,
-                Properties.Settings.Default.origin,
-                Properties.Settings.Default.zoom);
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
         }
 
@@ -1123,15 +1118,6 @@ namespace CodeGenerator
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (drawPanel.Transformation == null) return;
-            var el = drawPanel.Transformation.Elements;
-            Properties.Settings.Default.m11 = el[0];
-            Properties.Settings.Default.m12 = el[1];
-            Properties.Settings.Default.m21 = el[2];
-            Properties.Settings.Default.m22 = el[3];
-            Properties.Settings.Default.dx = el[4];
-            Properties.Settings.Default.dy = el[5];
-            Properties.Settings.Default.origin = drawPanel.Origin;
-            Properties.Settings.Default.zoom = drawPanel.Zoom;
             Properties.Settings.Default.leftpan = panLeft.Width;
             Properties.Settings.Default.rightpan = panRight.Width;
             Properties.Settings.Default.Save();
@@ -1287,7 +1273,37 @@ namespace CodeGenerator
             }
         }
 
+        private void TsmiSave_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                SaveWithDialog();
+            else
+            {
+                try
+                {
+                    SaveXml(fileName);
+                    UnselectAll();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Сохранение модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+            }
+        }
+
+        private void UnselectAll()
+        {
+            shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+            links.ForEach(link => { link.Selected = false; link.Hover = false; });
+        }
+
         private void TsmiSaveAs_Click(object sender, EventArgs e)
+        {
+            SaveWithDialog();
+        }
+
+        private void SaveWithDialog()
         {
             var dlg = new SaveFileDialog()
             {
@@ -1300,9 +1316,10 @@ namespace CodeGenerator
             {
                 try
                 {
-                    SaveXml(dlg.FileName);
-                    shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
-                    links.ForEach(link => { link.Selected = false; link.Hover = false; });
+                    fileName = dlg.FileName;
+                    SaveXml(fileName);
+                    UnselectAll();
+                    Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
                 }
                 catch (Exception ex)
                 {
@@ -1325,8 +1342,11 @@ namespace CodeGenerator
             {
                 try
                 {
-                    LoadXml(dlg.FileName);
+                    ClearAll();
+                    fileName = dlg.FileName;
+                    LoadXml(fileName);
                     modelChanged = false;
+                    Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
                 }
                 catch (Exception ex)
                 {
@@ -1341,6 +1361,33 @@ namespace CodeGenerator
             var root = xdoc.Element("Document");
             if (root == null) return;
             var name = root.Attribute("Name")?.Value;
+
+            var xenvironment = root.Element("Environment");
+            var fp = CultureInfo.GetCultureInfo("en-US");
+            var xmatrix = xenvironment?.Element("Matrix")?.Value;
+            var xorigin = xenvironment?.Element("Origin");
+            var xzoom = xenvironment?.Element("Zoom")?.Value;
+            if (xmatrix != null && xorigin != null && xzoom != null)
+            {
+                var xoX = xorigin.Attribute("X")?.Value;
+                var xoY = xorigin.Attribute("Y")?.Value;
+                var svals = xmatrix.Split(", ");
+                if (xoX != null && xoY != null && svals.Length == 6)
+                {
+                    var m11 = ParseHelper.ParseSingle(svals[0], fp, 1);
+                    var m12 = ParseHelper.ParseSingle(svals[1], fp, 0);
+                    var m21 = ParseHelper.ParseSingle(svals[2], fp, 0);
+                    var m22 = ParseHelper.ParseSingle(svals[3], fp, 1);
+                    var dx = ParseHelper.ParseSingle(svals[4], fp, 0);
+                    var dy = ParseHelper.ParseSingle(svals[5], fp, 0);
+                    var zoom = ParseHelper.ParseDouble(xzoom, fp, 1);
+
+                    drawPanel.RestoreWheelData(m11, m12, m21, m22, dx, dy,
+                        new Point(ParseHelper.ParseInteger(xoX, 0), ParseHelper.ParseInteger(xoY, 0)),
+                        zoom);
+                }
+            }
+
             var xmodel = root.Element("Model");
             if (xmodel == null) return;
             shapes.Clear();
@@ -1387,6 +1434,19 @@ namespace CodeGenerator
             var root = new XElement("Document");
             root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
             var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
+            if (drawPanel.Transformation != null)
+            {
+                var xenvironment = new XElement("Environment");
+                root.Add(xenvironment);
+                float[] el = drawPanel.Transformation.Elements;
+                var fp = CultureInfo.GetCultureInfo("en-US");
+                xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
+                var xorigin = new XElement("Origin");
+                xorigin.Add(new XAttribute("X", drawPanel.Origin.X));
+                xorigin.Add(new XAttribute("Y", drawPanel.Origin.Y));
+                xenvironment.Add(xorigin);
+                xenvironment.Add(new XElement("Zoom", drawPanel.Zoom.ToString(fp)));
+            }
             var xmodel = new XElement("Model");
             root.Add(xmodel);
             foreach (var shape in shapes)
@@ -1404,6 +1464,11 @@ namespace CodeGenerator
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
+        {
+            ClearAll();
+        }
+
+        private void ClearAll()
         {
             timerCalculate.Enabled = false;
             try
@@ -1445,6 +1510,9 @@ namespace CodeGenerator
                 SortIndexByLocation();
                 InitField();
                 modelChanged = false;
+                fileName = string.Empty;
+                Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+                drawPanel.Reset();
                 drawPanel.Invalidate();
             }
             finally
@@ -1453,9 +1521,10 @@ namespace CodeGenerator
             }
         }
 
-        private void timerInterface_Tick(object sender, EventArgs e)
+        private void TimerInterface_Tick(object sender, EventArgs e)
         {
             tsmiSave.Enabled = tsbSave.Enabled = modelChanged;
+            tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
         }
     }
 }

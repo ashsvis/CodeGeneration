@@ -146,6 +146,7 @@
             tsmiSave.ShortcutKeys = Keys.Control | Keys.S;
             tsmiSave.Size = new Size(233, 22);
             tsmiSave.Text = "&Сохранить";
+            tsmiSave.Click += TsmiSave_Click;
             // 
             // tsmiSaveAs
             // 
@@ -344,7 +345,7 @@
             tsbSave.Name = "tsbSave";
             tsbSave.Size = new Size(23, 22);
             tsbSave.Text = "&Сохранить";
-            tsbSave.Click += TsmiSaveAs_Click;
+            tsbSave.Click += TsmiSave_Click;
             // 
             // печатьToolStripButton
             // 
@@ -542,7 +543,7 @@
             // 
             timerInterface.Enabled = true;
             timerInterface.Interval = 50;
-            timerInterface.Tick += timerInterface_Tick;
+            timerInterface.Tick += TimerInterface_Tick;
             // 
             // MainForm
             // 
