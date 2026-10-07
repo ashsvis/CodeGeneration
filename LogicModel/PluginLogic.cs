@@ -44,6 +44,13 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Выбор дискретного сигнала") { Tag = typeof(Seld) });
             nodesGroup.Nodes.Add(new TreeNode("Выбор аналогового сигнала") { Tag = typeof(Sela) });
             //
+            nodesGroup = new TreeNode("Арифметика");
+            items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Сложение") { Tag = typeof(Add) });
+            nodesGroup.Nodes.Add(new TreeNode("Вычитание") { Tag = typeof(Sub) });
+            nodesGroup.Nodes.Add(new TreeNode("Умножение") { Tag = typeof(Mul) });
+            nodesGroup.Nodes.Add(new TreeNode("Деление") { Tag = typeof(Div) });
+            //
             nodesGroup = new TreeNode("Вывод сигнала") { Tag = typeof(DigitalOutput) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });

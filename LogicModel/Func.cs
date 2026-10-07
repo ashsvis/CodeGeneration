@@ -89,11 +89,6 @@ namespace LogicModel
                         break;
                 }
             }
-
-            //foreach (var input in Inputs)
-            //    input.ReadContent(xfunc);
-            //foreach (var output in Outputs)
-            //    output.ReadContent(xfunc);
         }
 
 
@@ -278,7 +273,19 @@ namespace LogicModel
                             p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                             break;
                         case ValueKind.Analog:
-                            p.AddString($"{value:0.#}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
+                            var text = double.IsNaN(value) ? "N" : $"{value:0.#}";
+                            if (target.IsOutput)
+                            {
+                                sf.Alignment = StringAlignment.Near;
+                                p.AddString(text, fontFunc.FontFamily, (int)FontStyle.Bold, 10f, 
+                                    new PointF(t.Left + 1f, t.Top + t.Height / 2f), sf);
+                            }
+                            else
+                            {
+                                sf.Alignment = StringAlignment.Far;
+                                p.AddString(text, fontFunc.FontFamily, (int)FontStyle.Bold, 10f, 
+                                    new PointF(t.Left + t.Width - 1f, t.Top + t.Height / 2f), sf);
+                            }
                             break;
                     }
                     paths.Add(p);
