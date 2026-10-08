@@ -44,7 +44,7 @@ namespace LogicModel
         for (var j = 1; j <= i; j++)
         {
             holderValues.Add("false");
-            holderInits.Add("new FuncInput { }");
+            holderInits.Add("new PinInput { }");
             holderInputNames.Add("\"\"");
         }
 #>
@@ -55,7 +55,7 @@ namespace LogicModel
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
             Inputs = [<#= string.Join(", ", holderInits) #>];
-            Outputs = [new FuncOutput { }];
+            Outputs = [new PinOutput { }];
             CalculateHeight();
         }
 
@@ -82,6 +82,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }

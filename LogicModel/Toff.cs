@@ -45,6 +45,7 @@ namespace LogicModel
             timer.Enabled = false;
             Outputs[0].Value = 0;
             time = 0;
+            base.Calculate();
         }
 
         public override void Calculate()
@@ -60,6 +61,7 @@ namespace LogicModel
                     timer.Enabled = false;
                     Outputs[0].Value = 1;
                     time = 0;
+                    base.Calculate();
                 }
                 else
                 {
@@ -73,6 +75,7 @@ namespace LogicModel
                     {
                         Outputs[0].Value = 0;
                         time = 0;
+                        base.Calculate();
                     }
                 }
             }

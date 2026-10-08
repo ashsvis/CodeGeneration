@@ -40,18 +40,21 @@ namespace LogicModel
                 if (result == 1 && Outputs[0].Value == 0)
                 {
                     Outputs[0].Value = result;
+                    base.Calculate();
                     if (lastState == false)
                     {
                         lastState = true;
                     }
                 }
                 Outputs[0].Value = 0;
+                base.Calculate();
             }
         }
 
         public void SwitchOffSubscibers()
         {
             Outputs[0].Value = 0;
+            base.Calculate();
         }
     }
 }

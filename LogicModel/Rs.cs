@@ -64,6 +64,7 @@ namespace LogicModel
                         var result = false;
                         result ^= Outputs[0].IsInverted;
                         Outputs[0].Value = result ? 1 : 0;
+                        base.Calculate();
                     }
                 }
                 else if (Set)
@@ -73,6 +74,7 @@ namespace LogicModel
                         var result = true;
                         result ^= Outputs[0].IsInverted;
                         Outputs[0].Value = result ? 1 : 0;
+                        base.Calculate();
                     }
                 }
             }

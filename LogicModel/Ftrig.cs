@@ -43,6 +43,7 @@ namespace LogicModel
                     }
                 }
                 Outputs[0].Value = 0;
+                base.Calculate();
             }
         }
     }

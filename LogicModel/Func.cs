@@ -208,9 +208,7 @@ namespace LogicModel
                         var item = new ToolStripMenuItem("Удалить связь");
                         item.Click += (s, e) =>
                         {
-                            var link = Inputs[target.PinIndex].Source;
-                            //UnlinkInput(link, target.PinIndex);
-                            //DeleteLinkFromTarget(link, (ILinked)this, target.PinIndex);
+                            DeleteLinkFromTarget(Inputs[target.PinIndex].Source?.Owner, this, target.PinIndex);
                         };
                         items.Add(item);
                     }
@@ -465,13 +463,19 @@ namespace LogicModel
         public override void SetInputSource(int index, Shape source, int pinIndex)
         {
             if (index >= 0 && index < Inputs.Length)
+            {
                 Inputs[index].Source = new PinInfo(source, false, pinIndex, GetOutputPinPoint(pinIndex));
+                Inputs[index].IsLinked = true;
+            }
         }
 
         public override void RemoveInputSource(int index)
         {
             if (index >= 0 && index < Inputs.Length)
+            {
                 Inputs[index].Source = null;
+                Inputs[index].IsLinked = false;
+            }
         }
 
         public override void SetOutputTarget(int index, Shape target, int pinIndex)

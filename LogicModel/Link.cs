@@ -177,7 +177,9 @@ namespace LogicModel
 
         public override void UnlinkToLocation(Shape? source, Shape? target)
         {
+            source?.RemoveInputSource(SourcePinIndex);
             Source = null;
+            target?.RemoveInputSource(TargetPinIndex);
             Target = null;
         }
 

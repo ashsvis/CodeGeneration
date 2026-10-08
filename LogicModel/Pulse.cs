@@ -45,6 +45,7 @@ namespace LogicModel
             timer.Enabled = false;
             Outputs[0].Value = 0;
             time = 0;
+            base.Calculate();
         }
 
         public override void Calculate()
@@ -58,6 +59,7 @@ namespace LogicModel
                 if (input)
                 {
                     Outputs[0].Value = 1;
+                    base.Calculate();
                     if (!timer.Enabled)
                     {
                         timer.Interval = MilliSeconds;

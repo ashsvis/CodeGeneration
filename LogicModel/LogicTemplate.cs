@@ -62,6 +62,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -102,6 +103,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -142,6 +144,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -182,6 +185,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -222,6 +226,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -262,6 +267,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -302,6 +308,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -342,6 +349,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -382,6 +390,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -422,6 +431,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -462,6 +472,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -502,6 +513,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -542,6 +554,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
@@ -582,6 +595,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
+                    base.Calculate();
                 }
             }
         }
