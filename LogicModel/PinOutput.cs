@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class FuncOutput : IDeepCloneable<FuncOutput>, IPersistent<FuncOutput>
+    public class PinOutput : IDeepCloneable<PinOutput>, IPersistent<PinOutput>
     {
         public int Index { get; set; }
         public string? Name { get; internal set; }
@@ -11,9 +11,11 @@ namespace LogicModel
         public ValueKind Kind { get; set; }
         public bool IsInverted { get; set; }
 
-        public FuncOutput DeepClone()
+        public List<PinInfo> Targets { get; set; } = [];
+
+        public PinOutput DeepClone()
         {
-            return new FuncOutput { Value = Value, IsInverted = IsInverted };
+            return new PinOutput { Value = Value, IsInverted = IsInverted };
         }
 
         public void ReadContent(XElement xoutput)

@@ -50,9 +50,6 @@ namespace LogicModel
         private Size EndShift { get; set; }
 
         private Point[] linkPoints = [];
-        //private bool mustRebuild = false;
-
-        //public bool MustRebuild => mustRebuild;
 
         public override bool NoDataToWrite()
         {
@@ -174,31 +171,13 @@ namespace LogicModel
             EndShift = new Size(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
 
             SetPoints([.. points]);
-
-            //source.OnLocationChange += MakeChangesForFirst;
-            //target.OnLocationChange += MakeChangesForLast;
         }
 
         public override void UnlinkToLocation(Shape? source, Shape? target)
         {
-            //if (source == null || target == null) return;
-            //source.OnLocationChange -= MakeChangesForFirst;
-            //target.OnLocationChange -= MakeChangesForLast;
             Source = null;
             Target = null;
         }
-
-        //private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)
-        //{
-        //    StartPoint = Point.Add(e.NewValue, StartShift);
-        //    mustRebuild = true;
-        //}
-
-        //private void MakeChangesForLast(object sender, LocationChangedEventArgs e)
-        //{
-        //    EndPoint = Point.Add(e.NewValue, EndShift);
-        //    mustRebuild = true;
-        //}
 
         public override Point[] GetPoints()
         {
@@ -210,14 +189,5 @@ namespace LogicModel
             linkPoints = points;
             IsShort = linkPoints.Length > 0 && linkPoints[0] != StartPoint;
         }
-
-        ///public override void Rebuild()
-        ///{
-        ///    if (mustRebuild)
-        ///    {
-        ///        mustRebuild = false;
-        ///        RebuildLinkFromTarget(this);
-        ///    }
-        ///}
     }
 }

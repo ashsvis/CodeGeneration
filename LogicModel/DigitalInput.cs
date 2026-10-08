@@ -9,8 +9,8 @@ namespace LogicModel
         {
             FuncName = "D/#";
             FuncDesc = "Дискретный ввод сигнала";
-            Inputs = [new FuncInput { Kind = ValueKind.DI }];
-            Outputs = [new FuncOutput { Kind = ValueKind.Digital }];
+            Inputs = [new PinInput { Kind = ValueKind.DI }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
 

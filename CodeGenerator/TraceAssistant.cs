@@ -247,5 +247,19 @@ namespace CodeGenerator
             return points;
         }
 
+        public static void DrawField(Graphics? graphics)
+        {
+            if (field != null)
+            {
+                // рисуем поле трассировки связей
+                for (int i = 0; i < field.GetLength(0); i++)
+                {
+                    for (int j = 0; j < field.GetLength(1); j++)
+                    {
+                        field[i, j].Draw(graphics);
+                    }
+                }
+            }
+        }
     }
 }

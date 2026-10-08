@@ -10,7 +10,7 @@ namespace LogicModel
             FuncDesc = "Тег дискретного входа";
             FuncName = "TAG_DI";
             Inputs = [];
-            Outputs = [new FuncOutput { Kind = ValueKind.DI }];
+            Outputs = [new PinOutput { Kind = ValueKind.DI }];
             Background = SystemColors.Control;
             Width = 48 * 3;
             CalculateHeight();

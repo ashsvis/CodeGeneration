@@ -3,10 +3,9 @@ using System.Xml.Linq;
 
 namespace PluginSupport
 {
-    public abstract class Shape : /*ILocation, */IDeepCloneable<Shape>, IPersistent<Shape>
+    public abstract class Shape : IDeepCloneable<Shape>, IPersistent<Shape>
     {
         private Guid id = Guid.Empty;
-        //private Point location;
         public Guid Id
         {
             get 
@@ -17,16 +16,6 @@ namespace PluginSupport
         }
 
         public Point Location { get; set; }
-        //public Point Location 
-        //{ 
-        //    get => location; 
-        //    set 
-        //    {
-        //        if (location == value) return;
-        //        location = value; 
-        //        OnLocationChange?.Invoke(this, new LocationChangedEventArgs(location));
-        //    } 
-        //}
 
         public abstract Rectangle Bounds { get; }
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
@@ -38,7 +27,6 @@ namespace PluginSupport
         public bool CanOutputLink { get; set; }
         public int Index { get; set; }
 
-        //public event LocationChangedEventHandler? OnLocationChange;
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
         public event EventHandler? OnShowProperties;
         public event EventHandler? OnDelete;
@@ -177,11 +165,7 @@ namespace PluginSupport
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
         public abstract int CountOutputs();
-        //public abstract void LinkInput(Shape? link, int index);
-        //public abstract void UnlinkInput(Shape? link, int index);
         public abstract bool IsLinked(int index);
-        //public abstract void UnlinkAllInputs();
-        //public abstract void UnlinkOutputFor(Shape? link);
 
         public abstract Type GetLinkTypeToCreate();
 

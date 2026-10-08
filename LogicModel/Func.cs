@@ -11,8 +11,8 @@ namespace LogicModel
         public int Width { get; set; } = BaseWidth;
         public int Height { get; set; } = BaseHeight;
         private int CalcHeight { get; set; }
-        protected FuncInput[] Inputs = [];
-        protected FuncOutput[] Outputs = [];
+        protected PinInput[] Inputs = [];
+        protected PinOutput[] Outputs = [];
         public string? FuncName { get; protected set; }
         public string? FuncDesc { get; protected set; }
 
@@ -91,7 +91,6 @@ namespace LogicModel
                 }
             }
         }
-
 
         protected override void CalculateHeight()
         {
@@ -209,7 +208,7 @@ namespace LogicModel
                         var item = new ToolStripMenuItem("Удалить связь");
                         item.Click += (s, e) =>
                         {
-                            var link = Inputs[target.PinIndex].Link;
+                            var link = Inputs[target.PinIndex].Source;
                             //UnlinkInput(link, target.PinIndex);
                             //DeleteLinkFromTarget(link, (ILinked)this, target.PinIndex);
                         };
@@ -354,14 +353,14 @@ namespace LogicModel
             for (int i = 0; i < Inputs.Length; i++)
             {
                 var p = new Point(rect.Left - sizeTarget, rect.Top + hi);
-                items.Add(new PinInfo(false, i, p));
+                items.Add(new PinInfo(this, false, i, p));
                 hi += step;
             }
             // вывод целей выходов
             if (Outputs.Length == 1)
             {
                 var p = new Point(rect.Right + sizeTarget, rect.Top + rect.Height / 2);
-                items.Add(new PinInfo(true, 0, p));
+                items.Add(new PinInfo(this, true, 0, p));
             }
             else
             {
@@ -369,33 +368,12 @@ namespace LogicModel
                 for (int i = 0; i < Outputs.Length; i++)
                 {
                     var p = new Point(rect.Right + sizeTarget, rect.Top + ho);
-                    items.Add(new PinInfo(true, i, p));
+                    items.Add(new PinInfo(this, true, i, p));
                     ho += step;
                 }
             }
             return [.. items];
         }
-
-        //public override void LinkInput(ILinked? link, int index) { }
-        //public override void UnlinkInput(ILinked? link, int index) { }
-
-        //public override void UnlinkAllInputs() 
-        //{ 
-        //    for (var i = 0; i < Inputs.Length; i++)
-        //        UnlinkInput(Inputs[i].Link, i);
-        //}
-
-        //public override void UnlinkOutputFor(ILinked? link)
-        //{
-        //    foreach (var input in Inputs.Where(x => x.Link == link))
-        //    {
-        //        for (var i = 0; i < Inputs.Length; i++)
-        //        {
-        //            if (Inputs[i] == input)
-        //                UnlinkInput(Inputs[i].Link, i);
-        //        }
-        //    }
-        //}
 
         public override bool IsLinked(int index) 
         { 

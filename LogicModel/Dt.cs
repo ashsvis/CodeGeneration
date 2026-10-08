@@ -6,8 +6,8 @@ namespace LogicModel
         {
             FuncName = "T";
             FuncDesc = "D-ענטדדונ";
-            Inputs = [new FuncInput { Name = "D" }, new FuncInput { Name = "C" }];
-            Outputs = [new FuncOutput { Name = "Q" }];
+            Inputs = [new PinInput { Name = "D" }, new PinInput { Name = "C" }];
+            Outputs = [new PinOutput { Name = "Q" }];
             CalculateHeight();
         }
 

@@ -10,8 +10,8 @@ namespace LogicModel
         {
             FuncName = "Ftrig";
             FuncDesc = "Детектор спада";
-            Inputs = [new FuncInput { }];
-            Outputs = [new FuncOutput { }];
+            Inputs = [new PinInput { }];
+            Outputs = [new PinOutput { }];
             CalculateHeight();
         }
 

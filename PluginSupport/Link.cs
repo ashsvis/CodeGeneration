@@ -25,7 +25,6 @@ namespace PluginSupport
         public abstract int Length { get; }
         public abstract Point[] GetPoints();
         public abstract void SetPoints(Point[] points);
-        /// public abstract void Rebuild();
         public abstract Rectangle Bounds { get; }
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
         public bool Selected { get; set; }
@@ -40,8 +39,6 @@ namespace PluginSupport
         public abstract void LinkToLocation(Shape source, Point startPoint, 
             Shape target, int targetPinIndex, Point endPoint, List<Point> points);
         public abstract void UnlinkToLocation(Shape source, Shape target);
-
-        ///public event RebuildLinkFromTargetEventHandler? OnRebuildLink;
 
         public virtual void DrawLines(Graphics? g, Pen pen)
         {
@@ -61,20 +58,8 @@ namespace PluginSupport
             }
         }
 
-        //public void RebuildLinkFromTarget(Link link)
-        //{
-        //    OnRebuildLink?.Invoke(this, new RebuildLinkFromTargetEventArgs(link));
-        //}
-
         public abstract XElement WriteContent();
         public abstract void ReadContent(XElement element);
         public abstract bool NoDataToWrite();
     }
-
-    //public class RebuildLinkFromTargetEventArgs(PluginSupport.Link link) : EventArgs
-    //{
-    //    public PluginSupport.Link Link { get; set; } = link;
-    //}
-
-    //public delegate void RebuildLinkFromTargetEventHandler(object sender, RebuildLinkFromTargetEventArgs e);
 }

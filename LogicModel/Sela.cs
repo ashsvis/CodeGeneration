@@ -8,10 +8,10 @@ namespace LogicModel
         {
             FuncName = "SEL";
             FuncDesc = "Выбор сигнала";
-            Inputs = [new FuncInput { Name = "0/1" }, 
-                new FuncInput { Name = "0", Kind = ValueKind.Analog }, 
-                new FuncInput { Name = "1", Kind = ValueKind.Analog }];
-            Outputs = [new FuncOutput { Kind = ValueKind.Analog }];
+            Inputs = [new PinInput { Name = "0/1" }, 
+                new PinInput { Name = "0", Kind = ValueKind.Analog }, 
+                new PinInput { Name = "1", Kind = ValueKind.Analog }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 

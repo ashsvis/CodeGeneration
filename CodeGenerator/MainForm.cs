@@ -700,17 +700,8 @@ namespace CodeGenerator
                 e.Graphics?.DrawRectangle(pen, rect);
             }
 
-            //if (field != null)
-            //{
-            //    // рисуем поле трассировки связей
-            //    for (int i = 0; i < field.GetLength(0); i++)
-            //    {
-            //        for (int j = 0; j < field.GetLength(1); j++)
-            //        {
-            //            field[i, j].Draw(e.Graphics);
-            //        }
-            //    }
-            //}
+            // рисуем поле трассировки связей
+            //TraceAssistant.DrawField(e.Graphics);
         }
 
         private static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, bool bigStamp = false)
@@ -1277,13 +1268,6 @@ namespace CodeGenerator
                     // ищем источник и цель
                     var source = shapes.FirstOrDefault(x => x == link.Source);
                     var target = shapes.FirstOrDefault(x => x == link.Target);
- 
-                    // если найдены оба, то отписывается
-                    ///if (source != null && target != null)
-                    ///    link.UnlinkToLocation(source, target);
-
-                    ///link.OnRebuildLink -= CellLink_OnRebuildLink;
-                    ///
                     // удаляем визуальную ссылку
                     links.Remove(link);
                     UpdateOtherLinks(link);
@@ -1291,14 +1275,6 @@ namespace CodeGenerator
                 // для всех удаляемых элементов
                 foreach (var shape in shapesForDelete)
                 {
-                    // удаляем подписки для всех входов элемента
-                    //shape.UnlinkAllInputs();
-                    // ищем элементы, у которых были связаны выходы
-                    //foreach (var item in shapes)
-                    //{
-                    //    if (shape is Shape link)
-                    //        item.UnlinkOutputFor(link);
-                    //}
                     shape.OnDeleteLink -= Shape_OnDeleteLink;
                     shape.OnDelete -= Shape_OnDelete;
                     shape.OnMakeCopy -= Shape_OnMakeCopy;
