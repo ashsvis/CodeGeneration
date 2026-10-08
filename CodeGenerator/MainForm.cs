@@ -354,12 +354,7 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        //private void Link_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        private const int Step = 12; // –азмер клетки
+        private static readonly int Step = TraceAssistant.CellSize; // –азмер клетки
 
         private static Point MovePointToGrid(Point point)
         {
@@ -382,8 +377,6 @@ namespace CodeGenerator
                                 shape.Location = MovePointToGrid(shape.Location);
                         }
                         SortIndexByLocation();
-                        ///foreach (var link in links)
-                        ///    link.Rebuild();
                         modelChanged = true;
                         drawPanel.Invalidate();
                     }
@@ -402,7 +395,7 @@ namespace CodeGenerator
                                 // создание представлени€ св€зи
                                 var type = shape.GetLinkTypeToCreate();
                                 var link = (PluginSupport.Link?)Activator.CreateInstance(type);
-                                if (link != null && firstShape is Shape source && shape is Shape target)
+                                if (link != null)
                                 {
                                     var startPoint = firstShape.GetOutputPinPoint(0);
                                     var endPoint = shape.GetInputPinPoint(index);
@@ -413,12 +406,20 @@ namespace CodeGenerator
                                         // построение волны и точек визуальной св€зи
                                         var points = TraceAssistant.BuildWaveInField(shapes, links, link);
 
-                                        link.LinkToLocation(source, link.StartPoint, target, index, link.EndPoint, points);
+                                        link.LinkToLocation(firstShape, link.StartPoint, shape, index, link.EndPoint, points);
                                         links.Add(link);
                                         // настройка фигуры дл€ установлени€ св€зи
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
-                                        //shape.LinkInput(linked, index);
-                                        ///link.OnRebuildLink += CellLink_OnRebuildLink;
+
+                                        // сохранение настроек дл€ визуальной св€зи
+                                        link.Source = firstShape;
+                                        link.SourcePinIndex = 0;
+                                        link.Target = shape;
+                                        link.TargetPinIndex = index;
+                                        // сохранение настроек св€зи дл€ источника
+                                        firstShape.SetOutputTarget(0, link.Target, link.TargetPinIndex);
+                                        // сохранение настроек св€зи дл€ цели
+                                        shape.SetInputSource(link.SourcePinIndex, link.Source, 0);
                                         modelChanged = true;
                                     }
                                 }
@@ -449,16 +450,6 @@ namespace CodeGenerator
                 }
             }
         }
-
-        /// <summary>
-        /// —обытие при перестройке точек линии св€зи
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void CellLink_OnRebuildLink(object sender, RebuildLinkFromTargetEventArgs e)
-        //{
-        //    UpdateOtherLinks(e.Link);
-        //}
 
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)
         {

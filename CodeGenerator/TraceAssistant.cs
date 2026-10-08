@@ -7,6 +7,8 @@ namespace CodeGenerator
         private const int step = 12;
         private static Cell[,]? field;
 
+        public static int CellSize => step;
+
         /// <summary>
         /// Построение поля для трассировки связей
         /// </summary>

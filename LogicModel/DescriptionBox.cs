@@ -67,10 +67,13 @@ namespace LogicModel
             var sizeTarget = BaseWidth / 4;
             foreach (var pin in infos)
             {
-                if (pin.IsOutput)
-                    pin.PinPoint = Point.Subtract(pin.PinPoint, new Size(sizeTarget, 0));
-                else
-                    pin.PinPoint = Point.Add(pin.PinPoint, new Size(sizeTarget, 0));
+                if (pin.PinPoint is Point point)
+                {
+                    if (pin.IsOutput)
+                        pin.PinPoint = Point.Subtract(point, new Size(sizeTarget, 0));
+                    else
+                        pin.PinPoint = Point.Add(point, new Size(sizeTarget, 0));
+                }
             }
             return infos;
         }

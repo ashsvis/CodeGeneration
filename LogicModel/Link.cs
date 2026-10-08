@@ -7,6 +7,7 @@ namespace LogicModel
     public class Link : PluginSupport.Link
     {
         public override Shape? Source { get; set; }
+        public override int SourcePinIndex { get; set; }
         public override int SourceIndex { get; set; }
         public override Shape? Target { get; set; }
         public override int TargetIndex { get; set; }
@@ -36,6 +37,7 @@ namespace LogicModel
             var link = new LogicModel.Link()
             {
                 SourceIndex = this.SourceIndex,
+                SourcePinIndex = this.SourcePinIndex,
                 TargetIndex = this.TargetIndex,
                 TargetPinIndex = this.TargetPinIndex,
                 StartPoint = this.StartPoint,

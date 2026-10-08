@@ -462,6 +462,33 @@ namespace LogicModel
             }
         }
 
+        public override void SetInputSource(int index, Shape source, int pinIndex)
+        {
+            if (index >= 0 && index < Inputs.Length)
+                Inputs[index].Source = new PinInfo(source, false, pinIndex, GetOutputPinPoint(pinIndex));
+        }
+
+        public override void RemoveInputSource(int index)
+        {
+            if (index >= 0 && index < Inputs.Length)
+                Inputs[index].Source = null;
+        }
+
+        public override void SetOutputTarget(int index, Shape target, int pinIndex)
+        {
+            if (index >= 0 && index < Outputs.Length)
+            {
+                if (!Outputs[index].Targets.Any(x => x.PinIndex == pinIndex && x.Owner == target))
+                    Outputs[index].Targets.Add(new PinInfo(target, true, pinIndex, GetInputPinPoint(pinIndex)));
+            }
+        }
+
+        public override void RemoveOutputTarget(int index, Shape target, int pinIndex)
+        {
+            if (index >= 0 && index < Outputs.Length)
+                Outputs[index].Targets.RemoveAll(x => x.PinIndex == pinIndex && x.Owner == target);
+        }
+
         public override int CountInputs()
         {
             return Inputs.Length;
@@ -475,6 +502,18 @@ namespace LogicModel
         public override Type GetLinkTypeToCreate()
         {
             return typeof(Link);
+        }
+
+        public override void Calculate()
+        {
+            for (int i = 0; i < Outputs.Length; i++)
+            {
+                foreach (var target in Outputs[i].Targets)
+                {
+                    if (target.Owner is Shape shape)
+                        shape.SetInputValue(target.PinIndex, Outputs[i].Value);
+                }
+            }
         }
     }
 }

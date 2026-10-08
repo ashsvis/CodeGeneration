@@ -16,6 +16,7 @@ namespace PluginSupport
         }
 
         public abstract Shape? Source { get; set; }
+        public abstract int SourcePinIndex { get; set; }
         public abstract int SourceIndex { get; set; }
         public abstract Shape? Target { get; set; }
         public abstract int TargetIndex { get; set; }

@@ -42,6 +42,7 @@ namespace PluginSupport
         public abstract TargetInfo[] GetTargets();
         public abstract PinInfo[] GetPinPoints();
 
+
         public virtual void Draw(Graphics? g, Pen pen, Brush brush)
         {
             foreach (var p in GetGraphicsPaths())
@@ -104,6 +105,11 @@ namespace PluginSupport
         public abstract ValueKind GetOutputValueKind(int index = 0);
         public abstract void SetInputValue(int index, double value);
 
+        public abstract void SetInputSource(int index, Shape source, int pinIndex);
+        public abstract void RemoveInputSource(int index);
+        public abstract void SetOutputTarget(int index, Shape target, int pinIndex);
+        public abstract void RemoveOutputTarget(int index, Shape target, int pinIndex);
+
         public abstract Point? GetInputPinPoint(int index);
         public abstract Point? GetOutputPinPoint(int index = 0);
 
@@ -161,7 +167,7 @@ namespace PluginSupport
         }
 
         public abstract void Click(Point point, Action<TargetInfo>? action = null);
-        public virtual void Calculate() { }
+        public abstract void Calculate();
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
         public abstract int CountOutputs();
