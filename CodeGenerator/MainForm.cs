@@ -285,8 +285,6 @@ namespace CodeGenerator
                             if (copiedShapes.FirstOrDefault(x => x.Id == link.SourceId) is Shape source &&
                                 copiedShapes.FirstOrDefault(x => x.Id == link.TargetId) is Shape target)
                             {
-                                source.NewGuid();
-                                target.NewGuid();
                                 link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                                 links.Add(link);
                                 // сохранение настроек для визуальной связи
@@ -304,6 +302,7 @@ namespace CodeGenerator
                         }
                         foreach (var shape in copiedShapes)
                         {
+                            shape.NewGuid();
                             shape.Selected = true;
                             shape.OnDelete += Shape_OnDelete;
                             shape.OnDeleteLink += Shape_OnDeleteLink;
