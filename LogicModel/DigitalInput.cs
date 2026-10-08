@@ -21,6 +21,8 @@ namespace LogicModel
         {
             return new DigitalInput()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

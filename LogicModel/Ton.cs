@@ -28,6 +28,8 @@ namespace LogicModel
         {
             return new Ton()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

@@ -24,6 +24,8 @@ namespace LogicModel
         {
             return new DigitalInputTag()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

@@ -15,6 +15,8 @@ namespace LogicModel
         {
             return new Dt()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

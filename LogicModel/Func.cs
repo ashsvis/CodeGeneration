@@ -18,14 +18,16 @@ namespace LogicModel
 
         public override Func DeepClone()
         {
-            return new Func()
+            var func = new Func
             {
+                id = Id,
                 Index = this.Index,
                 Location = this.Location,
                 FuncName = this.FuncName,
                 Inputs = [.. this.Inputs.Select(x => x.DeepClone())],
-                Outputs = [.. this.Outputs.Select(x => x.DeepClone())],
+                Outputs = [.. this.Outputs.Select(x => x.DeepClone())]
             };
+            return func;
         }
 
         public override bool NoDataToWrite()

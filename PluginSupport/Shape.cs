@@ -5,7 +5,7 @@ namespace PluginSupport
 {
     public abstract class Shape : IDeepCloneable<Shape>, IPersistent<Shape>
     {
-        private Guid id = Guid.Empty;
+        protected Guid id = Guid.Empty;
         public Guid Id
         {
             get 
@@ -13,6 +13,11 @@ namespace PluginSupport
                 if (id == Guid.Empty) id = Guid.NewGuid();
                 return id;
             }
+        }
+
+        public void NewGuid()
+        {
+            id = Guid.NewGuid();
         }
 
         public Point Location { get; set; }

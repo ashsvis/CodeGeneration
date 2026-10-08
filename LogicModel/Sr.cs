@@ -15,6 +15,8 @@ namespace LogicModel
         {
             return new Sr()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

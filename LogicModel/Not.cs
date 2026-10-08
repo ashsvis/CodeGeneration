@@ -18,6 +18,8 @@ namespace LogicModel
         {
             return new Not()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

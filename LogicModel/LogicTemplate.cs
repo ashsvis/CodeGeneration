@@ -43,6 +43,8 @@ namespace LogicModel
         {
             return new Or2()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -84,6 +86,8 @@ namespace LogicModel
         {
             return new Or3()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -125,6 +129,8 @@ namespace LogicModel
         {
             return new Or4()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -166,6 +172,8 @@ namespace LogicModel
         {
             return new Or5()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -207,6 +215,8 @@ namespace LogicModel
         {
             return new Or6()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -248,6 +258,8 @@ namespace LogicModel
         {
             return new Or7()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -289,6 +301,8 @@ namespace LogicModel
         {
             return new Or8()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -330,6 +344,8 @@ namespace LogicModel
         {
             return new And2()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -371,6 +387,8 @@ namespace LogicModel
         {
             return new And3()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -412,6 +430,8 @@ namespace LogicModel
         {
             return new And4()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -453,6 +473,8 @@ namespace LogicModel
         {
             return new And5()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -494,6 +516,8 @@ namespace LogicModel
         {
             return new And6()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -535,6 +559,8 @@ namespace LogicModel
         {
             return new And7()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -576,6 +602,8 @@ namespace LogicModel
         {
             return new And8()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

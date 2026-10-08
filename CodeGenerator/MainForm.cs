@@ -1,6 +1,9 @@
 using PluginSupport;
+using System;
+using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace CodeGenerator
@@ -279,15 +282,22 @@ namespace CodeGenerator
                         foreach (var link in copiedLinks)
                         {
                             link.Selected = true;
-                            if (copiedShapes.FirstOrDefault(x => x.Index == link.SourceIndex) is Shape source &&
-                                copiedShapes.FirstOrDefault(x => x.Index == link.TargetIndex) is Shape target)
+                            if (copiedShapes.FirstOrDefault(x => x.Id == link.SourceId) is Shape source &&
+                                copiedShapes.FirstOrDefault(x => x.Id == link.TargetId) is Shape target)
                             {
+                                source.NewGuid();
+                                target.NewGuid();
                                 link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                                 links.Add(link);
-                                //copiedShapes[link.TargetIndex].LinkInput((ILinked?)copiedShapes[link.SourceIndex], link.TargetPinIndex);
-
-                                //if (copiedShapes.FirstOrDefault(x => x.Index == link.SourceIndex) is ILinked linkedSource)
-                                //    target.LinkInput(linkedSource, link.TargetPinIndex);
+                                // сохранение настроек дл€ визуальной св€зи
+                                link.Source = source;
+                                link.SourcePinIndex = link.SourcePinIndex;
+                                link.Target = target;
+                                link.TargetPinIndex = link.TargetPinIndex;
+                                // сохранение настроек св€зи дл€ источника
+                                source.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
+                                // сохранение настроек св€зи дл€ цели
+                                target.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex);
                             }
                         }
                         foreach (var shape in copiedShapes)
@@ -302,19 +312,24 @@ namespace CodeGenerator
                        dragCopiedShapes = false;
                     }
                     // перемещаем только выбранные фигуры
+                    List<Link> list = [];
                     foreach (var shape in shapes)
                     {
                         if (shape.Selected)
                         {
                             shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                            var link = links.FirstOrDefault(x => x.Source == shape);
-                            if (link != null && shape.GetOutputPinPoint(0) is Point spoint)
+                            var linksFromSource = links.Where(x => x.Source == shape);
+                            if (shape.GetOutputPinPoint(0) is Point spoint)
                             {
-                                link.StartPoint = spoint;
+                                foreach (var link in linksFromSource)
+                                {
+                                    link.StartPoint = spoint;
+                                    if (!list.Contains(link)) list.Add(link);
+                                }
                             }
                             for (var i = 0; i < shape.CountInputs(); i++)
                             {
-                                link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
+                                var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
                                 if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
                                     link.EndPoint = tpoint;
                             }
@@ -381,31 +396,41 @@ namespace CodeGenerator
                     if (dragShapes)
                     {
                         dragShapes = false;
-                        List<Link> list = [];
-                        foreach (var shape in shapes)
+                        List<Shape> shapesList = [];
+                        foreach (var shape in shapes.Where(x => x.Selected))
                         {
-                            if (shape.Selected)
+                            if (!shapesList.Contains(shape)) shapesList.Add(shape);
+                            foreach (var link in links.Where(x => x.Target == shape))
                             {
-                                shape.Location = MovePointToGrid(shape.Location);
-                                var link = links.FirstOrDefault(x => x.Source == shape);
-                                if (link != null && shape.GetOutputPinPoint(0) is Point spoint)
+                                if (link.Source != null && !shapesList.Contains(link.Source))
+                                    shapesList.Add(link.Source);
+                            }
+                        }
+                        List<Link> linksList = [];
+                        foreach (var shape in shapesList)
+                        {
+                            shape.Location = MovePointToGrid(shape.Location);
+                            var linksFromSource = links.Where(x => x.Source == shape);
+                            if (shape.GetOutputPinPoint(0) is Point spoint)
+                            {
+                                foreach (var link in linksFromSource)
                                 {
                                     link.StartPoint = spoint;
-                                    if (!list.Contains(link)) list.Add(link);
+                                    if (!linksList.Contains(link)) linksList.Add(link);
                                 }
-                                for (var i = 0; i < shape.CountInputs(); i++)
+                            }
+                            for (var i = 0; i < shape.CountInputs(); i++)
+                            {
+                                var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
+                                if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
                                 {
-                                    link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                                    if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
-                                    {
-                                        link.EndPoint = tpoint;
-                                        if (!list.Contains(link)) list.Add(link);
-                                    }
+                                    link.EndPoint = tpoint;
+                                    if (!linksList.Contains(link)) linksList.Add(link);
                                 }
                             }
                         }
-                        list.ForEach(x => x.SetPoints([]));
-                        foreach (var link in list.OrderByDescending(x => x.Length))
+                        linksList.ForEach(x => x.SetPoints([]));
+                        foreach (var link in linksList.OrderBy(x => x.Length))
                         {
                             var points = TraceAssistant.BuildWaveInField(shapes, links, link);
                             link.SetPoints([.. points]);
@@ -1001,10 +1026,9 @@ namespace CodeGenerator
                                 var target = shapes.FirstOrDefault(x => x == link.Target);
 
                                 // если найдены оба, то отписываетс€
-                                ///if (source != null && target != null)
-                                ///    link.UnlinkToLocation(source, target);
+                                if (source != null && target != null)
+                                   link.UnlinkToLocation(source, target);
 
-                                ///link.OnRebuildLink -= CellLink_OnRebuildLink;
                                 // удал€ем визуальную ссылку
                                 links.Remove(link);
                                 UpdateOtherLinks(link);
@@ -1012,14 +1036,6 @@ namespace CodeGenerator
                             // дл€ всех удал€емых элементов
                             foreach (var shape in shapesForDelete)
                             {
-                                // удал€ем подписки дл€ всех входов эелемента
-                                //shape.UnlinkAllInputs();
-                                // ищем элементы, у которых были св€заны выходы
-                                //foreach (var item in shapes)
-                                //{
-                                //    if (shape is Shape link)
-                                //        item.UnlinkOutputFor(link);
-                                //}
                                 shape.OnDeleteLink -= Shape_OnDeleteLink;
                                 shape.OnDelete -= Shape_OnDelete;
                                 shape.OnMakeCopy -= Shape_OnMakeCopy;
@@ -1220,8 +1236,15 @@ namespace CodeGenerator
                             {
                                 link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                                 links.Add(link);
-                                //shapes[link.TargetIndex].LinkInput((Shape?)shapes[link.SourceIndex], link.TargetPinIndex);
-                                ///link.OnRebuildLink += CellLink_OnRebuildLink;
+                                // сохранение настроек дл€ визуальной св€зи
+                                link.Source = source;
+                                link.SourcePinIndex = link.SourcePinIndex;
+                                link.Target = target;
+                                link.TargetPinIndex = link.TargetPinIndex;
+                                // сохранение настроек св€зи дл€ источника
+                                source.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
+                                // сохранение настроек св€зи дл€ цели
+                                target.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex);
                             }
                         }
                     }

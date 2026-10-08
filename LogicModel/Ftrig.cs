@@ -19,6 +19,8 @@ namespace LogicModel
         {
             return new Ftrig()
             {
+                id = Id,
+                Index = this.Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

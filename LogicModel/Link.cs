@@ -7,9 +7,11 @@ namespace LogicModel
     public class Link : PluginSupport.Link
     {
         public override Shape? Source { get; set; }
+        public override Guid SourceId { get; set; }
         public override int SourcePinIndex { get; set; }
         public override int SourceIndex { get; set; }
         public override Shape? Target { get; set; }
+        public override Guid TargetId { get; set; }
         public override int TargetIndex { get; set; }
         public override int TargetPinIndex { get; set; }
         public override Point StartPoint { get; set; }
@@ -36,8 +38,10 @@ namespace LogicModel
                 this.TargetIndex = tarloc.Index;
             var link = new LogicModel.Link()
             {
+                SourceId = this.SourceId,
                 SourceIndex = this.SourceIndex,
                 SourcePinIndex = this.SourcePinIndex,
+                TargetId = this.TargetId,
                 TargetIndex = this.TargetIndex,
                 TargetPinIndex = this.TargetPinIndex,
                 StartPoint = this.StartPoint,
@@ -166,7 +170,9 @@ namespace LogicModel
         {
             if (source == null || target == null) return;
             Source = source;
+            SourceId = source.Id;
             Target = target;
+            TargetId = target.Id;
             TargetPinIndex = targetPinIndex;
 
             StartShift = new Size(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
