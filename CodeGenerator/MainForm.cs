@@ -291,8 +291,10 @@ namespace CodeGenerator
                                 links.Add(link);
                                 // сохранение настроек для визуальной связи
                                 link.Source = source;
+                                link.SourceId = source.Id;
                                 link.SourcePinIndex = link.SourcePinIndex;
                                 link.Target = target;
+                                link.TargetId = target.Id;
                                 link.TargetPinIndex = link.TargetPinIndex;
                                 // сохранение настроек связи для источника
                                 source.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
