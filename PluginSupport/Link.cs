@@ -5,6 +5,16 @@ namespace PluginSupport
 {
     public abstract class Link : IPersistent<Link>, IDeepCloneable<Link>
     {
+        private Guid id = Guid.Empty;
+        public Guid Id
+        {
+            get
+            {
+                if (id == Guid.Empty) id = Guid.NewGuid();
+                return id;
+            }
+        }
+
         public abstract ILocation? Source { get; set; }
         public abstract int SourceIndex { get; set; }
         public abstract ILocation? Target { get; set; }
