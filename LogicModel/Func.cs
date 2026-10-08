@@ -210,8 +210,8 @@ namespace LogicModel
                         item.Click += (s, e) =>
                         {
                             var link = Inputs[target.PinIndex].Link;
-                            UnlinkInput(link, target.PinIndex);
-                            DeleteLinkFromTarget(link, (ILinked)this, target.PinIndex);
+                            //UnlinkInput(link, target.PinIndex);
+                            //DeleteLinkFromTarget(link, (ILinked)this, target.PinIndex);
                         };
                         items.Add(item);
                     }
@@ -376,26 +376,26 @@ namespace LogicModel
             return [.. items];
         }
 
-        public override void LinkInput(ILinked? link, int index) { }
-        public override void UnlinkInput(ILinked? link, int index) { }
+        //public override void LinkInput(ILinked? link, int index) { }
+        //public override void UnlinkInput(ILinked? link, int index) { }
 
-        public override void UnlinkAllInputs() 
-        { 
-            for (var i = 0; i < Inputs.Length; i++)
-                UnlinkInput(Inputs[i].Link, i);
-        }
+        //public override void UnlinkAllInputs() 
+        //{ 
+        //    for (var i = 0; i < Inputs.Length; i++)
+        //        UnlinkInput(Inputs[i].Link, i);
+        //}
 
-        public override void UnlinkOutputFor(ILinked? link)
-        {
-            foreach (var input in Inputs.Where(x => x.Link == link))
-            {
-                for (var i = 0; i < Inputs.Length; i++)
-                {
-                    if (Inputs[i] == input)
-                        UnlinkInput(Inputs[i].Link, i);
-                }
-            }
-        }
+        //public override void UnlinkOutputFor(ILinked? link)
+        //{
+        //    foreach (var input in Inputs.Where(x => x.Link == link))
+        //    {
+        //        for (var i = 0; i < Inputs.Length; i++)
+        //        {
+        //            if (Inputs[i] == input)
+        //                UnlinkInput(Inputs[i].Link, i);
+        //        }
+        //    }
+        //}
 
         public override bool IsLinked(int index) 
         { 

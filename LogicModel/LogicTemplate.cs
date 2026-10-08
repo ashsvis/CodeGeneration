@@ -28,7 +28,7 @@ namespace LogicModel
         }
     }
 
-    public class Or2 : Func, ILinked
+    public class Or2 : Func
     {
         public Or2()
         {
@@ -51,8 +51,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -64,55 +62,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
    }
 
-    public class Or3 : Func, ILinked
+    public class Or3 : Func
     {
         public Or3()
         {
@@ -135,8 +91,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -148,66 +102,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
    }
 
-    public class Or4 : Func, ILinked
+    public class Or4 : Func
     {
         public Or4()
         {
@@ -230,8 +131,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -243,77 +142,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
    }
 
-    public class Or5 : Func, ILinked
+    public class Or5 : Func
     {
         public Or5()
         {
@@ -336,8 +171,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -349,88 +182,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
    }
 
-    public class Or6 : Func, ILinked
+    public class Or6 : Func
     {
         public Or6()
         {
@@ -453,8 +211,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -466,99 +222,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
    }
 
-    public class Or7 : Func, ILinked
+    public class Or7 : Func
     {
         public Or7()
         {
@@ -581,8 +251,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -594,110 +262,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange += MakeChangesFor7;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange -= MakeChangesFor7;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[6].Value = e.NewValue;
-        }
    }
 
-    public class Or8 : Func, ILinked
+    public class Or8 : Func
     {
         public Or8()
         {
@@ -720,8 +291,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -733,121 +302,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange += MakeChangesFor7;
-                    break;
-                case 7:
-                    link.OnOutputChange += MakeChangesFor8;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange -= MakeChangesFor7;
-                    break;
-                case 7:
-                    link.OnOutputChange -= MakeChangesFor8;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[6].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[7].Value = e.NewValue;
-        }
    }
 
-    public class And2 : Func, ILinked
+    public class And2 : Func
     {
         public And2()
         {
@@ -870,8 +331,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -883,55 +342,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
    }
 
-    public class And3 : Func, ILinked
+    public class And3 : Func
     {
         public And3()
         {
@@ -954,8 +371,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -967,66 +382,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
    }
 
-    public class And4 : Func, ILinked
+    public class And4 : Func
     {
         public And4()
         {
@@ -1049,8 +411,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -1062,77 +422,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
    }
 
-    public class And5 : Func, ILinked
+    public class And5 : Func
     {
         public And5()
         {
@@ -1155,8 +451,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -1168,88 +462,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
    }
 
-    public class And6 : Func, ILinked
+    public class And6 : Func
     {
         public And6()
         {
@@ -1272,8 +491,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -1285,99 +502,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
    }
 
-    public class And7 : Func, ILinked
+    public class And7 : Func
     {
         public And7()
         {
@@ -1400,8 +531,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -1413,110 +542,13 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange += MakeChangesFor7;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange -= MakeChangesFor7;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[6].Value = e.NewValue;
-        }
    }
 
-    public class And8 : Func, ILinked
+    public class And8 : Func
     {
         public And8()
         {
@@ -1539,8 +571,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -1552,118 +582,10 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange += MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange += MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange += MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange += MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange += MakeChangesFor7;
-                    break;
-                case 7:
-                    link.OnOutputChange += MakeChangesFor8;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesFor1;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesFor2;
-                    break;
-                case 2:
-                    link.OnOutputChange -= MakeChangesFor3;
-                    break;
-                case 3:
-                    link.OnOutputChange -= MakeChangesFor4;
-                    break;
-                case 4:
-                    link.OnOutputChange -= MakeChangesFor5;
-                    break;
-                case 5:
-                    link.OnOutputChange -= MakeChangesFor6;
-                    break;
-                case 6:
-                    link.OnOutputChange -= MakeChangesFor7;
-                    break;
-                case 7:
-                    link.OnOutputChange -= MakeChangesFor8;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-
-        public void MakeChangesFor1(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor2(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor3(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[2].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor4(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[3].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor5(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[4].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor6(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[5].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor7(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[6].Value = e.NewValue;
-        }
-
-        public void MakeChangesFor8(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[7].Value = e.NewValue;
-        }
    }
 
 }

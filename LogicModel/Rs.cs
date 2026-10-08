@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class Rs : Func, ILinked
+    public class Rs : Func
     {
         public Rs()
         {
@@ -29,8 +29,6 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override GraphicsPath[] GetTextPaths()
         {
             List<GraphicsPath> paths = [..base.GetTextPaths()];
@@ -52,11 +50,6 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public virtual void UpdateLinked(double result)
-        {
-            OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
-        }
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -71,7 +64,6 @@ namespace LogicModel
                         var result = false;
                         result ^= Outputs[0].IsInverted;
                         Outputs[0].Value = result ? 1 : 0;
-                        UpdateLinked(result ? 1 : 0);
                     }
                 }
                 else if (Set)
@@ -81,52 +73,9 @@ namespace LogicModel
                         var result = true;
                         result ^= Outputs[0].IsInverted;
                         Outputs[0].Value = result ? 1 : 0;
-                        UpdateLinked(result ? 1 : 0);
                     }
                 }
             }
-        }
-
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange += MakeChangesForSet;
-                    break;
-                case 1:
-                    link.OnOutputChange += MakeChangesForReset;
-                    break;
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-        }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-                case 0:
-                    link.OnOutputChange -= MakeChangesForSet;
-                    break;
-                case 1:
-                    link.OnOutputChange -= MakeChangesForReset;
-                    break;
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-        }
-
-        public void MakeChangesForSet(object? sender, OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
-        }
-
-        public void MakeChangesForReset(object? sender, OutputChangedEventArgs e)
-        {
-            Inputs[1].Value = e.NewValue;
         }
     }
 }

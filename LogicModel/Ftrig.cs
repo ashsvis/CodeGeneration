@@ -40,7 +40,6 @@ namespace LogicModel
                     if (lastState == false)
                     {
                         lastState = true;
-                        UpdateLinked(1);
                     }
                 }
                 Outputs[0].Value = 0;

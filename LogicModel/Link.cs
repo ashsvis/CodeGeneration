@@ -6,9 +6,9 @@ namespace LogicModel
 {
     public class Link : PluginSupport.Link
     {
-        public override ILocation? Source { get; set; }
+        public override Shape? Source { get; set; }
         public override int SourceIndex { get; set; }
-        public override ILocation? Target { get; set; }
+        public override Shape? Target { get; set; }
         public override int TargetIndex { get; set; }
         public override int TargetPinIndex { get; set; }
         public override Point StartPoint { get; set; }
@@ -29,9 +29,9 @@ namespace LogicModel
 
         public override PluginSupport.Link DeepClone()
         {
-            if (Source is ILocation souloc)
+            if (Source is Shape souloc)
                 this.SourceIndex = souloc.Index;
-            if (Target is ILocation tarloc)
+            if (Target is Shape tarloc)
                 this.TargetIndex = tarloc.Index;
             var link = new LogicModel.Link()
             {
@@ -50,9 +50,9 @@ namespace LogicModel
         private Size EndShift { get; set; }
 
         private Point[] linkPoints = [];
-        private bool mustRebuild = false;
+        //private bool mustRebuild = false;
 
-        public bool MustRebuild => mustRebuild;
+        //public bool MustRebuild => mustRebuild;
 
         public override bool NoDataToWrite()
         {
@@ -62,9 +62,9 @@ namespace LogicModel
         public override XElement WriteContent()
         {
             var xlink = new XElement($"{this.GetType().FullName}");
-            if (Source is ILocation souloc)
+            if (Source is Shape souloc)
                 xlink.Add(new XAttribute("Source", souloc.Index));
-            if (Target is ILocation tarloc)
+            if (Target is Shape tarloc)
             {
                 xlink.Add(new XAttribute("Target", tarloc.Index));
                 xlink.Add(new XAttribute("Pin", TargetPinIndex));
@@ -162,8 +162,8 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public override void LinkToLocation(ILocation? source, Point startPoint, 
-            ILocation? target, int targetPinIndex, Point endPoint, List<Point> points)
+        public override void LinkToLocation(Shape? source, Point startPoint, 
+            Shape? target, int targetPinIndex, Point endPoint, List<Point> points)
         {
             if (source == null || target == null) return;
             Source = source;
@@ -175,30 +175,30 @@ namespace LogicModel
 
             SetPoints([.. points]);
 
-            source.OnLocationChange += MakeChangesForFirst;
-            target.OnLocationChange += MakeChangesForLast;
+            //source.OnLocationChange += MakeChangesForFirst;
+            //target.OnLocationChange += MakeChangesForLast;
         }
 
-        public override void UnlinkToLocation(ILocation? source, ILocation? target)
+        public override void UnlinkToLocation(Shape? source, Shape? target)
         {
-            if (source == null || target == null) return;
-            source.OnLocationChange -= MakeChangesForFirst;
-            target.OnLocationChange -= MakeChangesForLast;
+            //if (source == null || target == null) return;
+            //source.OnLocationChange -= MakeChangesForFirst;
+            //target.OnLocationChange -= MakeChangesForLast;
             Source = null;
             Target = null;
         }
 
-        private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)
-        {
-            StartPoint = Point.Add(e.NewValue, StartShift);
-            mustRebuild = true;
-        }
+        //private void MakeChangesForFirst(object sender, LocationChangedEventArgs e)
+        //{
+        //    StartPoint = Point.Add(e.NewValue, StartShift);
+        //    mustRebuild = true;
+        //}
 
-        private void MakeChangesForLast(object sender, LocationChangedEventArgs e)
-        {
-            EndPoint = Point.Add(e.NewValue, EndShift);
-            mustRebuild = true;
-        }
+        //private void MakeChangesForLast(object sender, LocationChangedEventArgs e)
+        //{
+        //    EndPoint = Point.Add(e.NewValue, EndShift);
+        //    mustRebuild = true;
+        //}
 
         public override Point[] GetPoints()
         {
@@ -211,13 +211,13 @@ namespace LogicModel
             IsShort = linkPoints.Length > 0 && linkPoints[0] != StartPoint;
         }
 
-        public override void Rebuild()
-        {
-            if (mustRebuild)
-            {
-                mustRebuild = false;
-                RebuildLinkFromTarget(this);
-            }
-        }
+        ///public override void Rebuild()
+        ///{
+        ///    if (mustRebuild)
+        ///    {
+        ///        mustRebuild = false;
+        ///        RebuildLinkFromTarget(this);
+        ///    }
+        ///}
     }
 }

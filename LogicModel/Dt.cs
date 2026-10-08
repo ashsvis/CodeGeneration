@@ -34,7 +34,6 @@ namespace LogicModel
                     var result = Data;
                     result ^= Outputs[0].IsInverted;
                     Outputs[0].Value = result ? 1 : 0;
-                    UpdateLinked(result ? 1 : 0);
                 }
             }
         }

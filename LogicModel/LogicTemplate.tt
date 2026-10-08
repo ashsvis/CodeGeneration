@@ -48,7 +48,7 @@ namespace LogicModel
             holderInputNames.Add("\"\"");
         }
 #>
-    public class <#= type.Item1 #><#= i #> : Func, ILinked
+    public class <#= type.Item1 #><#= i #> : Func
     {
         public <#= type.Item1 #><#= i #>()
         {
@@ -71,8 +71,6 @@ namespace LogicModel
             };
         }
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
@@ -84,62 +82,10 @@ namespace LogicModel
                 if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 {
                     Outputs[0].Value = result ? 1 : 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result ? 1 : 0));
                 }
             }
         }
 
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-<#
-            for (var j = 1; j <= i; j++)
-            {
-#>
-                case <#= j - 1 #>:
-                    link.OnOutputChange += MakeChangesFor<#= j #>;
-                    break;
-<#
-            }
-#>
-            }
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-       }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            switch (index)
-            {
-<#
-            for (var j = 1; j <= i; j++)
-            {
-#>
-                case <#= j - 1 #>:
-                    link.OnOutputChange -= MakeChangesFor<#= j #>;
-                    break;
-<#
-            }
-#>
-            }
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-       }
-<#
-            for (var j = 1; j <= i; j++)
-            {
-#>
-
-        public void MakeChangesFor<#= j #>(object? sender,  OutputChangedEventArgs e)
-        {
-            Inputs[<#= j - 1 #>].Value = e.NewValue;
-        }
-<#
-            }
-#>
    }
 
 <#

@@ -11,7 +11,7 @@ namespace LogicModel
         public ValueKind Kind { get; set; }
         public bool IsInverted { get; set; }
         public bool IsLinked { get; set; }
-        public ILinked? Link { get; set; }
+        public Shape? Link { get; set; }
 
         public FuncInput DeepClone()
         {

@@ -43,7 +43,6 @@ namespace LogicModel
                     if (lastState == false)
                     {
                         lastState = true;
-                        UpdateLinked(1);
                     }
                 }
                 Outputs[0].Value = 0;
@@ -52,7 +51,7 @@ namespace LogicModel
 
         public void SwitchOffSubscibers()
         {
-            UpdateLinked(0);
+            Outputs[0].Value = 0;
         }
     }
 }

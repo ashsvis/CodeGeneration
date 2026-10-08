@@ -1,11 +1,10 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Timers;
 
 namespace LogicModel
 {
-    public class Toff : Func, ILinked
+    public class Toff : Func
     {
         private readonly System.Timers.Timer timer;
 
@@ -41,19 +40,11 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
 
-        public event OutputChangedEventHandler? OnOutputChange;
-
-        public virtual void UpdateLinked(double result)
-        {
-            OnOutputChange?.Invoke(this, new OutputChangedEventArgs(result));
-        }
-
         private void OnTimedEvent(object? source, ElapsedEventArgs e)
         {
             timer.Enabled = false;
             Outputs[0].Value = 0;
             time = 0;
-            OnOutputChange?.Invoke(this, new OutputChangedEventArgs(0));
         }
 
         public override void Calculate()
@@ -69,7 +60,6 @@ namespace LogicModel
                     timer.Enabled = false;
                     Outputs[0].Value = 1;
                     time = 0;
-                    OnOutputChange?.Invoke(this, new OutputChangedEventArgs(1));
                 }
                 else
                 {
@@ -83,31 +73,9 @@ namespace LogicModel
                     {
                         Outputs[0].Value = 0;
                         time = 0;
-                        OnOutputChange?.Invoke(this, new OutputChangedEventArgs(0));
                     }
                 }
             }
-        }
-
-        public override void LinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            link.OnOutputChange += MakeChanges;
-            Inputs[index].Link = link;
-            Inputs[index].IsLinked = true;
-        }
-
-        public override void UnlinkInput(ILinked? link, int index)
-        {
-            if (link == null) return;
-            link.OnOutputChange -= MakeChanges;
-            Inputs[index].Link = null;
-            Inputs[index].IsLinked = false;
-        }
-
-        public void MakeChanges(object? sender, OutputChangedEventArgs e)
-        {
-            Inputs[0].Value = e.NewValue;
         }
 
         public override GraphicsPath[] GetTextPaths()
