@@ -39,7 +39,7 @@ namespace PluginSupport
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();
 
-        public abstract void LinkToLocation(Shape source, Point startPoint, 
+        public abstract void LinkToLocation(Shape source, int sourcePinIndex, Point startPoint, 
             Shape target, int targetPinIndex, Point endPoint, List<Point> points);
         public abstract void UnlinkToLocation(Shape source, Shape target);
 

@@ -1,9 +1,6 @@
 using PluginSupport;
-using System;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Reflection;
 using System.Xml.Linq;
 
 namespace CodeGenerator
@@ -285,19 +282,8 @@ namespace CodeGenerator
                             if (copiedShapes.FirstOrDefault(x => x.Id == link.SourceId) is Shape source &&
                                 copiedShapes.FirstOrDefault(x => x.Id == link.TargetId) is Shape target)
                             {
-                                link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                                link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                                 links.Add(link);
-                                // сохранение настроек для визуальной связи
-                                link.Source = source;
-                                link.SourceId = source.Id;
-                                link.SourcePinIndex = link.SourcePinIndex;
-                                link.Target = target;
-                                link.TargetId = target.Id;
-                                link.TargetPinIndex = link.TargetPinIndex;
-                                // сохранение настроек связи для источника
-                                source.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
-                                // сохранение настроек связи для цели
-                                target.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex);
                             }
                         }
                         foreach (var shape in copiedShapes)
@@ -467,7 +453,7 @@ namespace CodeGenerator
                                         // построение волны и точек визуальной связи
                                         var points = TraceAssistant.BuildWaveInField(shapes, links, link);
 
-                                        link.LinkToLocation(firstShape, link.StartPoint, shape, index, link.EndPoint, points);
+                                        link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
                                         links.Add(link);
                                         // настройка фигуры для установления связи
                                         shape.SetInputValue(index, firstShape.GetOutputValue(0));
@@ -1235,17 +1221,8 @@ namespace CodeGenerator
                             if (shapes[link.SourceIndex] is Shape source &&
                                 shapes[link.TargetIndex] is Shape target)
                             {
-                                link.LinkToLocation(source, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                                link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                                 links.Add(link);
-                                // сохранение настроек для визуальной связи
-                                link.Source = source;
-                                link.SourcePinIndex = link.SourcePinIndex;
-                                link.Target = target;
-                                link.TargetPinIndex = link.TargetPinIndex;
-                                // сохранение настроек связи для источника
-                                source.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
-                                // сохранение настроек связи для цели
-                                target.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex);
                             }
                         }
                     }

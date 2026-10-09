@@ -15,7 +15,7 @@ namespace LogicModel
 
         public PinInput DeepClone()
         {
-            return new PinInput { Index = Index, Value = Value, IsInverted = IsInverted, Source = null};
+            return new PinInput { Index = Index, Value = Value, Kind = Kind, IsInverted = IsInverted, Source = null};
         }
 
         public void ReadContent(XElement xinput)

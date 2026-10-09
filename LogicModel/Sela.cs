@@ -15,6 +15,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
         public override Sela DeepClone()
         {
             return new Sela()

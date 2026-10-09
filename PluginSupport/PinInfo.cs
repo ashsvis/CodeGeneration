@@ -6,5 +6,6 @@ namespace PluginSupport
         public bool IsOutput { get; set; } = isOutput;
         public int PinIndex { get; set; } = pinIndex;
         public Point? PinPoint { get; set; } = pinPoint;
+        public Guid LinkId { get; set; } = Guid.Empty;
     }
 }

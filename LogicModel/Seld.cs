@@ -13,6 +13,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
         public override Seld DeepClone()
         {
             return new Seld()
@@ -26,9 +29,6 @@ namespace LogicModel
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }
-
-        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted);
 
         public override void Calculate()
         {

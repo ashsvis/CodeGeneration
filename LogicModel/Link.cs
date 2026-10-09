@@ -1,6 +1,7 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace LogicModel
 {
@@ -66,11 +67,16 @@ namespace LogicModel
         {
             var xlink = new XElement($"{this.GetType().FullName}");
             if (Source is Shape souloc)
+            {
                 xlink.Add(new XAttribute("Source", souloc.Index));
+                if (SourcePinIndex > 0)
+                    xlink.Add(new XAttribute("SourcePin", SourcePinIndex));
+            }
             if (Target is Shape tarloc)
             {
                 xlink.Add(new XAttribute("Target", tarloc.Index));
-                xlink.Add(new XAttribute("Pin", TargetPinIndex));
+                if (TargetPinIndex > 0)
+                    xlink.Add(new XAttribute("TargetPin", TargetPinIndex));
             }
             xlink.Add(new XAttribute("Start", $"{StartPoint.X},{StartPoint.Y}"));
             xlink.Add(new XAttribute("End", $"{EndPoint.X},{EndPoint.Y}"));
@@ -84,12 +90,15 @@ namespace LogicModel
             var sSource = xlink.Attribute("Source")?.Value;
             if (!string.IsNullOrWhiteSpace(sSource))
                 SourceIndex = ParseHelper.ParseInteger(sSource, 0);
+            var sSourcePin = xlink.Attribute("SourcePin")?.Value;
+            if (!string.IsNullOrWhiteSpace(sSourcePin))
+                SourcePinIndex = ParseHelper.ParseInteger(sSourcePin, 0);
             var sTarget = xlink.Attribute("Target")?.Value;
             if (!string.IsNullOrWhiteSpace(sTarget))
                 TargetIndex = ParseHelper.ParseInteger(sTarget, 0);
-            var sPin = xlink.Attribute("Pin")?.Value;
-            if (!string.IsNullOrWhiteSpace(sPin))
-                TargetPinIndex = ParseHelper.ParseInteger(sPin, 0);
+            var sTargetPin = xlink.Attribute("TargetPin")?.Value;
+            if (!string.IsNullOrWhiteSpace(sTargetPin))
+                TargetPinIndex = ParseHelper.ParseInteger(sTargetPin, 0);
             var sStart = xlink.Attribute("Start")?.Value;
             if (!string.IsNullOrWhiteSpace(sStart))
             {
@@ -165,15 +174,18 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public override void LinkToLocation(Shape? source, Point startPoint, 
+        public override void LinkToLocation(Shape? source, int sourcePinIndex, Point startPoint, 
             Shape? target, int targetPinIndex, Point endPoint, List<Point> points)
         {
             if (source == null || target == null) return;
             Source = source;
             SourceId = source.Id;
+            SourcePinIndex = sourcePinIndex;
+            source.SetOutputTarget(sourcePinIndex, target, targetPinIndex);
             Target = target;
             TargetId = target.Id;
             TargetPinIndex = targetPinIndex;
+            target.SetInputSource(targetPinIndex, source, sourcePinIndex);
 
             StartShift = new Size(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new Size(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);

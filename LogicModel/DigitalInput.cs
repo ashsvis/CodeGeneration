@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class DigitalInput : Func/*, ILinked*/
+    public class DigitalInput : Func
     {
         public DigitalInput()
         {
@@ -30,8 +30,6 @@ namespace LogicModel
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }
-
-        //public event OutputChangedEventHandler? OnOutputChange;
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
