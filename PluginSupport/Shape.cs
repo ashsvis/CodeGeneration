@@ -126,13 +126,15 @@ namespace PluginSupport
         public abstract ValueKind GetOutputValueKind(int index = 0);
         public abstract void SetInputValue(int index, double value);
 
-        public abstract void SetInputSource(int index, Shape source, int pinIndex);
+        public abstract void SetInputSource(int index, Shape source, int pinIndex, Guid linkId);
         public abstract void RemoveInputSource(int index);
-        public abstract void SetOutputTarget(int index, Shape target, int pinIndex);
+        public abstract void SetOutputTarget(int index, Shape target, int pinIndex, Guid linkId);
         public abstract void RemoveOutputTarget(int index, Shape target, int pinIndex);
 
         public abstract Point? GetInputPinPoint(int index);
+        public abstract Guid GetInputPinLinkId(int index);
         public abstract Point? GetOutputPinPoint(int index = 0);
+        public abstract Guid GetOutputPinLinkId(int index = 0);
 
 
         public bool IsInputTargetsPoint(Point point, out int index)

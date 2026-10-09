@@ -479,9 +479,9 @@ namespace CodeGenerator
                                         link.Target = shape;
                                         link.TargetPinIndex = index;
                                         // сохранение настроек связи для источника
-                                        firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex);
+                                        firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
                                         // сохранение настроек связи для цели
-                                        shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex);
+                                        shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
                                         modelChanged = true;
                                     }
                                 }

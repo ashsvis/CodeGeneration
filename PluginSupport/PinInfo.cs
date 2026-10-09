@@ -2,7 +2,7 @@ using System.ComponentModel;
 
 namespace PluginSupport
 {
-    public class PinInfo(Shape? owner, bool isOutput, int pinIndex, Point? pinPoint)
+    public class PinInfo(Shape? owner, bool isOutput, int pinIndex, Point? pinPoint, Guid linkId)
     {
         [Category("Owner"), DisplayName("Function")]
         public Shape? Owner { get; set; } = owner;
@@ -26,7 +26,7 @@ namespace PluginSupport
         public Point? PinPoint { get; set; } = pinPoint;
 
         [Browsable(false)]
-        public Guid LinkId { get; set; } = Guid.Empty;
+        public Guid LinkId { get; set; } = linkId;
 
         [Category("Linked To"), DisplayName("Id")]
         public string LinkInfo => LinkId == Guid.Empty ? "" : LinkId.ToString();

@@ -180,12 +180,11 @@ namespace LogicModel
             Source = source;
             SourceId = source.Id;
             SourcePinIndex = sourcePinIndex;
-            source.SetOutputTarget(sourcePinIndex, target, targetPinIndex);
+            source.SetOutputTarget(sourcePinIndex, target, targetPinIndex, this.Id);
             Target = target;
             TargetId = target.Id;
             TargetPinIndex = targetPinIndex;
-            target.SetInputSource(targetPinIndex, source, sourcePinIndex);
-
+            target.SetInputSource(targetPinIndex, source, sourcePinIndex, this.Id);
             StartShift = new Size(startPoint.X - source.Location.X, startPoint.Y - source.Location.Y);
             EndShift = new Size(endPoint.X - target.Location.X, endPoint.Y - target.Location.Y);
 

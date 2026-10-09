@@ -364,23 +364,26 @@ namespace LogicModel
             var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
             {
+                var id = Inputs[i]?.Source?.LinkId;
                 var p = new Point(rect.Left - sizeTarget, rect.Top + hi);
-                items.Add(new PinInfo(this, false, i, p));
+                items.Add(new PinInfo(this, false, i, p, id ?? Guid.Empty));
                 hi += step;
             }
             // вывод целей выходов
             if (Outputs.Length == 1)
             {
+                var id = Outputs[0].Targets.Count > 0 ? Outputs[0].Targets.First().LinkId : Guid.Empty;
                 var p = new Point(rect.Right + sizeTarget, rect.Top + rect.Height / 2);
-                items.Add(new PinInfo(this, true, 0, p));
+                items.Add(new PinInfo(this, true, 0, p, id));
             }
             else
             {
                 var ho = Outputs.Length < maxPins ? (CalcHeight - (step * Outputs.Length + 1) + step) / 2 : step;
                 for (int i = 0; i < Outputs.Length; i++)
                 {
+                    var id = Outputs[i].Targets.Count > 0 ? Outputs[i].Targets.First().LinkId : Guid.Empty;
                     var p = new Point(rect.Right + sizeTarget, rect.Top + ho);
-                    items.Add(new PinInfo(this, true, i, p));
+                    items.Add(new PinInfo(this, true, i, p, id));
                     ho += step;
                 }
             }
@@ -434,6 +437,17 @@ namespace LogicModel
             return null;
         }
 
+        public override Guid GetInputPinLinkId(int index)
+        {
+            if (index >= 0 && index < Inputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == index);
+                if (item != null)
+                    return item.LinkId;
+            }
+            return Guid.Empty;
+        }
+
         public override Point? GetOutputPinPoint(int index = 0)
         {
             if (index >= 0 && index < Outputs.Length)
@@ -443,6 +457,17 @@ namespace LogicModel
                     return item.PinPoint;
             }
             return null;
+        }
+
+        public override Guid GetOutputPinLinkId(int index = 0)
+        {
+            if (index >= 0 && index < Outputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == index);
+                if (item != null)
+                    return item.LinkId;
+            }
+            return Guid.Empty;
         }
 
         public override double GetOutputValue(int index = 0)
@@ -474,11 +499,11 @@ namespace LogicModel
             }
         }
 
-        public override void SetInputSource(int index, Shape source, int pinIndex)
+        public override void SetInputSource(int index, Shape source, int pinIndex, Guid linkId)
         {
             if (index >= 0 && index < Inputs.Length)
             {
-                Inputs[index].Source = new PinInfo(source, false, pinIndex, GetOutputPinPoint(pinIndex));
+                Inputs[index].Source = new PinInfo(source, false, pinIndex, GetOutputPinPoint(pinIndex), linkId);
                 Inputs[index].IsLinked = true;
             }
         }
@@ -492,12 +517,12 @@ namespace LogicModel
             }
         }
 
-        public override void SetOutputTarget(int index, Shape target, int pinIndex)
+        public override void SetOutputTarget(int index, Shape target, int pinIndex, Guid linkId)
         {
             if (index >= 0 && index < Outputs.Length)
             {
                 if (!Outputs[index].Targets.Any(x => x.PinIndex == pinIndex && x.Owner == target))
-                    Outputs[index].Targets.Add(new PinInfo(target, true, pinIndex, GetInputPinPoint(pinIndex)));
+                    Outputs[index].Targets.Add(new PinInfo(target, true, pinIndex, GetInputPinPoint(pinIndex), linkId));
             }
         }
 
