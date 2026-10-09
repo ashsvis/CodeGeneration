@@ -217,15 +217,18 @@
             // 
             // tsmiCut
             // 
+            tsmiCut.Enabled = false;
             tsmiCut.Image = (Image)resources.GetObject("tsmiCut.Image");
             tsmiCut.ImageTransparentColor = Color.Magenta;
             tsmiCut.Name = "tsmiCut";
             tsmiCut.ShortcutKeys = Keys.Control | Keys.X;
             tsmiCut.Size = new Size(181, 22);
             tsmiCut.Text = "В&ырезать";
+            tsmiCut.Click += TsmiCut_Click;
             // 
             // tsmiCopy
             // 
+            tsmiCopy.Enabled = false;
             tsmiCopy.Image = (Image)resources.GetObject("tsmiCopy.Image");
             tsmiCopy.ImageTransparentColor = Color.Magenta;
             tsmiCopy.Name = "tsmiCopy";
@@ -236,12 +239,14 @@
             // 
             // tsmiPaste
             // 
+            tsmiPaste.Enabled = false;
             tsmiPaste.Image = (Image)resources.GetObject("tsmiPaste.Image");
             tsmiPaste.ImageTransparentColor = Color.Magenta;
             tsmiPaste.Name = "tsmiPaste";
             tsmiPaste.ShortcutKeys = Keys.Control | Keys.V;
             tsmiPaste.Size = new Size(181, 22);
             tsmiPaste.Text = "&Вставить";
+            tsmiPaste.Click += TsmiPaste_Click;
             // 
             // toolStripSeparator4
             // 
@@ -264,13 +269,13 @@
             // tsmiTuning
             // 
             tsmiTuning.Name = "tsmiTuning";
-            tsmiTuning.Size = new Size(180, 22);
+            tsmiTuning.Size = new Size(138, 22);
             tsmiTuning.Text = "&Настройки";
             // 
             // tsmiParameters
             // 
             tsmiParameters.Name = "tsmiParameters";
-            tsmiParameters.Size = new Size(180, 22);
+            tsmiParameters.Size = new Size(138, 22);
             tsmiParameters.Text = "&Параметры";
             // 
             // tsmiHelp
@@ -283,30 +288,30 @@
             // tsmiContent
             // 
             tsmiContent.Name = "tsmiContent";
-            tsmiContent.Size = new Size(180, 22);
+            tsmiContent.Size = new Size(158, 22);
             tsmiContent.Text = "&Содержимое";
             // 
             // tsmiIndex
             // 
             tsmiIndex.Name = "tsmiIndex";
-            tsmiIndex.Size = new Size(180, 22);
+            tsmiIndex.Size = new Size(158, 22);
             tsmiIndex.Text = "&Индекс";
             // 
             // tsmiSearch
             // 
             tsmiSearch.Name = "tsmiSearch";
-            tsmiSearch.Size = new Size(180, 22);
+            tsmiSearch.Size = new Size(158, 22);
             tsmiSearch.Text = "&Поиск";
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(177, 6);
+            toolStripSeparator5.Size = new Size(155, 6);
             // 
             // tsmiAbout
             // 
             tsmiAbout.Name = "tsmiAbout";
-            tsmiAbout.Size = new Size(180, 22);
+            tsmiAbout.Size = new Size(158, 22);
             tsmiAbout.Text = "&О программе…";
             // 
             // toolStrip1
@@ -365,15 +370,18 @@
             // tsbCut
             // 
             tsbCut.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCut.Enabled = false;
             tsbCut.Image = (Image)resources.GetObject("tsbCut.Image");
             tsbCut.ImageTransparentColor = Color.Magenta;
             tsbCut.Name = "tsbCut";
             tsbCut.Size = new Size(23, 22);
             tsbCut.Text = "Вы&резать";
+            tsbCut.Click += TsmiCut_Click;
             // 
             // tsbCopy
             // 
             tsbCopy.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCopy.Enabled = false;
             tsbCopy.Image = (Image)resources.GetObject("tsbCopy.Image");
             tsbCopy.ImageTransparentColor = Color.Magenta;
             tsbCopy.Name = "tsbCopy";
@@ -384,11 +392,13 @@
             // tsbPaste
             // 
             tsbPaste.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbPaste.Enabled = false;
             tsbPaste.Image = (Image)resources.GetObject("tsbPaste.Image");
             tsbPaste.ImageTransparentColor = Color.Magenta;
             tsbPaste.Name = "tsbPaste";
             tsbPaste.Size = new Size(23, 22);
             tsbPaste.Text = "&Вставить";
+            tsbPaste.Click += TsmiPaste_Click;
             // 
             // toolStripSeparator7
             // 
