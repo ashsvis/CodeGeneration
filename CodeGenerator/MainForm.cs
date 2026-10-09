@@ -80,6 +80,7 @@ namespace CodeGenerator
         private Shape? firstShape = null;
         private bool linkBuilding = false;
         private bool leftPressed = false;
+        private bool dragShapesPreview = false;
         private bool dragShapes = false;
         private bool dragCopiedShapes = false;
         private bool frameBuilding = false;
@@ -112,6 +113,7 @@ namespace CodeGenerator
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
             dragShapes = false;
+            dragShapesPreview = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
             shapes.ForEach(shape => shape.Hover = false);
@@ -181,7 +183,7 @@ namespace CodeGenerator
                     shape.Selected = true;
                     shape.Hover = true;
                     shapeFound = true;
-                    dragShapes = true;
+                    dragShapesPreview = true;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
                     if (e.Button == MouseButtons.Right)
                     {
@@ -282,6 +284,10 @@ namespace CodeGenerator
             }
             if (leftPressed)
             {
+                currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                if (!dragShapes && dragShapesPreview &&
+                    (Math.Abs(firstPoint.X - ((Point)currentPoint).X) > 3 || Math.Abs(firstPoint.Y - ((Point)currentPoint).Y) > 3))
+                    dragShapes = true;
                 if (dragShapes)
                 {
                     var ctrl = ModifierKeys.HasFlag(Keys.Control);
@@ -289,7 +295,6 @@ namespace CodeGenerator
                     var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     var dx = ePoint.X - firstPoint.X;
                     var dy = ePoint.Y - firstPoint.Y;
-                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                     if (dragCopiedShapes)
                     {
                         var copyed = CopySelectedToXml();
@@ -382,6 +387,7 @@ namespace CodeGenerator
                     leftPressed = false;
                     if (dragShapes)
                     {
+                        dragShapesPreview = false;
                         dragShapes = false;
                         List<Shape> shapesList = [];
                         foreach (var shape in shapes.Where(x => x.Selected))
