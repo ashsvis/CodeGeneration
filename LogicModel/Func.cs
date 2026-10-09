@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
@@ -8,12 +9,21 @@ namespace LogicModel
     {
         public const int BaseWidth = 48;
         public const int BaseHeight = 48;
+
+        [Browsable(false)]
         public int Width { get; set; } = BaseWidth;
+
+        [Browsable(false)]
         public int Height { get; set; } = BaseHeight;
+
         private int CalcHeight { get; set; }
         protected PinInput[] Inputs = [];
         protected PinOutput[] Outputs = [];
+
+        [Category("Common"), DisplayName("Function")]
         public string? FuncName { get; protected set; }
+
+        [Category("Common"), DisplayName("Description")]
         public string? FuncDesc { get; protected set; }
 
         public override Func DeepClone()
@@ -101,8 +111,10 @@ namespace LogicModel
             CalcHeight = maxPins > 1 ? step * (maxPins + 1) : Height;
         }
 
+        [Browsable(false)]
         public override Rectangle Bounds => new(Location.X, Location.Y, Width, CalcHeight);
-        
+
+        [Browsable(false)]
         public virtual AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All;
 
         public override GraphicsPath[] GetGraphicsPaths()

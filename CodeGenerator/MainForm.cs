@@ -105,6 +105,7 @@ namespace CodeGenerator
                 shapes.ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
+            pgProperties.SelectedObject = null;
             foreach (var shape in shapes.Select(x => x).Reverse())
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -114,6 +115,8 @@ namespace CodeGenerator
                     {
                         if (e.Button == MouseButtons.Left)
                         {
+                            pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == outputIndex);
+                            tcUtilites.SelectedTab = tpProperties;
                             shape.Click(point, (targetInfo) =>
                             {
                                 firstShape = shape;
@@ -138,6 +141,9 @@ namespace CodeGenerator
                         shapeFound = true;
                         if (e.Button == MouseButtons.Left)
                         {
+                            pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == inputIndex);
+                            tcUtilites.SelectedTab = tpProperties;
+
                             shape.Click(point, (targetInfo) => { });
                         }
                         else if (e.Button == MouseButtons.Right)
@@ -162,6 +168,11 @@ namespace CodeGenerator
                     {
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                         contextMenu.Show(drawPanel, e.Location);
+                    }
+                    else if (e.Button == MouseButtons.Left)
+                    {
+                        pgProperties.SelectedObject = shape;
+                        tcUtilites.SelectedTab = tpProperties;
                     }
                     break;
                 }
@@ -267,7 +278,11 @@ namespace CodeGenerator
                         foreach (var shape in shapes)
                         {
                             if (shape.Selected)
-                                copiedShapes.Add(shape.DeepClone());
+                            {
+                                Shape clone = shape.DeepClone();
+                                clone.Index = shapes.Count + copiedShapes.Count;
+                                copiedShapes.Add(clone);
+                            }
                         }
                         foreach (var link in links)
                         {
@@ -551,6 +566,7 @@ namespace CodeGenerator
             {
                 shapes.ForEach(shape => shape.Selected = false);
                 var shape = source.DeepClone();
+                shape.NewGuid();
                 shape.Location = Point.Add(shape.Location, new Size(12, 12));
                 shape.Selected = true;
                 shape.OnDelete += Shape_OnDelete;

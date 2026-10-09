@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
@@ -20,16 +21,31 @@ namespace PluginSupport
             id = Guid.NewGuid();
         }
 
+        [Browsable(false)]
         public Point Location { get; set; }
 
+        [Browsable(false)]
         public abstract Rectangle Bounds { get; }
+
+        [Browsable(false)]
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
+
+        [Browsable(false)]
         public Color Background { get; set; } = Color.FromArgb(50, 50, 50);
 
+        [Browsable(false)]
         public bool Selected { get; set; }
+
+        [Browsable(false)]
         public bool Hover { get; set; }
+
+        [Browsable(false)]
         public bool CanInputLink { get; set; }
+
+        [Browsable(false)]
         public bool CanOutputLink { get; set; }
+
+        [Browsable(false)]
         public int Index { get; set; }
 
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
