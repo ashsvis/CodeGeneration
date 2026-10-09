@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -19,8 +20,6 @@ namespace CodeGenerator
         private readonly Dictionary<string, Type> types = [];
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
-
-        private XElement? copycuted;
 
         public MainForm()
         {
@@ -88,10 +87,28 @@ namespace CodeGenerator
         private bool addShapes = false;
         private Shape? addShape;
 
+        private bool movePasted = false;
+        private XElement? copycuted;
+        private GraphicsPath[]? pasted;
+
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             leftPressed = e.Button == MouseButtons.Left;
+
+            if (movePasted)
+            {
+                movePasted = false;
+                if (e.Button == MouseButtons.Left)
+                {
+                    if (copycuted != null)
+                    {
+                        PasteFromXml(copycuted, shapes, links, firstPoint);
+                    }
+                }
+                return;
+            }
+
             if (e.Button == MouseButtons.Right)
                 contextMenu.Items.Clear();
             dragShapes = false;
@@ -278,7 +295,7 @@ namespace CodeGenerator
                         var copyed = CopySelectedToXml();
                         shapes.ForEach(x => x.Selected = false);
                         links.ForEach(x => x.Selected = false);
-                        PasteFromXml(copyed, shapes, links);
+                        PasteFromXml(copyed, shapes, links, Point.Empty);
                         dragCopiedShapes = false;
                     }
                     // перемещаем только выбранные фигуры
@@ -678,13 +695,27 @@ namespace CodeGenerator
                     }
                 }
             }
-            if (addShapes && addShape is Shape added && currentPoint is Point addpoint)
+
+            // рисуем перетягиваемую из библиотеки фигуру
+            if (addShapes && addShape is Shape added && currentPoint is Point _)
             {
-                // рисуем перетягиваемую из библиотеки фигуру
                 added.Location = drawPanel.GetLocation(MousePosition);
                 using var defaultpen = new Pen(added.Foreground);
                 using var brush = new SolidBrush(added.Background);
                 addShape.Draw(e.Graphics, defaultpen, brush);
+            }
+            // рисуем перетягиваемые после Paste фигуры
+            if (pasted != null && movePasted)
+            {
+                var r = pasted.Select(x => x.GetBounds()).OrderBy(x => x.Left).ThenBy(x => x.Top).First();
+                foreach (GraphicsPath path in pasted) 
+                {
+                    var loc = drawPanel.GetLocation(MousePosition);
+                    loc = Point.Add(loc, new Size(-(int)r.Left, -(int)r.Top));
+                    e.Graphics?.TranslateTransform(loc.X, loc.Y);
+                    e.Graphics?.DrawPath(Pens.Yellow, path);
+                    e.Graphics?.TranslateTransform(-loc.X, -loc.Y);
+                }
             }
 
             // рисование курсора при свободном движении указателя мыши
@@ -705,6 +736,7 @@ namespace CodeGenerator
                 e.Graphics?.DrawLine(linkpen, source, target);
             }
 
+            // рисуем резиновую рамку выделения объектов
             if (frameBuilding && ribbonRect is Rectangle rect)
             {
                 var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
@@ -1267,7 +1299,67 @@ namespace CodeGenerator
             return xmodel;
         }
 
-        private void PasteFromXml(XElement xmodel, List<Shape> shapes, List<Link> links)
+        private GraphicsPath[] PasteFromXml(XElement xmodel)
+        {
+            if (xmodel == null) return [];
+            List<Shape> pastedShapes = [];
+            List<Link> pastedLinks = [];
+            int n = 0;
+            foreach (var xelement in xmodel.Descendants())
+            {
+                if (types.ContainsKey($"{xelement.Name}"))
+                {
+                    var type = types[$"{xelement.Name}"];
+                    var obj = Activator.CreateInstance(type);
+                    if (obj is Shape shape)
+                    {
+                        shape.Selected = true;
+                        shape.Index = n++;
+                        shape.ReadContent(xelement);
+                        shape.OnDelete += Shape_OnDelete;
+                        shape.OnDeleteLink += Shape_OnDeleteLink;
+                        shape.OnMakeCopy += Shape_OnMakeCopy;
+                        pastedShapes.Add(shape);
+                    }
+                    else if (obj is Link link)
+                    {
+                        link.ReadContent(xelement);
+                        var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
+                        var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
+                        if (source != null && target != null)
+                        {
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            pastedLinks.Add(link);
+                        }
+                    }
+                }
+            }
+            foreach (var link in pastedLinks)
+            {
+                link.Selected = true;
+                var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
+                if (source != null)
+                {
+                    source.NewGuid();
+                    link.SourceId = source.Id;
+                }
+                var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
+                if (target != null)
+                {
+                    target.NewGuid();
+                    link.TargetId = target.Id;
+                }
+            }
+
+            List<GraphicsPath> list = [];
+            foreach (var shape in pastedShapes)
+                list.AddRange(shape.GetGraphicsPaths());
+            foreach (var link in pastedLinks)
+                list.AddRange(link.GetLinesPaths());
+            return [..list];
+        }
+
+        private void PasteFromXml(XElement xmodel, List<Shape> shapes, List<Link> links, Point point)
         {
             if (xmodel == null) return;
             List<Shape> pastedShapes = [];
@@ -1320,6 +1412,22 @@ namespace CodeGenerator
             }
             shapes.AddRange(pastedShapes);
             links.AddRange(pastedLinks);
+
+            var p = pastedShapes.Select(x => x.Location).OrderBy(x => x.X).ThenBy(x => x.Y).First();
+            foreach (var shape in pastedShapes)
+            {
+                shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
+            }
+            foreach (var link in pastedLinks)
+            {
+                link.StartPoint = Point.Add(link.StartPoint, new Size(point.X - p.X, point.Y - p.Y));
+                link.EndPoint = Point.Add(link.EndPoint, new Size(point.X - p.X, point.Y - p.Y));
+                var points = link.GetPoints();
+                for (var i = 0; i < points.Length; i++)
+                    points[i] = Point.Add(points[i], new Size(point.X - p.X, point.Y - p.Y));
+                link.SetPoints(points);
+            }
+
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1361,6 +1469,7 @@ namespace CodeGenerator
                 drawPanel.Reset();
                 drawPanel.Invalidate();
                 copycuted = null;
+                pasted = null;
             }
             finally
             {
@@ -1389,11 +1498,12 @@ namespace CodeGenerator
 
         private void TsmiPaste_Click(object sender, EventArgs e)
         {
-            if (copycuted != null)
+            if (copycuted != null && !movePasted)
             {
                 shapes.ForEach(x => x.Selected = false);
                 links.ForEach(x => x.Selected = false);
-                PasteFromXml(copycuted, shapes, links);
+                pasted = PasteFromXml(copycuted);
+                movePasted = true;
             }
         }
     }
