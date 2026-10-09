@@ -9,10 +9,8 @@ namespace LogicModel
         public override Shape? Source { get; set; }
         public override Guid SourceId { get; set; }
         public override int SourcePinIndex { get; set; }
-        public override int SourceIndex { get; set; }
         public override Shape? Target { get; set; }
         public override Guid TargetId { get; set; }
-        public override int TargetIndex { get; set; }
         public override int TargetPinIndex { get; set; }
         public override Point StartPoint { get; set; }
         public override Point EndPoint { get; set; }
@@ -32,17 +30,11 @@ namespace LogicModel
 
         public override PluginSupport.Link DeepClone()
         {
-            if (Source is Shape souloc)
-                this.SourceIndex = souloc.Index;
-            if (Target is Shape tarloc)
-                this.TargetIndex = tarloc.Index;
             var link = new LogicModel.Link()
             {
                 SourceId = this.SourceId,
-                SourceIndex = this.SourceIndex,
                 SourcePinIndex = this.SourcePinIndex,
                 TargetId = this.TargetId,
-                TargetIndex = this.TargetIndex,
                 TargetPinIndex = this.TargetPinIndex,
                 StartPoint = this.StartPoint,
                 EndPoint = this.EndPoint,
@@ -67,13 +59,13 @@ namespace LogicModel
             var xlink = new XElement($"{this.GetType().FullName}");
             if (Source is Shape souloc)
             {
-                xlink.Add(new XAttribute("Source", souloc.Index));
+                xlink.Add(new XAttribute("SourceId", souloc.Id));
                 if (SourcePinIndex > 0)
                     xlink.Add(new XAttribute("SourcePin", SourcePinIndex));
             }
             if (Target is Shape tarloc)
             {
-                xlink.Add(new XAttribute("Target", tarloc.Index));
+                xlink.Add(new XAttribute("TargetId", tarloc.Id));
                 if (TargetPinIndex > 0)
                     xlink.Add(new XAttribute("TargetPin", TargetPinIndex));
             }
@@ -86,15 +78,15 @@ namespace LogicModel
         public override void ReadContent(XElement xlink)
         {
             if (xlink == null || xlink.Name != $"{this.GetType().FullName}") return;
-            var sSource = xlink.Attribute("Source")?.Value;
-            if (!string.IsNullOrWhiteSpace(sSource))
-                SourceIndex = ParseHelper.ParseInteger(sSource, 0);
+            var sSourceId = xlink.Attribute("SourceId")?.Value;
+            if (!string.IsNullOrWhiteSpace(sSourceId))
+                SourceId = ParseHelper.ParseGuid(sSourceId, Guid.Empty);
             var sSourcePin = xlink.Attribute("SourcePin")?.Value;
             if (!string.IsNullOrWhiteSpace(sSourcePin))
                 SourcePinIndex = ParseHelper.ParseInteger(sSourcePin, 0);
-            var sTarget = xlink.Attribute("Target")?.Value;
-            if (!string.IsNullOrWhiteSpace(sTarget))
-                TargetIndex = ParseHelper.ParseInteger(sTarget, 0);
+            var sTargetId = xlink.Attribute("TargetId")?.Value;
+            if (!string.IsNullOrWhiteSpace(sTargetId))
+                TargetId = ParseHelper.ParseGuid(sTargetId, Guid.Empty);
             var sTargetPin = xlink.Attribute("TargetPin")?.Value;
             if (!string.IsNullOrWhiteSpace(sTargetPin))
                 TargetPinIndex = ParseHelper.ParseInteger(sTargetPin, 0);

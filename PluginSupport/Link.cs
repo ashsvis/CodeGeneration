@@ -18,10 +18,8 @@ namespace PluginSupport
         public abstract Shape? Source { get; set; }
         public abstract Guid SourceId { get; set; }
         public abstract int SourcePinIndex { get; set; }
-        public abstract int SourceIndex { get; set; }
         public abstract Shape? Target { get; set; }
         public abstract Guid TargetId { get; set; }
-        public abstract int TargetIndex { get; set; }
         public abstract int TargetPinIndex { get; set; }
         public abstract Point StartPoint { get; set; }
         public abstract Point EndPoint { get; set; }

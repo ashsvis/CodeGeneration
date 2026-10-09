@@ -311,7 +311,7 @@ namespace CodeGenerator
                             shape.Index = shapes.Count;
                             shapes.Add(shape);
                         }
-                       dragCopiedShapes = false;
+                        dragCopiedShapes = false;
                     }
                     // перемещаем только выбранные фигуры
                     List<Link> list = [];
@@ -581,7 +581,7 @@ namespace CodeGenerator
 
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
-            var linksForDelete = links.Where(x => x.Source == e.Source && 
+            var linksForDelete = links.Where(x => x.Source == e.Source &&
                 x.Target == e.Target && x.TargetPinIndex == e.TargetPinIndex).ToList();
             foreach (var link in linksForDelete)
             {
@@ -1030,7 +1030,7 @@ namespace CodeGenerator
 
                                 // если найдены оба, то отписывается
                                 if (source != null && target != null)
-                                   link.UnlinkToLocation(source, target);
+                                    link.UnlinkToLocation(source, target);
 
                                 // удаляем визуальную ссылку
                                 links.Remove(link);
@@ -1231,15 +1231,12 @@ namespace CodeGenerator
                     else if (obj is Link link)
                     {
                         link.ReadContent(xelement);
-                        if (link.SourceIndex >= 0 && link.SourceIndex < shapes.Count &&
-                            link.TargetIndex >= 0 && link.TargetIndex < shapes.Count)
+                        var source = shapes.FirstOrDefault(x => x.Id == link.SourceId);
+                        var target = shapes.FirstOrDefault(x => x.Id == link.TargetId);
+                        if (source != null && target != null)
                         {
-                            if (shapes[link.SourceIndex] is Shape source &&
-                                shapes[link.TargetIndex] is Shape target)
-                            {
-                                link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
-                                links.Add(link);
-                            }
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            links.Add(link);
                         }
                     }
                 }
@@ -1279,6 +1276,58 @@ namespace CodeGenerator
             }
             doc.Save(filename);
             modelChanged = false;
+        }
+
+        public XElement CopySelectedToXml()
+        {
+            var xmodel = new XElement("Copy");
+            foreach (var shape in shapes.Where(x => x.Selected))
+            {
+                var xshape = shape.WriteContent();
+                xmodel.Add(xshape);
+            }
+            foreach (var link in links.Where(x => x.Selected))
+            {
+                var xlink = link.WriteContent();
+                xmodel.Add(xlink);
+            }
+            return xmodel;
+        }
+
+        private void PasteFromXml(XElement xmodel)
+        {
+            if (xmodel == null) return;
+            List<Shape> shapes = [];
+            List<Link> links = [];
+            int n = 0;
+            foreach (var xelement in xmodel.Descendants())
+            {
+                if (types.ContainsKey($"{xelement.Name}"))
+                {
+                    var type = types[$"{xelement.Name}"];
+                    var obj = Activator.CreateInstance(type);
+                    if (obj is Shape shape)
+                    {
+                        shape.Index = n++;
+                        shape.ReadContent(xelement);
+                        shape.OnDelete += Shape_OnDelete;
+                        shape.OnDeleteLink += Shape_OnDeleteLink;
+                        shape.OnMakeCopy += Shape_OnMakeCopy;
+                        shapes.Add(shape);
+                    }
+                    else if (obj is Link link)
+                    {
+                        link.ReadContent(xelement);
+                        var source = shapes.FirstOrDefault(x => x.Id == link.SourceId);
+                        var target = shapes.FirstOrDefault(x => x.Id == link.TargetId);
+                        if (source != null && target != null)
+                        {
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            links.Add(link);
+                        }
+                    }
+                }
+            }
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1330,6 +1379,12 @@ namespace CodeGenerator
         {
             tsmiSave.Enabled = tsbSave.Enabled = modelChanged;
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
+        }
+
+        private void TsmiCopy_Click(object sender, EventArgs e)
+        {
+            var content = CopySelectedToXml();
+            PasteFromXml(content);
         }
     }
 }

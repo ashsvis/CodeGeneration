@@ -38,37 +38,37 @@
             tsmiSave = new ToolStripMenuItem();
             tsmiSaveAs = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
-            печатьToolStripMenuItem = new ToolStripMenuItem();
-            предварительныйпросмотрToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPrint = new ToolStripMenuItem();
+            tsmiPreview = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
-            изменитьToolStripMenuItem = new ToolStripMenuItem();
-            отменитьToolStripMenuItem = new ToolStripMenuItem();
-            повторитьToolStripMenuItem = new ToolStripMenuItem();
+            tsmiChange = new ToolStripMenuItem();
+            tsmiUndo = new ToolStripMenuItem();
+            tsmiRedo = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
-            вырезатьToolStripMenuItem = new ToolStripMenuItem();
-            копироватьToolStripMenuItem = new ToolStripMenuItem();
-            вставитьToolStripMenuItem = new ToolStripMenuItem();
+            tsmiCut = new ToolStripMenuItem();
+            tsmiCopy = new ToolStripMenuItem();
+            tsmiPaste = new ToolStripMenuItem();
             toolStripSeparator4 = new ToolStripSeparator();
-            выбратьвсеToolStripMenuItem = new ToolStripMenuItem();
-            инструментыToolStripMenuItem = new ToolStripMenuItem();
-            настройкиToolStripMenuItem = new ToolStripMenuItem();
-            параметрыToolStripMenuItem = new ToolStripMenuItem();
-            справкаToolStripMenuItem = new ToolStripMenuItem();
-            содержимоеToolStripMenuItem = new ToolStripMenuItem();
-            индексToolStripMenuItem = new ToolStripMenuItem();
-            поискToolStripMenuItem = new ToolStripMenuItem();
+            tsmiSelectAll = new ToolStripMenuItem();
+            tsmiTools = new ToolStripMenuItem();
+            tsmiTuning = new ToolStripMenuItem();
+            tsmiParameters = new ToolStripMenuItem();
+            tsmiHelp = new ToolStripMenuItem();
+            tsmiContent = new ToolStripMenuItem();
+            tsmiIndex = new ToolStripMenuItem();
+            tsmiSearch = new ToolStripMenuItem();
             toolStripSeparator5 = new ToolStripSeparator();
-            опрограммеToolStripMenuItem = new ToolStripMenuItem();
+            tsmiAbout = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
             tsbCreate = new ToolStripButton();
             tsbOpen = new ToolStripButton();
             tsbSave = new ToolStripButton();
-            печатьToolStripButton = new ToolStripButton();
+            tsbPrint = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
-            вырезатьToolStripButton = new ToolStripButton();
-            копироватьToolStripButton = new ToolStripButton();
-            вставитьToolStripButton = new ToolStripButton();
+            tsbCut = new ToolStripButton();
+            tsbCopy = new ToolStripButton();
+            tsbPaste = new ToolStripButton();
             toolStripSeparator7 = new ToolStripSeparator();
             справкаToolStripButton = new ToolStripButton();
             statusStrip1 = new StatusStrip();
@@ -99,7 +99,7 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, изменитьToolStripMenuItem, инструментыToolStripMenuItem, справкаToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, tsmiChange, tsmiTools, tsmiHelp });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
@@ -108,7 +108,7 @@
             // 
             // tsmiFile
             // 
-            tsmiFile.DropDownItems.AddRange(new ToolStripItem[] { tsmiCreate, tsmiOpenFile, toolStripSeparator, tsmiSave, tsmiSaveAs, toolStripSeparator1, печатьToolStripMenuItem, предварительныйпросмотрToolStripMenuItem, toolStripSeparator2, tsmiExit });
+            tsmiFile.DropDownItems.AddRange(new ToolStripItem[] { tsmiCreate, tsmiOpenFile, toolStripSeparator, tsmiSave, tsmiSaveAs, toolStripSeparator1, tsmiPrint, tsmiPreview, toolStripSeparator2, tsmiExit });
             tsmiFile.Name = "tsmiFile";
             tsmiFile.Size = new Size(48, 20);
             tsmiFile.Text = "&Файл";
@@ -160,22 +160,22 @@
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(230, 6);
             // 
-            // печатьToolStripMenuItem
+            // tsmiPrint
             // 
-            печатьToolStripMenuItem.Image = (Image)resources.GetObject("печатьToolStripMenuItem.Image");
-            печатьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            печатьToolStripMenuItem.Name = "печатьToolStripMenuItem";
-            печатьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.P;
-            печатьToolStripMenuItem.Size = new Size(233, 22);
-            печатьToolStripMenuItem.Text = "&Печать";
+            tsmiPrint.Image = (Image)resources.GetObject("tsmiPrint.Image");
+            tsmiPrint.ImageTransparentColor = Color.Magenta;
+            tsmiPrint.Name = "tsmiPrint";
+            tsmiPrint.ShortcutKeys = Keys.Control | Keys.P;
+            tsmiPrint.Size = new Size(233, 22);
+            tsmiPrint.Text = "&Печать";
             // 
-            // предварительныйпросмотрToolStripMenuItem
+            // tsmiPreview
             // 
-            предварительныйпросмотрToolStripMenuItem.Image = (Image)resources.GetObject("предварительныйпросмотрToolStripMenuItem.Image");
-            предварительныйпросмотрToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            предварительныйпросмотрToolStripMenuItem.Name = "предварительныйпросмотрToolStripMenuItem";
-            предварительныйпросмотрToolStripMenuItem.Size = new Size(233, 22);
-            предварительныйпросмотрToolStripMenuItem.Text = "Предварительный про&смотр";
+            tsmiPreview.Image = (Image)resources.GetObject("tsmiPreview.Image");
+            tsmiPreview.ImageTransparentColor = Color.Magenta;
+            tsmiPreview.Name = "tsmiPreview";
+            tsmiPreview.Size = new Size(233, 22);
+            tsmiPreview.Text = "Предварительный про&смотр";
             // 
             // toolStripSeparator2
             // 
@@ -189,128 +189,129 @@
             tsmiExit.Text = "Вы&ход";
             tsmiExit.Click += TsmiExit_Click;
             // 
-            // изменитьToolStripMenuItem
+            // tsmiChange
             // 
-            изменитьToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { отменитьToolStripMenuItem, повторитьToolStripMenuItem, toolStripSeparator3, вырезатьToolStripMenuItem, копироватьToolStripMenuItem, вставитьToolStripMenuItem, toolStripSeparator4, выбратьвсеToolStripMenuItem });
-            изменитьToolStripMenuItem.Name = "изменитьToolStripMenuItem";
-            изменитьToolStripMenuItem.Size = new Size(73, 20);
-            изменитьToolStripMenuItem.Text = "&Изменить";
+            tsmiChange.DropDownItems.AddRange(new ToolStripItem[] { tsmiUndo, tsmiRedo, toolStripSeparator3, tsmiCut, tsmiCopy, tsmiPaste, toolStripSeparator4, tsmiSelectAll });
+            tsmiChange.Name = "tsmiChange";
+            tsmiChange.Size = new Size(73, 20);
+            tsmiChange.Text = "&Изменить";
             // 
-            // отменитьToolStripMenuItem
+            // tsmiUndo
             // 
-            отменитьToolStripMenuItem.Name = "отменитьToolStripMenuItem";
-            отменитьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
-            отменитьToolStripMenuItem.Size = new Size(181, 22);
-            отменитьToolStripMenuItem.Text = "&Отменить";
+            tsmiUndo.Name = "tsmiUndo";
+            tsmiUndo.ShortcutKeys = Keys.Control | Keys.Z;
+            tsmiUndo.Size = new Size(181, 22);
+            tsmiUndo.Text = "&Отменить";
             // 
-            // повторитьToolStripMenuItem
+            // tsmiRedo
             // 
-            повторитьToolStripMenuItem.Name = "повторитьToolStripMenuItem";
-            повторитьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Y;
-            повторитьToolStripMenuItem.Size = new Size(181, 22);
-            повторитьToolStripMenuItem.Text = "&Повторить";
+            tsmiRedo.Name = "tsmiRedo";
+            tsmiRedo.ShortcutKeys = Keys.Control | Keys.Y;
+            tsmiRedo.Size = new Size(181, 22);
+            tsmiRedo.Text = "&Повторить";
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new Size(178, 6);
             // 
-            // вырезатьToolStripMenuItem
+            // tsmiCut
             // 
-            вырезатьToolStripMenuItem.Image = (Image)resources.GetObject("вырезатьToolStripMenuItem.Image");
-            вырезатьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            вырезатьToolStripMenuItem.Name = "вырезатьToolStripMenuItem";
-            вырезатьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.X;
-            вырезатьToolStripMenuItem.Size = new Size(181, 22);
-            вырезатьToolStripMenuItem.Text = "В&ырезать";
+            tsmiCut.Image = (Image)resources.GetObject("tsmiCut.Image");
+            tsmiCut.ImageTransparentColor = Color.Magenta;
+            tsmiCut.Name = "tsmiCut";
+            tsmiCut.ShortcutKeys = Keys.Control | Keys.X;
+            tsmiCut.Size = new Size(181, 22);
+            tsmiCut.Text = "В&ырезать";
             // 
-            // копироватьToolStripMenuItem
+            // tsmiCopy
             // 
-            копироватьToolStripMenuItem.Image = (Image)resources.GetObject("копироватьToolStripMenuItem.Image");
-            копироватьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            копироватьToolStripMenuItem.Name = "копироватьToolStripMenuItem";
-            копироватьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
-            копироватьToolStripMenuItem.Size = new Size(181, 22);
-            копироватьToolStripMenuItem.Text = "&Копировать";
+            tsmiCopy.Image = (Image)resources.GetObject("tsmiCopy.Image");
+            tsmiCopy.ImageTransparentColor = Color.Magenta;
+            tsmiCopy.Name = "tsmiCopy";
+            tsmiCopy.ShortcutKeys = Keys.Control | Keys.C;
+            tsmiCopy.Size = new Size(181, 22);
+            tsmiCopy.Text = "&Копировать";
+            tsmiCopy.Click += TsmiCopy_Click;
             // 
-            // вставитьToolStripMenuItem
+            // tsmiPaste
             // 
-            вставитьToolStripMenuItem.Image = (Image)resources.GetObject("вставитьToolStripMenuItem.Image");
-            вставитьToolStripMenuItem.ImageTransparentColor = Color.Magenta;
-            вставитьToolStripMenuItem.Name = "вставитьToolStripMenuItem";
-            вставитьToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
-            вставитьToolStripMenuItem.Size = new Size(181, 22);
-            вставитьToolStripMenuItem.Text = "&Вставить";
+            tsmiPaste.Image = (Image)resources.GetObject("tsmiPaste.Image");
+            tsmiPaste.ImageTransparentColor = Color.Magenta;
+            tsmiPaste.Name = "tsmiPaste";
+            tsmiPaste.ShortcutKeys = Keys.Control | Keys.V;
+            tsmiPaste.Size = new Size(181, 22);
+            tsmiPaste.Text = "&Вставить";
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
             toolStripSeparator4.Size = new Size(178, 6);
             // 
-            // выбратьвсеToolStripMenuItem
+            // tsmiSelectAll
             // 
-            выбратьвсеToolStripMenuItem.Name = "выбратьвсеToolStripMenuItem";
-            выбратьвсеToolStripMenuItem.Size = new Size(181, 22);
-            выбратьвсеToolStripMenuItem.Text = "Выбрать &все";
+            tsmiSelectAll.Name = "tsmiSelectAll";
+            tsmiSelectAll.Size = new Size(181, 22);
+            tsmiSelectAll.Text = "Выбрать &все";
             // 
-            // инструментыToolStripMenuItem
+            // tsmiTools
             // 
-            инструментыToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { настройкиToolStripMenuItem, параметрыToolStripMenuItem });
-            инструментыToolStripMenuItem.Name = "инструментыToolStripMenuItem";
-            инструментыToolStripMenuItem.Size = new Size(95, 20);
-            инструментыToolStripMenuItem.Text = "&Инструменты";
+            tsmiTools.DropDownItems.AddRange(new ToolStripItem[] { tsmiTuning, tsmiParameters });
+            tsmiTools.Name = "tsmiTools";
+            tsmiTools.Size = new Size(95, 20);
+            tsmiTools.Text = "&Инструменты";
             // 
-            // настройкиToolStripMenuItem
+            // tsmiTuning
             // 
-            настройкиToolStripMenuItem.Name = "настройкиToolStripMenuItem";
-            настройкиToolStripMenuItem.Size = new Size(138, 22);
-            настройкиToolStripMenuItem.Text = "&Настройки";
+            tsmiTuning.Name = "tsmiTuning";
+            tsmiTuning.Size = new Size(180, 22);
+            tsmiTuning.Text = "&Настройки";
             // 
-            // параметрыToolStripMenuItem
+            // tsmiParameters
             // 
-            параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
-            параметрыToolStripMenuItem.Size = new Size(138, 22);
-            параметрыToolStripMenuItem.Text = "&Параметры";
+            tsmiParameters.Name = "tsmiParameters";
+            tsmiParameters.Size = new Size(180, 22);
+            tsmiParameters.Text = "&Параметры";
             // 
-            // справкаToolStripMenuItem
+            // tsmiHelp
             // 
-            справкаToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { содержимоеToolStripMenuItem, индексToolStripMenuItem, поискToolStripMenuItem, toolStripSeparator5, опрограммеToolStripMenuItem });
-            справкаToolStripMenuItem.Name = "справкаToolStripMenuItem";
-            справкаToolStripMenuItem.Size = new Size(65, 20);
-            справкаToolStripMenuItem.Text = "&Справка";
+            tsmiHelp.DropDownItems.AddRange(new ToolStripItem[] { tsmiContent, tsmiIndex, tsmiSearch, toolStripSeparator5, tsmiAbout });
+            tsmiHelp.Name = "tsmiHelp";
+            tsmiHelp.Size = new Size(65, 20);
+            tsmiHelp.Text = "&Справка";
             // 
-            // содержимоеToolStripMenuItem
+            // tsmiContent
             // 
-            содержимоеToolStripMenuItem.Name = "содержимоеToolStripMenuItem";
-            содержимоеToolStripMenuItem.Size = new Size(158, 22);
-            содержимоеToolStripMenuItem.Text = "&Содержимое";
+            tsmiContent.Name = "tsmiContent";
+            tsmiContent.Size = new Size(180, 22);
+            tsmiContent.Text = "&Содержимое";
             // 
-            // индексToolStripMenuItem
+            // tsmiIndex
             // 
-            индексToolStripMenuItem.Name = "индексToolStripMenuItem";
-            индексToolStripMenuItem.Size = new Size(158, 22);
-            индексToolStripMenuItem.Text = "&Индекс";
+            tsmiIndex.Name = "tsmiIndex";
+            tsmiIndex.Size = new Size(180, 22);
+            tsmiIndex.Text = "&Индекс";
             // 
-            // поискToolStripMenuItem
+            // tsmiSearch
             // 
-            поискToolStripMenuItem.Name = "поискToolStripMenuItem";
-            поискToolStripMenuItem.Size = new Size(158, 22);
-            поискToolStripMenuItem.Text = "&Поиск";
+            tsmiSearch.Name = "tsmiSearch";
+            tsmiSearch.Size = new Size(180, 22);
+            tsmiSearch.Text = "&Поиск";
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(155, 6);
+            toolStripSeparator5.Size = new Size(177, 6);
             // 
-            // опрограммеToolStripMenuItem
+            // tsmiAbout
             // 
-            опрограммеToolStripMenuItem.Name = "опрограммеToolStripMenuItem";
-            опрограммеToolStripMenuItem.Size = new Size(158, 22);
-            опрограммеToolStripMenuItem.Text = "&О программе…";
+            tsmiAbout.Name = "tsmiAbout";
+            tsmiAbout.Size = new Size(180, 22);
+            tsmiAbout.Text = "&О программе…";
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, печатьToolStripButton, toolStripSeparator6, вырезатьToolStripButton, копироватьToolStripButton, вставитьToolStripButton, toolStripSeparator7, справкаToolStripButton });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, справкаToolStripButton });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -347,46 +348,47 @@
             tsbSave.Text = "&Сохранить";
             tsbSave.Click += TsmiSave_Click;
             // 
-            // печатьToolStripButton
+            // tsbPrint
             // 
-            печатьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            печатьToolStripButton.Image = (Image)resources.GetObject("печатьToolStripButton.Image");
-            печатьToolStripButton.ImageTransparentColor = Color.Magenta;
-            печатьToolStripButton.Name = "печатьToolStripButton";
-            печатьToolStripButton.Size = new Size(23, 22);
-            печатьToolStripButton.Text = "&Печать";
+            tsbPrint.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbPrint.Image = (Image)resources.GetObject("tsbPrint.Image");
+            tsbPrint.ImageTransparentColor = Color.Magenta;
+            tsbPrint.Name = "tsbPrint";
+            tsbPrint.Size = new Size(23, 22);
+            tsbPrint.Text = "&Печать";
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
             toolStripSeparator6.Size = new Size(6, 25);
             // 
-            // вырезатьToolStripButton
+            // tsbCut
             // 
-            вырезатьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            вырезатьToolStripButton.Image = (Image)resources.GetObject("вырезатьToolStripButton.Image");
-            вырезатьToolStripButton.ImageTransparentColor = Color.Magenta;
-            вырезатьToolStripButton.Name = "вырезатьToolStripButton";
-            вырезатьToolStripButton.Size = new Size(23, 22);
-            вырезатьToolStripButton.Text = "Вы&резать";
+            tsbCut.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCut.Image = (Image)resources.GetObject("tsbCut.Image");
+            tsbCut.ImageTransparentColor = Color.Magenta;
+            tsbCut.Name = "tsbCut";
+            tsbCut.Size = new Size(23, 22);
+            tsbCut.Text = "Вы&резать";
             // 
-            // копироватьToolStripButton
+            // tsbCopy
             // 
-            копироватьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            копироватьToolStripButton.Image = (Image)resources.GetObject("копироватьToolStripButton.Image");
-            копироватьToolStripButton.ImageTransparentColor = Color.Magenta;
-            копироватьToolStripButton.Name = "копироватьToolStripButton";
-            копироватьToolStripButton.Size = new Size(23, 22);
-            копироватьToolStripButton.Text = "&Копировать";
+            tsbCopy.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCopy.Image = (Image)resources.GetObject("tsbCopy.Image");
+            tsbCopy.ImageTransparentColor = Color.Magenta;
+            tsbCopy.Name = "tsbCopy";
+            tsbCopy.Size = new Size(23, 22);
+            tsbCopy.Text = "&Копировать";
+            tsbCopy.Click += TsmiCopy_Click;
             // 
-            // вставитьToolStripButton
+            // tsbPaste
             // 
-            вставитьToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            вставитьToolStripButton.Image = (Image)resources.GetObject("вставитьToolStripButton.Image");
-            вставитьToolStripButton.ImageTransparentColor = Color.Magenta;
-            вставитьToolStripButton.Name = "вставитьToolStripButton";
-            вставитьToolStripButton.Size = new Size(23, 22);
-            вставитьToolStripButton.Text = "&Вставить";
+            tsbPaste.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbPaste.Image = (Image)resources.GetObject("tsbPaste.Image");
+            tsbPaste.ImageTransparentColor = Color.Magenta;
+            tsbPaste.Name = "tsbPaste";
+            tsbPaste.Size = new Size(23, 22);
+            tsbPaste.Text = "&Вставить";
             // 
             // toolStripSeparator7
             // 
@@ -592,37 +594,37 @@
         private ToolStripMenuItem tsmiSave;
         private ToolStripMenuItem tsmiSaveAs;
         private ToolStripSeparator toolStripSeparator1;
-        private ToolStripMenuItem печатьToolStripMenuItem;
-        private ToolStripMenuItem предварительныйпросмотрToolStripMenuItem;
+        private ToolStripMenuItem tsmiPrint;
+        private ToolStripMenuItem tsmiPreview;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem tsmiExit;
-        private ToolStripMenuItem изменитьToolStripMenuItem;
-        private ToolStripMenuItem отменитьToolStripMenuItem;
-        private ToolStripMenuItem повторитьToolStripMenuItem;
+        private ToolStripMenuItem tsmiChange;
+        private ToolStripMenuItem tsmiUndo;
+        private ToolStripMenuItem tsmiRedo;
         private ToolStripSeparator toolStripSeparator3;
-        private ToolStripMenuItem вырезатьToolStripMenuItem;
-        private ToolStripMenuItem копироватьToolStripMenuItem;
-        private ToolStripMenuItem вставитьToolStripMenuItem;
+        private ToolStripMenuItem tsmiCut;
+        private ToolStripMenuItem tsmiCopy;
+        private ToolStripMenuItem tsmiPaste;
         private ToolStripSeparator toolStripSeparator4;
-        private ToolStripMenuItem выбратьвсеToolStripMenuItem;
-        private ToolStripMenuItem инструментыToolStripMenuItem;
-        private ToolStripMenuItem настройкиToolStripMenuItem;
-        private ToolStripMenuItem параметрыToolStripMenuItem;
-        private ToolStripMenuItem справкаToolStripMenuItem;
-        private ToolStripMenuItem содержимоеToolStripMenuItem;
-        private ToolStripMenuItem индексToolStripMenuItem;
-        private ToolStripMenuItem поискToolStripMenuItem;
+        private ToolStripMenuItem tsmiSelectAll;
+        private ToolStripMenuItem tsmiTools;
+        private ToolStripMenuItem tsmiTuning;
+        private ToolStripMenuItem tsmiParameters;
+        private ToolStripMenuItem tsmiHelp;
+        private ToolStripMenuItem tsmiContent;
+        private ToolStripMenuItem tsmiIndex;
+        private ToolStripMenuItem tsmiSearch;
         private ToolStripSeparator toolStripSeparator5;
-        private ToolStripMenuItem опрограммеToolStripMenuItem;
+        private ToolStripMenuItem tsmiAbout;
         private ToolStrip toolStrip1;
         private ToolStripButton tsbCreate;
         private ToolStripButton tsbOpen;
         private ToolStripButton tsbSave;
-        private ToolStripButton печатьToolStripButton;
+        private ToolStripButton tsbPrint;
         private ToolStripSeparator toolStripSeparator6;
-        private ToolStripButton вырезатьToolStripButton;
-        private ToolStripButton копироватьToolStripButton;
-        private ToolStripButton вставитьToolStripButton;
+        private ToolStripButton tsbCut;
+        private ToolStripButton tsbCopy;
+        private ToolStripButton tsbPaste;
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripButton справкаToolStripButton;
         private StatusStrip statusStrip1;

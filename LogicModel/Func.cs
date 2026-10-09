@@ -2,6 +2,7 @@ using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace LogicModel
 {
@@ -49,6 +50,7 @@ namespace LogicModel
         public override XElement WriteContent()
         {
             var xfunc = new XElement($"{this.GetType().FullName}");
+            xfunc.Add(new XAttribute("Id", Id));
             xfunc.Add(new XAttribute("X", Location.X));
             xfunc.Add(new XAttribute("Y", Location.Y));
             var index = 0;
@@ -73,6 +75,9 @@ namespace LogicModel
         public override void ReadContent(XElement xfunc)
         {
             if (xfunc == null || xfunc.Name != $"{this.GetType().FullName}") return;
+            var sId = xfunc.Attribute("Id")?.Value;
+            if (!string.IsNullOrWhiteSpace(sId) && Guid.TryParse(sId, out Guid objId))
+                id = objId;
             var sLeft = xfunc.Attribute("X")?.Value;
             var sTop = xfunc.Attribute("Y")?.Value;
             if (!string.IsNullOrWhiteSpace(sLeft) && !string.IsNullOrWhiteSpace(sTop))

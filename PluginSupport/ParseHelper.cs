@@ -70,5 +70,17 @@
             var value = line;
             return bool.TryParse(value, out bool x) ? x : defaultValue;
         }
+
+        /// <summary>
+        /// Разбор символьной записи для получения Guid значения
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public static Guid ParseGuid(string line, Guid defaultValue)
+        {
+            if (string.IsNullOrWhiteSpace(line)) return defaultValue;
+            var value = line;
+            return Guid.TryParse(value, out Guid x) ? x : defaultValue;
+        }
     }
 }
