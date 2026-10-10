@@ -200,20 +200,20 @@
             // 
             tsmiUndo.Name = "tsmiUndo";
             tsmiUndo.ShortcutKeys = Keys.Control | Keys.Z;
-            tsmiUndo.Size = new Size(181, 22);
+            tsmiUndo.Size = new Size(184, 22);
             tsmiUndo.Text = "&Отменить";
             // 
             // tsmiRedo
             // 
             tsmiRedo.Name = "tsmiRedo";
             tsmiRedo.ShortcutKeys = Keys.Control | Keys.Y;
-            tsmiRedo.Size = new Size(181, 22);
+            tsmiRedo.Size = new Size(184, 22);
             tsmiRedo.Text = "&Повторить";
             // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(178, 6);
+            toolStripSeparator3.Size = new Size(181, 6);
             // 
             // tsmiCut
             // 
@@ -222,7 +222,7 @@
             tsmiCut.ImageTransparentColor = Color.Magenta;
             tsmiCut.Name = "tsmiCut";
             tsmiCut.ShortcutKeys = Keys.Control | Keys.X;
-            tsmiCut.Size = new Size(181, 22);
+            tsmiCut.Size = new Size(184, 22);
             tsmiCut.Text = "В&ырезать";
             tsmiCut.Click += TsmiCut_Click;
             // 
@@ -233,7 +233,7 @@
             tsmiCopy.ImageTransparentColor = Color.Magenta;
             tsmiCopy.Name = "tsmiCopy";
             tsmiCopy.ShortcutKeys = Keys.Control | Keys.C;
-            tsmiCopy.Size = new Size(181, 22);
+            tsmiCopy.Size = new Size(184, 22);
             tsmiCopy.Text = "&Копировать";
             tsmiCopy.Click += TsmiCopy_Click;
             // 
@@ -244,20 +244,22 @@
             tsmiPaste.ImageTransparentColor = Color.Magenta;
             tsmiPaste.Name = "tsmiPaste";
             tsmiPaste.ShortcutKeys = Keys.Control | Keys.V;
-            tsmiPaste.Size = new Size(181, 22);
+            tsmiPaste.Size = new Size(184, 22);
             tsmiPaste.Text = "&Вставить";
             tsmiPaste.Click += TsmiPaste_Click;
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(178, 6);
+            toolStripSeparator4.Size = new Size(181, 6);
             // 
             // tsmiSelectAll
             // 
             tsmiSelectAll.Name = "tsmiSelectAll";
-            tsmiSelectAll.Size = new Size(181, 22);
+            tsmiSelectAll.ShortcutKeys = Keys.Control | Keys.A;
+            tsmiSelectAll.Size = new Size(184, 22);
             tsmiSelectAll.Text = "Выбрать &все";
+            tsmiSelectAll.Click += TsmiSelectAll_Click;
             // 
             // tsmiTools
             // 

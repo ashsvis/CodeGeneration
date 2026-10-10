@@ -10,7 +10,7 @@ namespace LogicModel
         public double Value { get; set; }
         public ValueKind Kind { get; set; }
         public bool IsInverted { get; set; }
-        public bool IsLinked { get; set; }
+        public bool IsLinked => Source != null;
         public PinInfo? Source { get; set; }
 
         public PinInput DeepClone()
@@ -30,9 +30,6 @@ namespace LogicModel
             var sinverted = xinput.Attribute("IsInverted")?.Value;
             if (!string.IsNullOrWhiteSpace(sinverted))
                 IsInverted = ParseHelper.ParseBoolean(sinverted, false);
-            var slinked = xinput.Attribute("IsLinked")?.Value;
-            if (!string.IsNullOrWhiteSpace(slinked))
-                IsLinked = ParseHelper.ParseBoolean(slinked, false);
         }
 
         public bool NoDataToWrite()
@@ -49,8 +46,6 @@ namespace LogicModel
                 xfunc.Add(new XAttribute("Value", Value));
             if (IsInverted)
                 xfunc.Add(new XAttribute("IsInverted", IsInverted));
-            if (IsLinked)
-                xfunc.Add(new XAttribute("IsLinked", IsLinked));
             return xfunc;
         }
     }

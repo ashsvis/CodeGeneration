@@ -509,7 +509,6 @@ namespace LogicModel
             if (index >= 0 && index < Inputs.Length)
             {
                 Inputs[index].Source = new PinInfo(source, false, pinIndex, GetOutputPinPoint(pinIndex), linkId);
-                Inputs[index].IsLinked = true;
             }
         }
 
@@ -518,7 +517,6 @@ namespace LogicModel
             if (index >= 0 && index < Inputs.Length)
             {
                 Inputs[index].Source = null;
-                Inputs[index].IsLinked = false;
             }
         }
 
