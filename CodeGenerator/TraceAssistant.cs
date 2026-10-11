@@ -109,7 +109,7 @@ namespace CodeGenerator
             InitField(shapes, links);
             if (field == null) return points;
             // очистка старых точек линии связи
-            link.SetPoints([]);
+            ////link.SetPoints([]);
             Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
             foreach (var shape in shapes.Skip(1))
                 rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));

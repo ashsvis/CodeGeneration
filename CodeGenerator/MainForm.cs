@@ -396,11 +396,26 @@ namespace CodeGenerator
                         List<Shape> shapesList = [];
                         foreach (var shape in shapes.Where(x => x.Selected))
                         {
-                            if (!shapesList.Contains(shape)) shapesList.Add(shape);
-                            foreach (var link in links.Where(x => x.Target == shape))
+                            if (!shapesList.Contains(shape))
                             {
-                                if (link.Source != null && !shapesList.Contains(link.Source))
-                                    shapesList.Add(link.Source);
+                                shapesList.Add(shape);
+                                foreach (var link in links.Where(x => x.Source == shape).ToList())
+                                {
+                                    if (link.Source != null && !shapesList.Contains(link.Source))
+                                        shapesList.Add(link.Source);
+                                }
+                            }
+                        }
+                        foreach (var link in links)
+                        {
+                            if (link.Selected)
+                            {
+                                link.StartPoint = MovePointToGrid(link.StartPoint);
+                                link.EndPoint = MovePointToGrid(link.EndPoint);
+                                var pts = link.GetPoints();
+                                for (var i = 0; i < pts.Length; i++)
+                                    pts[i] = MovePointToGrid(pts[i]);
+                                link.SetPoints(pts);
                             }
                         }
                         List<Link> linksList = [];
@@ -408,25 +423,37 @@ namespace CodeGenerator
                         {
                             shape.Location = MovePointToGrid(shape.Location);
                             var linksFromSource = links.Where(x => x.Source == shape);
-                            if (shape.GetOutputPinPoint(0) is Point spoint)
+                            foreach (var link in linksFromSource)
                             {
-                                foreach (var link in linksFromSource)
-                                {
-                                    link.StartPoint = spoint;
-                                    if (!linksList.Contains(link)) linksList.Add(link);
-                                }
+                                if (!linksList.Contains(link))
+                                    linksList.Add(link);
                             }
                             for (var i = 0; i < shape.CountInputs(); i++)
                             {
                                 var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                                if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
+                                if (link != null && !linksList.Contains(link))
                                 {
-                                    link.EndPoint = tpoint;
-                                    if (!linksList.Contains(link)) linksList.Add(link);
+                                    linksList.Add(link);
+                                    linksFromSource = links.Where(x => x != link && x.Source == link.Source);
+                                    foreach (var link2 in linksFromSource)
+                                    {
+                                        if (!linksList.Contains(link2))
+                                            linksList.Add(link2);
+                                    }
                                 }
                             }
                         }
-                        linksList.ForEach(x => x.SetPoints([]));
+
+                        linksList.RemoveAll(x => x.Source != null && shapesList.Contains(x.Source) && x.Target != null && shapesList.Contains(x.Target));
+
+                        linksList.ForEach(x => 
+                        {
+                            if (x.Source != null && x.Source.GetOutputPinPoint(0) is Point spoint)
+                                x.StartPoint = spoint;
+                            if (x.Target != null && x.Target.GetInputPinPoint(x.TargetPinIndex) is Point tpoint)
+                                x.EndPoint = tpoint;
+                            x.SetPoints([]); 
+                        });
                         foreach (var link in linksList.OrderBy(x => x.Length))
                         {
                             var points = TraceAssistant.BuildWaveInField(shapes, links, link);
