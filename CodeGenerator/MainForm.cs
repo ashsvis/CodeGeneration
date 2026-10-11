@@ -1267,6 +1267,7 @@ namespace CodeGenerator
             foreach (var shape in pastedShapes)
             {
                 shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
+                shape.Location = MovePointToGrid(shape.Location);
             }
             foreach (var link in pastedLinks)
             {
@@ -1275,6 +1276,13 @@ namespace CodeGenerator
                 var points = link.GetPoints();
                 for (var i = 0; i < points.Length; i++)
                     points[i] = Point.Add(points[i], new Size(point.X - p.X, point.Y - p.Y));
+                link.SetPoints(points);
+
+                link.StartPoint = MovePointToGrid(link.StartPoint);
+                link.EndPoint = MovePointToGrid(link.EndPoint);
+                points = link.GetPoints();
+                for (var i = 0; i < points.Length; i++)
+                    points[i] = MovePointToGrid(points[i]);
                 link.SetPoints(points);
             }
 
