@@ -21,6 +21,11 @@ namespace PluginSupport
             id = Guid.NewGuid();
         }
 
+        public Shape? First;
+        public Shape? Prev;
+        public Shape? Next;
+        public Shape? Last;
+
         [Browsable(false)]
         public Point Location { get; set; }
 

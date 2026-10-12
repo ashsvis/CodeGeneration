@@ -15,7 +15,6 @@ namespace CodeGenerator
         private readonly PluginManager pm = new();
 
         private readonly List<Shape> shapes = [];
-        private readonly List<Shape> reverseShapes = [];
         private readonly List<PluginSupport.Link> links = [];
 
         private readonly Dictionary<string, Type> types = [];
@@ -131,7 +130,8 @@ namespace CodeGenerator
             firstShape = null;
             firstLinkPoint = null;
             pgProperties.SelectedObject = null;
-            foreach (var shape in reverseShapes /*shapes.Select(x => x).Reverse()*/)
+            var shape = shapes.Count > 0 ? shapes[0] : null;
+            while (shape != null)
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
@@ -201,13 +201,12 @@ namespace CodeGenerator
                     }
                     break;
                 }
+                shape = shape.Prev;
             }
             if (shapeFound)
             {
                 if (e.Button == MouseButtons.Left)
-                {
                     SelectLinksForBothSelectedShapes();
-                }
             }
             else
             {
@@ -251,7 +250,7 @@ namespace CodeGenerator
         {
             // передача положения текущего положения курсора
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
-            /*
+
             Cursor = Cursors.Default;
             shapes.ForEach(shape => 
             {
@@ -261,7 +260,8 @@ namespace CodeGenerator
             });
             links.ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in reverseShapes)
+            var shape = shapes.Count > 0 ? shapes[0] : null;
+            while (shape != null)
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -283,8 +283,9 @@ namespace CodeGenerator
                 {
                     shape.Hover = true;
                 }
+                shape = shape.Prev;
             }
-            */
+
             if (leftPressed)
             {
                 currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
@@ -311,30 +312,35 @@ namespace CodeGenerator
                     }
                     // перемещаем только выбранные фигуры
                     List<Link> list = [];
-                    foreach (var shape in shapes.Where(x => x.Selected))
+                    shape = shapes.Count > 0 ? shapes[0] : null;
+                    while (shape != null)
                     {
-                        shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                        var rect = shape.Bounds;
-                        rect.Inflate(50, 50);
-                        drawPanel.Invalidate(rect);
-                        var linksFromSource = links.Where(x => x.Source == shape);
-                        if (shape.GetOutputPinPoint(0) is Point spoint)
+                        if (shape.Selected)
                         {
-                            foreach (var link in linksFromSource)
+                            shape.Location = Point.Add(shape.Location, new Size(dx, dy));
+                            var rect = shape.Bounds;
+                            rect.Inflate(50, 50);
+                            drawPanel.Invalidate(rect);
+                            var linksFromSource = links.Where(x => x.Source == shape);
+                            if (shape.GetOutputPinPoint(0) is Point spoint)
                             {
-                                if (!list.Contains(link))
+                                foreach (var link in linksFromSource)
                                 {
-                                    link.StartPoint = spoint;
-                                    list.Add(link);
+                                    if (!list.Contains(link))
+                                    {
+                                        link.StartPoint = spoint;
+                                        list.Add(link);
+                                    }
                                 }
                             }
+                            for (var i = 0; i < shape.CountInputs(); i++)
+                            {
+                                var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
+                                if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
+                                    link.EndPoint = tpoint;
+                            }
                         }
-                        for (var i = 0; i < shape.CountInputs(); i++)
-                        {
-                            var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                            if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
-                                link.EndPoint = tpoint;
-                        }
+                        shape = shape.Prev;
                     }
                     foreach (var link in links.Where(x => x.Selected))
                     {
@@ -369,7 +375,8 @@ namespace CodeGenerator
                         rect.Inflate(50, 50);
                         drawPanel.Invalidate(rect);
                         var mode = current.X > first.X;
-                        foreach (var shape in shapes)
+                        shape = shapes.Count > 0 ? shapes[0] : null;
+                        while (shape != null)
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -377,6 +384,7 @@ namespace CodeGenerator
                                 shape.Hover = true;
                                 drawPanel.Invalidate(shape.Bounds);
                             }
+                            shape = shape.Prev;
                         }
                     }
                 }
@@ -650,8 +658,19 @@ namespace CodeGenerator
                 n++;
             }
             shapes.Sort(new ShapesComparer());
-            reverseShapes.Clear();
-            reverseShapes.AddRange(shapes.Select(x => x).Reverse());
+
+            //создание ссылочного списка
+            var query = shapes.Select(x => x).Reverse().ToArray();
+            var first = query.First();
+            var last = query.Last();
+            for (var i = 0; i < query.Length; i++)
+            {
+                var shape = query[i];
+                shape.First = first;
+                shape.Prev = i > 0 ? query[i - 1] : null;
+                shape.Next = i < query.Length - 1 ? query[i + 1] : null;
+                shape.Last = last;
+            }
         }
 
         class ShapesComparer : IComparer<Shape>
@@ -1318,7 +1337,6 @@ namespace CodeGenerator
                     shape.OnMakeCopy -= Shape_OnMakeCopy;
                 }
                 shapes.Clear();
-                reverseShapes.Clear();
                 modelChanged = false;
                 fileName = string.Empty;
                 Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
