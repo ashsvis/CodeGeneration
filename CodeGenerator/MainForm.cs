@@ -252,15 +252,17 @@ namespace CodeGenerator
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
 
             Cursor = Cursors.Default;
-            shapes.ForEach(shape => 
+            var shape = shapes.Count > 0 ? shapes[0] : null;
+            while (shape != null)
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
-            });
+                shape = shape.Prev;
+            }
             links.ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            var shape = shapes.Count > 0 ? shapes[0] : null;
+            shape = shapes.Count > 0 ? shapes[0] : null;
             while (shape != null)
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
@@ -272,9 +274,7 @@ namespace CodeGenerator
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                    {
                         shape.CanInputLink = firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
-                    }
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !linkBuilding;
@@ -407,20 +407,24 @@ namespace CodeGenerator
                     leftPressed = false;
                     if (dragShapes)
                     {
+                        Cursor = Cursors.WaitCursor;
+                        Cursor.Show();
                         dragShapesPreview = false;
                         dragShapes = false;
                         List<Shape> shapesList = [];
-                        foreach (var shape in shapes.Where(x => x.Selected))
+                        var item = shapes.Count > 0 ? shapes[0] : null;
+                        while (item != null)
                         {
-                            if (!shapesList.Contains(shape))
+                            if (item.Selected && !shapesList.Contains(item))
                             {
-                                shapesList.Add(shape);
-                                foreach (var link in links.Where(x => x.Source == shape).ToList())
+                                shapesList.Add(item);
+                                foreach (var link in links.Where(x => x.Source == item).ToList())
                                 {
                                     if (link.Source != null && !shapesList.Contains(link.Source))
                                         shapesList.Add(link.Source);
                                 }
                             }
+                            item = item.Prev;
                         }
                         foreach (var link in links)
                         {
@@ -479,6 +483,8 @@ namespace CodeGenerator
                         SortIndexByLocation();
                         modelChanged = true;
                         drawPanel.Refresh();
+                        Cursor = Cursors.Default;
+                        Cursor.Hide();
                     }
                     else if (linkBuilding)
                     {
@@ -903,6 +909,8 @@ namespace CodeGenerator
             timerCalculate.Enabled = false;
             try
             {
+                Cursor = Cursors.WaitCursor;
+                Cursor.Show();
                 // сбор элементов для удаления на основании их выбранности
                 var shapesForDelete = shapes.Where(x => x.Selected).ToList();
                 // сбор связей, которые используются удаляемыми элементами
@@ -933,6 +941,8 @@ namespace CodeGenerator
                 SortIndexByLocation();
                 modelChanged = true;
                 drawPanel.Invalidate();
+                Cursor = Cursors.Default;
+                Cursor.Hide();
             }
             finally
             {
