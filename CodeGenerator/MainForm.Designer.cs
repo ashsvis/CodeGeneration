@@ -89,6 +89,7 @@
             timerInterface = new System.Windows.Forms.Timer(components);
             printPreviewDialog1 = new PrintPreviewDialog();
             printDocument1 = new System.Drawing.Printing.PrintDocument();
+            printDialog1 = new PrintDialog();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -170,6 +171,7 @@
             tsmiPrint.ShortcutKeys = Keys.Control | Keys.P;
             tsmiPrint.Size = new Size(233, 22);
             tsmiPrint.Text = "&Печать";
+            tsmiPrint.Click += TsmiPrint_Click;
             // 
             // tsmiPreview
             // 
@@ -178,7 +180,7 @@
             tsmiPreview.Name = "tsmiPreview";
             tsmiPreview.Size = new Size(233, 22);
             tsmiPreview.Text = "Предварительный про&смотр";
-            tsmiPreview.Click += tsmiPreview_Click;
+            tsmiPreview.Click += TsmiPreview_Click;
             // 
             // toolStripSeparator2
             // 
@@ -366,6 +368,7 @@
             tsbPrint.Name = "tsbPrint";
             tsbPrint.Size = new Size(23, 22);
             tsbPrint.Text = "&Печать";
+            tsbPrint.Click += TsmiPrint_Click;
             // 
             // toolStripSeparator6
             // 
@@ -575,8 +578,12 @@
             // 
             // printDocument1
             // 
-            printDocument1.PrintPage += printDocument1_PrintPage;
-            printDocument1.QueryPageSettings += printDocument1_QueryPageSettings;
+            printDocument1.PrintPage += PrintDocument1_PrintPage;
+            printDocument1.QueryPageSettings += PrintDocument1_QueryPageSettings;
+            // 
+            // printDialog1
+            // 
+            printDialog1.UseEXDialog = true;
             // 
             // MainForm
             // 
@@ -676,5 +683,6 @@
         private System.Windows.Forms.Timer timerInterface;
         private System.Drawing.Printing.PrintDocument printDocument1;
         private PrintPreviewDialog printPreviewDialog1;
+        private PrintDialog printDialog1;
     }
 }

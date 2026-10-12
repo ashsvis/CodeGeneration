@@ -4,7 +4,7 @@ namespace CodeGenerator
 {
     public static class StampAssistant
     {
-        public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, Color foreground, bool bigStamp = false)
+        public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, Color foreground, int pageNumber, int pagesCount)
         {
             int kf = 5;
             var borderPen = new Pen(foreground, 0)
@@ -16,14 +16,14 @@ namespace CodeGenerator
             var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf,
                             borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
             graphics?.DrawRectangle(borderPen, outRect);
-            if (bigStamp)
-                StampAssistant.DrawBigStamp(graphics, borderPen, outRect, kf, foreground);
+            if (pageNumber == 1)
+                StampAssistant.DrawBigStamp(graphics, borderPen, outRect, kf, foreground, pageNumber, pagesCount);
             else
-                StampAssistant.DrawSmallStamp(graphics, borderPen, outRect, kf, foreground);
+                StampAssistant.DrawSmallStamp(graphics, borderPen, outRect, kf, foreground, pageNumber);
             StampAssistant.DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
-        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
+        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber, int pagesCount)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 55 * kf, 185 * kf, 55 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new PointF(stamptRect.Right, stamptRect.Top));
@@ -89,16 +89,16 @@ namespace CodeGenerator
             }
             using var bigfont = new Font(stampfont.Name, 3f * kf);
             var pageNumRect = new Rectangle(stamptRect.Right - 35 * kf, stamptRect.Bottom - 25 * kf, 15 * kf, 10 * kf);
-            graphics?.DrawString("1", bigfont, brush,
+            graphics?.DrawString($"{pageNumber}", bigfont, brush,
                 new Point(pageNumRect.X + pageNumRect.Width / 2, pageNumRect.Y + pageNumRect.Height / 2), sf);
             var pagesCountRect = new Rectangle(stamptRect.Right - 20 * kf, stamptRect.Bottom - 25 * kf, 20 * kf, 10 * kf);
-            graphics?.DrawString("3", bigfont, brush,
+            graphics?.DrawString($"{pagesCount}", bigfont, brush,
                 new Point(pagesCountRect.X + pagesCountRect.Width / 2, pagesCountRect.Y + pagesCountRect.Height / 2), sf);
             graphics?.DrawString("Формат A3", stampfont, brush,
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
+        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 15 * kf, 185 * kf, 15 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Right, stamptRect.Top));
@@ -136,7 +136,7 @@ namespace CodeGenerator
                 new Point(pageRect.X + pageRect.Width / 2, pageRect.Y + pageRect.Height / 2), sf);
             if (true)
             {
-                graphics?.DrawString("2", bigfont, brush,
+                graphics?.DrawString($"{pageNumber}", bigfont, brush,
                     new Point(pageNumRect.X + pageNumRect.Width / 2, pageNumRect.Y + pageNumRect.Height / 2), sf);
             }
             graphics?.DrawString("Формат A3", stampfont, brush,
