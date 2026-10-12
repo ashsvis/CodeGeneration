@@ -15,6 +15,7 @@ namespace CodeGenerator
         private readonly PluginManager pm = new();
 
         private readonly List<Shape> shapes = [];
+        private readonly List<Shape> reverseShapes = [];
         private readonly List<PluginSupport.Link> links = [];
 
         private readonly Dictionary<string, Type> types = [];
@@ -249,14 +250,14 @@ namespace CodeGenerator
             // передача положени€ текущего положени€ курсора
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             Cursor = Cursors.Default;
-            foreach (var shape in shapes)
+            shapes.ForEach(shape => 
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
-            }
+            });
             links.ForEach(link => link.Hover = false);
-            foreach (var shape in shapes.Select(x => x).Reverse())
+            foreach (var shape in reverseShapes)
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
@@ -309,37 +310,31 @@ namespace CodeGenerator
                     }
                     // перемещаем только выбранные фигуры
                     List<Link> list = [];
-                    foreach (var shape in shapes)
+                    foreach (var shape in shapes.Where(x => x.Selected))
                     {
-                        if (shape.Selected)
+                        shape.Location = Point.Add(shape.Location, new Size(dx, dy));
+                        var linksFromSource = links.Where(x => x.Source == shape);
+                        if (shape.GetOutputPinPoint(0) is Point spoint)
                         {
-                            shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                            var linksFromSource = links.Where(x => x.Source == shape);
-                            if (shape.GetOutputPinPoint(0) is Point spoint)
+                            foreach (var link in linksFromSource)
                             {
-                                foreach (var link in linksFromSource)
-                                {
-                                    link.StartPoint = spoint;
-                                    if (!list.Contains(link)) list.Add(link);
-                                }
+                                link.StartPoint = spoint;
+                                if (!list.Contains(link)) list.Add(link);
                             }
-                            for (var i = 0; i < shape.CountInputs(); i++)
-                            {
-                                var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                                if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
-                                    link.EndPoint = tpoint;
-                            }
+                        }
+                        for (var i = 0; i < shape.CountInputs(); i++)
+                        {
+                            var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
+                            if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
+                                link.EndPoint = tpoint;
                         }
                     }
-                    foreach (var link in links)
+                    foreach (var link in links.Where(x => x.Selected))
                     {
-                        if (link.Selected)
-                        {
-                            var pts = link.GetPoints();
-                            for (var i = 0; i < pts.Length; i++)
-                                pts[i] = Point.Add(pts[i], new Size(dx, dy));
-                            link.SetPoints(pts);
-                        }
+                        var pts = link.GetPoints();
+                        for (var i = 0; i < pts.Length; i++)
+                            pts[i] = Point.Add(pts[i], new Size(dx, dy));
+                        link.SetPoints(pts);
                     }
                     modelChanged = true;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
@@ -642,6 +637,8 @@ namespace CodeGenerator
                 n++;
             }
             shapes.Sort(new ShapesComparer());
+            reverseShapes.Clear();
+            reverseShapes.AddRange(shapes.Select(x => x).Reverse());
         }
 
         class ShapesComparer : IComparer<Shape>
@@ -1094,6 +1091,7 @@ namespace CodeGenerator
                     }
                 }
             }
+            SortIndexByLocation();
             drawPanel.Invalidate();
         }
 
@@ -1298,29 +1296,16 @@ namespace CodeGenerator
             timerCalculate.Enabled = false;
             try
             {
-                // сбор элементов дл€ удалени€ на основании их выбранности
-                var shapesForDelete = shapes.ToList();
-                // сбор св€зей, которые используютс€ удал€емыми элементами
-                var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
-                foreach (var link in linksForDelete)
-                {
-                    // ищем источник и цель
-                    var source = shapes.FirstOrDefault(x => x == link.Source);
-                    var target = shapes.FirstOrDefault(x => x == link.Target);
-                    // удал€ем визуальную ссылку
-                    links.Remove(link);
-                    UpdateOtherLinks(link);
-                }
+                links.Clear();
                 // дл€ всех удал€емых элементов
-                foreach (var shape in shapesForDelete)
+                foreach (var shape in shapes)
                 {
                     shape.OnDeleteLink -= Shape_OnDeleteLink;
                     shape.OnDelete -= Shape_OnDelete;
                     shape.OnMakeCopy -= Shape_OnMakeCopy;
                 }
-                foreach (var shape in shapesForDelete)
-                    shapes.Remove(shape);
-                SortIndexByLocation();
+                shapes.Clear();
+                reverseShapes.Clear();
                 modelChanged = false;
                 fileName = string.Empty;
                 Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
