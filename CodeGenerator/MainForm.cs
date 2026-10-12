@@ -318,9 +318,9 @@ namespace CodeGenerator
                         if (shape.Selected)
                         {
                             shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                            var rect = shape.Bounds;
-                            rect.Inflate(50, 50);
-                            drawPanel.Invalidate(rect);
+                            //var rect = shape.Bounds;
+                            //rect.Inflate(50, 50);
+                            //drawPanel.Invalidate(/*rect*/);
                             var linksFromSource = links.Where(x => x.Source == shape);
                             if (shape.GetOutputPinPoint(0) is Point spoint)
                             {
@@ -348,9 +348,9 @@ namespace CodeGenerator
                         for (var i = 0; i < pts.Length; i++)
                             pts[i] = Point.Add(pts[i], new Size(dx, dy));
                         link.SetPoints(pts);
-                        var rect = link.Bounds;
-                        rect.Inflate(50, 50);
-                        drawPanel.Invalidate(rect);
+                        //var rect = link.Bounds;
+                        //rect.Inflate(50, 50);
+                        //drawPanel.Invalidate(/*rect*/);
                     }
                     modelChanged = true;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
@@ -371,9 +371,9 @@ namespace CodeGenerator
                         var maxX = Math.Max(first.X, current.X);
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-                        var rect = ribbonRect;
-                        rect.Inflate(50, 50);
-                        drawPanel.Invalidate(rect);
+                        //var rect = ribbonRect;
+                        //rect.Inflate(50, 50);
+                        drawPanel.Invalidate(/*rect*/);
                         var mode = current.X > first.X;
                         shape = shapes.Count > 0 ? shapes[0] : null;
                         while (shape != null)
@@ -382,12 +382,13 @@ namespace CodeGenerator
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
                                 shape.Hover = true;
-                                drawPanel.Invalidate(shape.Bounds);
+                                //drawPanel.Invalidate(shape.Bounds);
                             }
                             shape = shape.Prev;
                         }
                     }
                 }
+                drawPanel.Invalidate();
             }
         }
 
