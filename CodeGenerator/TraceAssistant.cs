@@ -90,7 +90,8 @@ namespace CodeGenerator
                                 {
                                     field[px, py].Empty = ThroughPassage.Vertical;
                                 }
-                                else if (ptPrev.Y == ptNext.Y && point.Y == ptPrev.Y)
+                                else 
+                                if (ptPrev.Y == ptNext.Y && point.Y == ptPrev.Y)
                                 {
                                     field[px, py].Empty = ThroughPassage.Horizontal;
                                 }
@@ -209,6 +210,7 @@ namespace CodeGenerator
                 if (!changed) break;
                 n++;
             }
+            var dir = Direction.Left;
             if (found)
             {
                 var i = gx;
@@ -217,26 +219,71 @@ namespace CodeGenerator
                 points.Add(field[i, j].Node);
                 while (wave > 0)
                 {
+                    // просмотр приоритетного направления
+                    switch (dir)
+                    {
+                        case Direction.Left:
+                            if (i - 1 >= 0 && field[i - 1, j].Wave == wave)
+                            {
+                                dir = Direction.Left;
+                                i--;
+                                points.Add(field[i, j].Node);
+                                goto nextWave;
+                            }
+                            break;
+                        case Direction.Right:
+                            if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
+                            {
+                                dir = Direction.Right;
+                                i++;
+                                points.Add(field[i, j].Node);
+                                goto nextWave;
+                            }
+                            break;
+                        case Direction.Up:
+                            if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
+                            {
+                                dir = Direction.Up;
+                                j--;
+                                points.Add(field[i, j].Node);
+                                goto nextWave;
+                            }
+                            break;
+                        case Direction.Down:
+                            if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
+                            {
+                                dir = Direction.Down;
+                                j++;
+                                points.Add(field[i, j].Node);
+                                goto nextWave;
+                            }
+                            break;
+                    }
+                    // просмотр прочих направлений
                     if (i - 1 >= 0 && field[i - 1, j].Wave == wave)
                     {
+                        dir = Direction.Left;
                         i--;
                         points.Add(field[i, j].Node);
                         goto nextWave;
                     }
                     if (j - 1 >= 0 && field[i, j - 1].Wave == wave)
                     {
+                        dir = Direction.Up;
                         j--;
                         points.Add(field[i, j].Node);
                         goto nextWave;
                     }
                     if (j + 1 < field.GetLength(1) && field[i, j + 1].Wave == wave)
                     {
+                        dir = Direction.Down;
                         j++;
                         points.Add(field[i, j].Node);
                         goto nextWave;
                     }
                     if (i + 1 < field.GetLength(0) && field[i + 1, j].Wave == wave)
                     {
+                        dir = Direction.Right;
                         i++;
                         points.Add(field[i, j].Node);
                         goto nextWave;

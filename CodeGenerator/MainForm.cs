@@ -107,6 +107,7 @@ namespace CodeGenerator
                     if (copycuted != null)
                     {
                         PasteFromXml(copycuted, shapes, links, firstPoint);
+                        SortIndexByLocation();
                         modelChanged = true;
                     }
                 }
@@ -234,6 +235,7 @@ namespace CodeGenerator
                 link.Selected = false;
             });
             var selected = shapes.Where(x => x.Selected).ToList();
+            var found = false;
             foreach (var link in links)
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
@@ -242,6 +244,19 @@ namespace CodeGenerator
                 {
                     link.Selected = true;
                     link.Hover = true;
+                    found = true;
+                }
+            }
+            if (!found)
+            {
+                foreach (var link in links)
+                {
+                    var sourceShape = selected.FirstOrDefault(x => x == link.Source);
+                    if (sourceShape != null)
+                    {
+                        link.Selected = true;
+                        link.Hover = true;
+                    }
                 }
             }
         }
@@ -468,7 +483,7 @@ namespace CodeGenerator
                                 x.EndPoint = tpoint;
                             x.SetPoints([]); 
                         });
-                        foreach (var link in linksList.OrderBy(x => x.Length))
+                        foreach (var link in linksList.OrderByDescending(x => x.Length))
                         {
                             var points = TraceAssistant.BuildWaveInField(shapes, links, link);
                             link.SetPoints([.. points]);
@@ -645,7 +660,7 @@ namespace CodeGenerator
                 item.SetPoints([]);
             // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
             // перестраиваем массив внутренних точек
-            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
+            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderByDescending(x => x.Length))
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(shapes, links, item)]);
         }
 
@@ -1278,6 +1293,7 @@ namespace CodeGenerator
                     }
                 }
             }
+            List<Shape> newIdShapes = [];
             foreach (var link in pastedLinks)
             {
                 link.Selected = true;
@@ -1285,12 +1301,14 @@ namespace CodeGenerator
                 if (source != null)
                 {
                     source.NewGuid();
+                    newIdShapes.Add(source);
                     link.SourceId = source.Id;
                 }
                 var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
                 if (target != null)
                 {
                     target.NewGuid();
+                    newIdShapes.Add(target);
                     link.TargetId = target.Id;
                 }
             }
@@ -1302,6 +1320,8 @@ namespace CodeGenerator
                 pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
             foreach (var shape in pastedShapes)
             {
+                if (!newIdShapes.Contains(shape))
+                    shape.NewGuid();
                 shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
                 shape.Location = MovePointToGrid(shape.Location);
             }
@@ -1321,7 +1341,8 @@ namespace CodeGenerator
                     points[i] = MovePointToGrid(points[i]);
                 link.SetPoints(points);
             }
-
+            if (pastedShapes.Count == 1)
+                pgProperties.SelectedObject = pastedShapes[0];
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)

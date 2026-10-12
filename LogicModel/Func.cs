@@ -2,7 +2,6 @@ using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
-using static System.Windows.Forms.LinkLabel;
 
 namespace LogicModel
 {
@@ -21,6 +20,8 @@ namespace LogicModel
         protected PinInput[] Inputs = [];
         protected PinOutput[] Outputs = [];
 
+        [Category("Common"), DisplayName("Label")]
+        public string Label => $"L{Index + 1}";
         [Category("Common"), DisplayName("Function")]
         public string? FuncName { get; protected set; }
 
