@@ -1,5 +1,4 @@
 using PluginSupport;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -13,6 +12,8 @@ namespace CodeGenerator
         private readonly string dragFormat;
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
+
+        private readonly List<Page> pages = [];
 
         private readonly List<Shape> shapes = [];
         private readonly List<PluginSupport.Link> links = [];
@@ -65,6 +66,8 @@ namespace CodeGenerator
                 foreach (var key in dict.Keys)
                     types.TryAdd(key, dict[key]);
             }
+            pages.Add(new Page(1, 420, 297));
+            pages.Add(new Page(2, 420, 297));
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -475,13 +478,13 @@ namespace CodeGenerator
 
                         linksList.RemoveAll(x => x.Source != null && shapesList.Contains(x.Source) && x.Target != null && shapesList.Contains(x.Target));
 
-                        linksList.ForEach(x => 
+                        linksList.ForEach(x =>
                         {
                             if (x.Source != null && x.Source.GetOutputPinPoint(0) is Point spoint)
                                 x.StartPoint = spoint;
                             if (x.Target != null && x.Target.GetInputPinPoint(x.TargetPinIndex) is Point tpoint)
                                 x.EndPoint = tpoint;
-                            x.SetPoints([]); 
+                            x.SetPoints([]);
                         });
                         foreach (var link in linksList.OrderByDescending(x => x.Length))
                         {
@@ -715,8 +718,10 @@ namespace CodeGenerator
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
         {
-            StampAssistant.DrawPageBorder(e.Graphics, new Point(0, 0), 420, 297, true);
-            StampAssistant.DrawPageBorder(e.Graphics, new Point(420, 0), 420, 297);
+            foreach (var page in pages)
+            {
+                page.Draw(e.Graphics, Color.FromArgb(127, Color.Gray));
+            }
             // рисуем фигуры из списка
             using var hoverpen = new Pen(Color.White);
             using var selectpen = new Pen(Color.Teal);
@@ -1413,6 +1418,47 @@ namespace CodeGenerator
             shapes.ForEach(x => x.Selected = true);
             links.ForEach(x => x.Selected = true);
             drawPanel.Invalidate();
+        }
+
+        private int pageToPrint;
+        private int pagesToPrint;
+
+        private void tsmiPreview_Click(object sender, EventArgs e)
+        {
+            pageToPrint = 1;
+            pagesToPrint = 2;
+            printPreviewDialog1.ShowDialog(this);
+        }
+
+        private void printDocument1_QueryPageSettings(object sender, System.Drawing.Printing.QueryPageSettingsEventArgs e)
+        {
+            e.PageSettings.PrinterSettings.PrinterName = "Microsoft Print To PDF";
+            e.PageSettings.Landscape = true;
+            e.PageSettings.PaperSize = e.PageSettings.PrinterSettings.PaperSizes[5]; // A3 - 5, A4 - 6
+        }
+
+        private void printDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
+        {
+            var rect = e.PageSettings.PrintableArea;
+            var kf = 297f / 1169f * 5;
+            var page = pages.FirstOrDefault(x => x.Number == pageToPrint);
+            if (page != null)
+            {
+                e.Graphics?.TranslateTransform(80 + (pageToPrint - 1) * page.Width, 20);
+                e.Graphics?.ScaleTransform(1 / kf, 1 / kf);
+                page?.Draw(e.Graphics, Color.Black);
+                foreach (var shape in shapes)
+                    shape.Draw(e.Graphics, Pens.Black, Brushes.White);
+                foreach (var link in links)
+                    link.DrawLines(e.Graphics, Pens.Black);
+                foreach (var link in links)
+                    link.DrawDots(e.Graphics, Brushes.Black);
+                e.Graphics?.ScaleTransform(kf, kf);
+                e.Graphics?.TranslateTransform(-80 + (pageToPrint - 1) * page.Width, -20);
+            }
+            e.HasMorePages = pagesToPrint > 1;
+            pageToPrint++;
+            pagesToPrint--;
         }
     }
 }

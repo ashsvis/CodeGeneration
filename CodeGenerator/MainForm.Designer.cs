@@ -87,6 +87,8 @@
             testToolStripMenuItem = new ToolStripMenuItem();
             timerCalculate = new System.Windows.Forms.Timer(components);
             timerInterface = new System.Windows.Forms.Timer(components);
+            printPreviewDialog1 = new PrintPreviewDialog();
+            printDocument1 = new System.Drawing.Printing.PrintDocument();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -176,6 +178,7 @@
             tsmiPreview.Name = "tsmiPreview";
             tsmiPreview.Size = new Size(233, 22);
             tsmiPreview.Text = "Предварительный про&смотр";
+            tsmiPreview.Click += tsmiPreview_Click;
             // 
             // toolStripSeparator2
             // 
@@ -559,6 +562,22 @@
             timerInterface.Interval = 50;
             timerInterface.Tick += TimerInterface_Tick;
             // 
+            // printPreviewDialog1
+            // 
+            printPreviewDialog1.AutoScrollMargin = new Size(0, 0);
+            printPreviewDialog1.AutoScrollMinSize = new Size(0, 0);
+            printPreviewDialog1.ClientSize = new Size(400, 300);
+            printPreviewDialog1.Document = printDocument1;
+            printPreviewDialog1.Enabled = true;
+            printPreviewDialog1.Icon = (Icon)resources.GetObject("printPreviewDialog1.Icon");
+            printPreviewDialog1.Name = "printPreviewDialog1";
+            printPreviewDialog1.Visible = false;
+            // 
+            // printDocument1
+            // 
+            printDocument1.PrintPage += printDocument1_PrintPage;
+            printDocument1.QueryPageSettings += printDocument1_QueryPageSettings;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -655,5 +674,7 @@
         private ToolStripMenuItem testToolStripMenuItem;
         private System.Windows.Forms.Timer timerCalculate;
         private System.Windows.Forms.Timer timerInterface;
+        private System.Drawing.Printing.PrintDocument printDocument1;
+        private PrintPreviewDialog printPreviewDialog1;
     }
 }

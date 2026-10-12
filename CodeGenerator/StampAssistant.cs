@@ -4,12 +4,12 @@ namespace CodeGenerator
 {
     public static class StampAssistant
     {
-        public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, bool bigStamp = false)
+        public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, Color foreground, bool bigStamp = false)
         {
             int kf = 5;
-            var borderPen = new Pen(Color.FromArgb(127, Color.Gray), 0)
+            var borderPen = new Pen(foreground, 0)
             {
-                DashStyle = DashStyle.Dash
+                //DashStyle = DashStyle.Dash
             };
             var borderRect = new Rectangle(origin.X * kf - 20 * kf, origin.Y * kf - 5 * kf, width * kf, height * kf);
             graphics?.DrawRectangle(borderPen, borderRect);
@@ -17,13 +17,13 @@ namespace CodeGenerator
                             borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
             graphics?.DrawRectangle(borderPen, outRect);
             if (bigStamp)
-                StampAssistant.DrawBigStamp(graphics, borderPen, outRect, kf);
+                StampAssistant.DrawBigStamp(graphics, borderPen, outRect, kf, foreground);
             else
-                StampAssistant.DrawSmallStamp(graphics, borderPen, outRect, kf);
-            StampAssistant.DrawSideStamp(graphics, borderPen, outRect, kf);
+                StampAssistant.DrawSmallStamp(graphics, borderPen, outRect, kf, foreground);
+            StampAssistant.DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
-        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf)
+        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 55 * kf, 185 * kf, 55 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new PointF(stamptRect.Right, stamptRect.Top));
@@ -36,7 +36,7 @@ namespace CodeGenerator
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             using var stampfont = new Font("Arial", 2f * kf);
-            using var brush = new SolidBrush(Color.FromArgb(127, Color.Gray));
+            using var brush = new SolidBrush(foreground);
             var x = 0 * kf;
             for (var i = 0; i < steps.Length; i++)
             {
@@ -98,7 +98,7 @@ namespace CodeGenerator
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf)
+        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 15 * kf, 185 * kf, 15 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Right, stamptRect.Top));
@@ -111,7 +111,7 @@ namespace CodeGenerator
                 LineAlignment = StringAlignment.Center
             };
             var stampfont = new Font("Arial", 2f * kf);
-            var brush = new SolidBrush(Color.FromArgb(127, Color.Gray));
+            var brush = new SolidBrush(foreground);
             var x = 0 * kf;
             for (var i = 0; i < steps.Length; i++)
             {
@@ -143,7 +143,7 @@ namespace CodeGenerator
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSideStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf)
+        public static void DrawSideStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
         {
             int[] steps = [25 * kf, 35 * kf, 25 * kf];
             string[] names = ["Инв.№ подл.", "Подп. и дата", "Взам. инв. №"];
@@ -151,7 +151,7 @@ namespace CodeGenerator
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             using var stampfont = new Font("Arial", 3f * kf);
-            using var brush = new SolidBrush(Color.FromArgb(127, Color.Gray));
+            using var brush = new SolidBrush(foreground);
             var y = outRect.Bottom;
             for (var i = 0; i < steps.Length; i++)
             {
