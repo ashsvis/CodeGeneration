@@ -296,31 +296,29 @@ namespace CodeGenerator
                 {
                     var ctrl = ModifierKeys.HasFlag(Keys.Control);
                     // начинаем перемещение фигур
-                    var ePoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    var ePoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                     var dx = ePoint.X - firstPoint.X;
                     var dy = ePoint.Y - firstPoint.Y;
                     if (dragCopiedShapes)
                     {
                         var copyed = CopySelectedToXml();
-                        var loc = shapes.Where(x => x.Selected).Select(x => x.Location).OrderBy(p => p.X).ThenBy(p => p.Y).First();
-                        var size = new Size(loc.X - ePoint.X, loc.Y - ePoint.Y);
+                        var loc = new Point(
+                            shapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
+                            shapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
                         shapes.ForEach(x => x.Selected = false);
                         links.ForEach(x => x.Selected = false);
-                        PasteFromXml(copyed, shapes, links, Point.Add(ePoint, size));
+                        PasteFromXml(copyed, shapes, links, loc);
                         dragCopiedShapes = false;
                         modelChanged = true;
                     }
                     // перемещаем только выбранные фигуры
                     List<Link> list = [];
-                    shape = shapes.Count > 0 ? shapes[0] : null;
-                    while (shape != null)
+                    for (var n = 0; n < shapes.Count; n++)
                     {
+                        shape = shapes[n];
                         if (shape.Selected)
                         {
                             shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                            //var rect = shape.Bounds;
-                            //rect.Inflate(50, 50);
-                            //drawPanel.Invalidate(/*rect*/);
                             var linksFromSource = links.Where(x => x.Source == shape);
                             if (shape.GetOutputPinPoint(0) is Point spoint)
                             {
@@ -340,17 +338,15 @@ namespace CodeGenerator
                                     link.EndPoint = tpoint;
                             }
                         }
-                        shape = shape.Prev;
                     }
                     foreach (var link in links.Where(x => x.Selected))
                     {
                         var pts = link.GetPoints();
                         for (var i = 0; i < pts.Length; i++)
+                        {
                             pts[i] = Point.Add(pts[i], new Size(dx, dy));
+                        }
                         link.SetPoints(pts);
-                        //var rect = link.Bounds;
-                        //rect.Inflate(50, 50);
-                        //drawPanel.Invalidate(/*rect*/);
                     }
                     modelChanged = true;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
@@ -371,9 +367,7 @@ namespace CodeGenerator
                         var maxX = Math.Max(first.X, current.X);
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-                        //var rect = ribbonRect;
-                        //rect.Inflate(50, 50);
-                        drawPanel.Invalidate(/*rect*/);
+                        //drawPanel.Invalidate(/*rect*/);
                         var mode = current.X > first.X;
                         shape = shapes.Count > 0 ? shapes[0] : null;
                         while (shape != null)
@@ -382,7 +376,6 @@ namespace CodeGenerator
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
                                 shape.Hover = true;
-                                //drawPanel.Invalidate(shape.Bounds);
                             }
                             shape = shape.Prev;
                         }
@@ -413,19 +406,19 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
                         List<Shape> shapesList = [];
-                        var item = shapes.Count > 0 ? shapes[0] : null;
-                        while (item != null)
+                        for (var i = 0; i < shapes.Count; i++)
                         {
-                            if (item.Selected && !shapesList.Contains(item))
+                            var shape = shapes[i];
+                            if (shape.Selected && !shapesList.Contains(shape))
                             {
-                                shapesList.Add(item);
-                                foreach (var link in links.Where(x => x.Source == item).ToList())
+                                shape.Location = MovePointToGrid(shape.Location);
+                                shapesList.Add(shape);
+                                foreach (var link in links.Where(x => x.Source == shape).ToList())
                                 {
                                     if (link.Source != null && !shapesList.Contains(link.Source))
                                         shapesList.Add(link.Source);
                                 }
                             }
-                            item = item.Prev;
                         }
                         foreach (var link in links)
                         {
@@ -668,8 +661,8 @@ namespace CodeGenerator
 
             //создание ссылочного списка
             var query = shapes.Select(x => x).Reverse().ToArray();
-            var first = query.First();
-            var last = query.Last();
+            var first = query.Length > 0 ? query.First() : null;
+            var last = query.Length > 0 ? query.Last() : null;
             for (var i = 0; i < query.Length; i++)
             {
                 var shape = query[i];
@@ -1304,7 +1297,9 @@ namespace CodeGenerator
             shapes.AddRange(pastedShapes);
             links.AddRange(pastedLinks);
 
-            var p = pastedShapes.Select(x => x.Location).OrderBy(x => x.Y).ThenBy(x => x.X).First();
+            var p = new Point(
+                pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
+                pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
             foreach (var shape in pastedShapes)
             {
                 shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
