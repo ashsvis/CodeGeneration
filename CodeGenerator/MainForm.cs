@@ -1027,7 +1027,7 @@ namespace CodeGenerator
             }
             finally
             {
-                timerCalculate.Enabled = true;
+                timerCalculate.Enabled = runEmulate;
             }
         }
 
@@ -1062,7 +1062,7 @@ namespace CodeGenerator
                 }
                 finally
                 {
-                    timerCalculate.Enabled = true;
+                    timerCalculate.Enabled = runEmulate;
                 }
             }
         }
@@ -1446,7 +1446,7 @@ namespace CodeGenerator
             }
             finally
             {
-                timerCalculate.Enabled = true;
+                timerCalculate.Enabled = runEmulate;
             }
         }
 
@@ -1555,6 +1555,7 @@ namespace CodeGenerator
         private void TsbRun_Click(object sender, EventArgs e)
         {
             runEmulate = !runEmulate;
+            timerCalculate.Enabled = runEmulate;
             drawPanel.Invalidate();
         }
     }
