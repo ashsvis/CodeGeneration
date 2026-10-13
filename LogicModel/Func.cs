@@ -1,7 +1,6 @@
 using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
-using System.IO;
 using System.Xml.Linq;
 
 namespace LogicModel
@@ -257,59 +256,6 @@ namespace LogicModel
                 path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, trect, sf);
                 paths.Add(path);
             }
-            //if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowLabelNumber))
-            //{
-            //    // вывод номера по порядку выполнения
-            //    path = new GraphicsPath();
-            //    var fnumber = $"L{Index + 1}";
-            //    using var fontNumber = new Font("Segoe UI", 12f);
-            //    var sz = TextRenderer.MeasureText(fnumber, fontNumber);
-            //    var trect = new Rectangle(Location, new Size(Width, CalcHeight));
-            //    using var sf = new StringFormat();
-            //    sf.Alignment = StringAlignment.Center;
-            //    sf.LineAlignment = StringAlignment.Far;
-            //    path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Bold, fontNumber.Size, trect, sf);
-            //    paths.Add(path);
-            //}
-            //if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowPins))
-            //{
-            //    // значения входов или выходов
-            //    var targets = GetTargets();
-            //    foreach (var target in targets)
-            //    {
-            //        var p = new GraphicsPath();
-            //        var value = target.IsOutput ? Outputs[target.PinIndex].Value : Inputs[target.PinIndex].Value;
-            //        var kind = target.IsOutput ? Outputs[target.PinIndex].Kind : Inputs[target.PinIndex].Kind;
-            //        var t = target.Target;
-            //        t.Offset(0f, -t.Height / 4);
-            //        using var fontFunc = new Font("Segoe UI", 12f);
-            //        using var sf = new StringFormat();
-            //        sf.Alignment = StringAlignment.Center;
-            //        sf.LineAlignment = StringAlignment.Center;
-            //        switch (kind)
-            //        {
-            //            case ValueKind.Digital:
-            //                p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
-            //                break;
-            //            case ValueKind.Analog:
-            //                var text = double.IsNaN(value) ? "?" : $"{value:0.#}";
-            //                if (target.IsOutput)
-            //                {
-            //                    sf.Alignment = StringAlignment.Near;
-            //                    p.AddString(text, fontFunc.FontFamily, (int)FontStyle.Bold, 10f, 
-            //                        new PointF(t.Left + 1f, t.Top + t.Height / 2f), sf);
-            //                }
-            //                else
-            //                {
-            //                    sf.Alignment = StringAlignment.Far;
-            //                    p.AddString(text, fontFunc.FontFamily, (int)FontStyle.Bold, 10f, 
-            //                        new PointF(t.Left + t.Width - 1f, t.Top + t.Height / 2f), sf);
-            //                }
-            //                break;
-            //        }
-            //        paths.Add(p);
-            //    }
-            //}
             return [.. paths];
         }
 

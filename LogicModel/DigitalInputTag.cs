@@ -29,7 +29,7 @@ namespace LogicModel
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
-                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Inputs = [],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }

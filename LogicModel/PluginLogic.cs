@@ -54,7 +54,9 @@ namespace LogicModel
             nodesGroup = new TreeNode("Вывод сигнала");
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Дискретная исходящая ссылка") { Tag = typeof(DigitalOutPageLink) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговый вывод") { Tag = typeof(AnalogOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Аналоговая исходящая ссылка") { Tag = typeof(AnalogOutPageLink) });
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной дискретный") { Tag = typeof(DigitalOutputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной аналоговый") { Tag = typeof(AnalogOutputTag) });
             return [.. items];

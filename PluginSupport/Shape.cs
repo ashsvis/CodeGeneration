@@ -101,7 +101,7 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool ContainsPoint(Point point, float width)
+        public virtual bool ContainsPoint(Point point, float width)
         {
             using var pen = new Pen(Foreground, width);
             foreach (var p in GetGraphicsPaths())
