@@ -1,8 +1,6 @@
 using PluginSupport;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace CodeGenerator
@@ -134,18 +132,18 @@ namespace CodeGenerator
             dragShapesPreview = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
-            shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape => shape.Hover = false);
-            links.Where(x => page == null || x.Page == page.Number).ToList().ForEach(link =>
+            ShapesFrom(page).ForEach(shape => shape.Hover = false);
+            LinksFrom(page).ForEach(link =>
             {
                 link.Hover = false;
                 link.Selected = false;
             });
-            if (!ctrl && shapes.Where(x => page == null || x.Page == page.Number).ToList().Count(x => x.Selected) == 1)
-                shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape => shape.Selected = false);
+            if (!ctrl && ShapesFrom(page).Count(x => x.Selected) == 1)
+                ShapesFrom(page).ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
             pgProperties.SelectedObject = null;
-            foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
+            foreach (var shape in ShapesFrom(page))
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
@@ -156,12 +154,9 @@ namespace CodeGenerator
                         {
                             pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == outputIndex);
                             tcUtilites.SelectedTab = tpProperties;
-                            shape.Click(point, (targetInfo) =>
-                            {
-                                firstShape = shape;
-                                linkBuilding = true;
-                                firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
-                            });
+                            firstShape = shape;
+                            linkBuilding = true;
+                            firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
                         }
                         else if (e.Button == MouseButtons.Right)
                         {
@@ -172,8 +167,8 @@ namespace CodeGenerator
                     }
                     else if (shape.IsInputTargetsPoint(point, out int inputIndex))
                     {
-                        var other = shapes.Where(x => page == null || x.Page == page.Number).Where(x => x.Selected).Contains(shape);
-                        if (!other && shapes.Where(x => page == null || x.Page == page.Number).Count(x => x.Selected) > 1 && !ctrl)
+                        var other = ShapesFrom(page).Where(x => x.Selected).Contains(shape);
+                        if (!other && ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
                             shapes.ForEach(shape => shape.Selected = false);
                         shape.Selected = true;
                         shape.Hover = true;
@@ -183,7 +178,10 @@ namespace CodeGenerator
                             pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == inputIndex);
                             tcUtilites.SelectedTab = tpProperties;
                             if (runEmulate)
-                                shape.Click(point, (targetInfo) => { });
+                            {
+                                if (!shape.IsLinked(inputIndex))
+                                    shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
+                            }
                         }
                         else if (e.Button == MouseButtons.Right)
                         {
@@ -195,9 +193,9 @@ namespace CodeGenerator
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
-                    var other = shapes.Where(x => page == null || x.Page == page.Number).Where(x => x.Selected).Contains(shape);
-                    if (!other && shapes.Where(x => page == null || x.Page == page.Number).Count(x => x.Selected) > 1 && !ctrl)
-                        shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape => shape.Selected = false);
+                    var other = ShapesFrom(page).Where(x => x.Selected).Contains(shape);
+                    if (!other && ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
+                        ShapesFrom(page).ForEach(shape => shape.Selected = false);
                     shape.Selected = true;
                     shape.Hover = true;
                     shapeFound = true;
@@ -223,12 +221,12 @@ namespace CodeGenerator
             }
             else
             {
-                shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape =>
+                ShapesFrom(page).ForEach(shape =>
                 {
                     shape.Selected = false;
                     shape.Hover = false;
                 });
-                links.Where(x => page == null || x.Page == page.Number).ToList().ForEach(link =>
+                LinksFrom(page).ForEach(link =>
                 {
                     link.Hover = false;
                     link.Selected = false;
@@ -246,9 +244,9 @@ namespace CodeGenerator
                 link.Hover = false;
                 link.Selected = false;
             });
-            var selected = shapes.Where(x => page == null || x.Page == page.Number).Where(x => x.Selected).ToList();
+            var selected = ShapesFrom(page).Where(x => x.Selected).ToList();
             var found = false;
-            foreach (var link in links.Where(x => page == null || x.Page == page.Number))
+            foreach (var link in LinksFrom(page))
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
                 var targetShape = selected.FirstOrDefault(x => x == link.Target);
@@ -261,7 +259,7 @@ namespace CodeGenerator
             }
             if (!found)
             {
-                foreach (var link in links.Where(x => page == null || x.Page == page.Number))
+                foreach (var link in LinksFrom(page))
                 {
                     var sourceShape = selected.FirstOrDefault(x => x == link.Source);
                     if (sourceShape != null)
@@ -273,6 +271,16 @@ namespace CodeGenerator
             }
         }
 
+        private List<Shape> ShapesFrom(Page? page)
+        {
+            return [.. shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+        }
+
+        private List<Link> LinksFrom(Page? page)
+        {
+            return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+        }
+
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
@@ -280,15 +288,15 @@ namespace CodeGenerator
 
             Cursor = Cursors.Default;
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
-            shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape =>
+            ShapesFrom(page).ForEach(shape =>
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
             });
-            links.Where(x => page == null || x.Page == page.Number).ToList().ForEach(link => link.Hover = false);
+            LinksFrom(page).ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
+            foreach (var shape in ShapesFrom(page))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -392,7 +400,7 @@ namespace CodeGenerator
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
                         var mode = current.X > first.X;
-                        foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
+                        foreach (var shape in ShapesFrom(page))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -402,8 +410,8 @@ namespace CodeGenerator
                         }
                     }
                 }
-                drawPanel.Invalidate();
             }
+            drawPanel.Invalidate();
         }
 
         private static readonly int Step = TraceAssistant.CellSize; // Размер клетки
@@ -429,7 +437,7 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
                         List<Shape> shapesList = [];
-                        foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
+                        foreach (var shape in ShapesFrom(page))
                         {
                             if (shape.Selected && !shapesList.Contains(shape))
                             {
@@ -442,7 +450,7 @@ namespace CodeGenerator
                                 }
                             }
                         }
-                        foreach (var link in links.Where(x => page == null || x.Page == page.Number))
+                        foreach (var link in LinksFrom(page))
                         {
                             if (link.Selected)
                             {
@@ -506,7 +514,7 @@ namespace CodeGenerator
                     {
                         // построение связи данных между фигурами
                         linkBuilding = false;
-                        foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number).Select(x => x).Reverse())
+                        foreach (var shape in ShapesFrom(page).Select(x => x).Reverse())
                         {
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
@@ -564,10 +572,10 @@ namespace CodeGenerator
                     else if (frameBuilding)
                     {
                         frameBuilding = false;
-                        shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape => shape.Selected = false);
+                        ShapesFrom(page).ForEach(shape => shape.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
-                        foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
+                        foreach (var shape in ShapesFrom(page))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -862,12 +870,15 @@ namespace CodeGenerator
             }
 
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && currentPoint is Point point && !addShapes)
+            if (MouseButtons.HasFlag(MouseButtons.None) && !addShapes)
             {
-                var cursize = (int)(50f / drawPanel.Zoom);
-                using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
-                e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(-cursize, 0)), Point.Add(point, new Size(cursize, 0)));
-                e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(0, -cursize)), Point.Add(point, new Size(0, cursize)));
+                if (currentPoint is Point point)
+                {
+                    var cursize = (int)(50f / drawPanel.Zoom);
+                    using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
+                    e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(-cursize, 0)), Point.Add(point, new Size(cursize, 0)));
+                    e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(0, -cursize)), Point.Add(point, new Size(0, cursize)));
+                }
             }
 
             // рисуем резиновую связь в момент построения связи

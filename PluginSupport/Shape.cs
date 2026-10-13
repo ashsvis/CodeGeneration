@@ -141,6 +141,7 @@ namespace PluginSupport
         public abstract double GetOutputValue(int index = 0);
         public abstract ValueKind GetOutputValueKind(int index = 0);
         public abstract void SetInputValue(int index, double value);
+        public abstract double GetInputValue(int index);
 
         public abstract void SetInputSource(int index, Shape source, int pinIndex, Guid linkId);
         public abstract void RemoveInputSource(int index);
@@ -205,7 +206,6 @@ namespace PluginSupport
             return [.. items];
         }
 
-        public abstract void Click(Point point, Action<TargetInfo>? action = null);
         public abstract void Calculate();
         protected abstract void CalculateHeight();
         public abstract int CountInputs();

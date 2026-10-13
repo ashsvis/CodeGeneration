@@ -464,35 +464,6 @@ namespace LogicModel
             return false; 
         }
 
-        /// <summary>
-        /// Обработка клика по цели
-        /// </summary>
-        /// <param name="point">Точка нажатия</param>
-        public override void Click(Point point, Action<TargetInfo>? action = null)
-        {
-            var targets = GetTargets();
-            foreach (TargetInfo info in targets)
-            {
-                if (info.Target.Contains(point))
-                {
-                    var pin = info.PinPoint;
-                    if (info.IsOutput)
-                    {
-                        // выходы
-                        action?.Invoke(info);
-                    }
-                    else
-                    {
-                        // входы
-                        if (!Inputs[info.PinIndex].IsLinked)
-                        {
-                            Inputs[info.PinIndex].Value = Inputs[info.PinIndex].Value > 0 ? 0 : 1;
-                        }
-                    }
-                }
-            }
-        }
-
         public override Point? GetInputPinPoint(int index)
         {
             if (index >= 0 && index < Inputs.Length)
@@ -564,6 +535,15 @@ namespace LogicModel
             {
                 Inputs[index].Value = value;
             }
+        }
+
+        public override double GetInputValue(int index)
+        {
+            if (index >= 0 && index < Inputs.Length)
+            {
+                return Inputs[index].Value;
+            }
+            return double.NaN;
         }
 
         public override void SetInputSource(int index, Shape source, int pinIndex, Guid linkId)
