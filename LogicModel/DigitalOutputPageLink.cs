@@ -1,23 +1,22 @@
 using PluginSupport;
-using System;
 using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class AnalogOutPageLink : Func
+    public class DigitalOutputPageLink : Func
     {
-        public AnalogOutPageLink()
+        public DigitalOutputPageLink()
         {
-            FuncName = "A-->";
-            FuncDesc = "Исходящая аналоговая ссылка со страницы";
-            Inputs = [new PinInput { Kind = ValueKind.Analog }];
+            FuncName = "D-->";
+            FuncDesc = "Исходящая дискретная ссылка со страницы";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [];
             CalculateHeight();
         }
 
-        public override AnalogOutPageLink DeepClone()
+        public override DigitalOutputPageLink DeepClone()
         {
-            return new AnalogOutPageLink()
+            return new DigitalOutputPageLink()
             {
                 id = Id,
                 Index = this.Index,
@@ -30,7 +29,7 @@ namespace LogicModel
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins|
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public override GraphicsPath[] GetGraphicsPaths()
@@ -49,7 +48,6 @@ namespace LogicModel
             return [.. paths];
         }
 
-
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
@@ -62,7 +60,7 @@ namespace LogicModel
             var fname = "Ссылка # на лист(ы) #";
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             rect.Width = sz.Width;
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold,
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, 
                 fontFunc.Size, new Point(rect.Left + 12, rect.Top + rect.Height / 2), sf);
             paths.Add(path);
             return [.. paths];
