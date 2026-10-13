@@ -102,6 +102,8 @@ namespace CodeGenerator
         private XElement? copycuted;
         private (GraphicsPath[], Rectangle) pasted;
 
+        private bool runEmulate = false;
+
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
@@ -299,7 +301,7 @@ namespace CodeGenerator
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                        shape.CanInputLink = firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                        shape.CanInputLink = firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !linkBuilding;
@@ -517,37 +519,47 @@ namespace CodeGenerator
                                 !shape.IsLinked(index) &&
                                 firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index))
                             {
-                                // создание представления связи
-                                var type = shape.GetLinkTypeToCreate();
-                                var link = (PluginSupport.Link?)Activator.CreateInstance(type);
-                                if (link != null)
+                                if (linked.Page == shape.Page)
                                 {
-                                    var startPoint = firstShape.GetOutputPinPoint(0);
-                                    var endPoint = shape.GetInputPinPoint(index);
-                                    if (startPoint != null && endPoint != null)
+                                    // создание представления связи
+                                    var type = shape.GetLinkTypeToCreate();
+                                    var link = (PluginSupport.Link?)Activator.CreateInstance(type);
+                                    if (link != null)
                                     {
-                                        link.StartPoint = (Point)startPoint;
-                                        link.EndPoint = (Point)endPoint;
-                                        // построение волны и точек визуальной связи
-                                        var points = TraceAssistant.BuildWaveInField(shapes, links, link);
+                                        var startPoint = firstShape.GetOutputPinPoint(0);
+                                        var endPoint = shape.GetInputPinPoint(index);
+                                        if (startPoint != null && endPoint != null)
+                                        {
+                                            link.StartPoint = (Point)startPoint;
+                                            link.EndPoint = (Point)endPoint;
+                                            // построение волны и точек визуальной связи
+                                            var points = TraceAssistant.BuildWaveInField(shapes, links, link);
 
-                                        link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
-                                        links.Add(link);
-                                        // настройка фигуры для установления связи
-                                        shape.SetInputValue(index, firstShape.GetOutputValue(0));
+                                            link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
+                                            links.Add(link);
+                                            // настройка фигуры для установления связи
+                                            shape.SetInputValue(index, firstShape.GetOutputValue(0));
 
-                                        // сохранение настроек для визуальной связи
-                                        link.Source = firstShape;
-                                        link.SourcePinIndex = 0;
-                                        link.Target = shape;
-                                        link.TargetPinIndex = index;
-                                        // сохранение настроек связи для источника
-                                        firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
-                                        // сохранение настроек связи для цели
-                                        shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
-                                        SortIndexByLocation();
-                                        modelChanged = true;
+                                            // сохранение настроек для визуальной связи
+                                            link.Source = firstShape;
+                                            link.SourcePinIndex = 0;
+                                            link.Target = shape;
+                                            link.TargetPinIndex = index;
+                                            // сохранение настроек связи для источника
+                                            firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
+                                            // сохранение настроек связи для цели
+                                            shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
+                                            SortIndexByLocation();
+                                            modelChanged = true;
+                                        }
                                     }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Для создания межстраничной связи" +
+                                        "\nиспользуйте межстраничные ссылки" +
+                                        "\nиз библиотеки компонентов.",
+                                        "Создание связи", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 }
                                 break;
                             }
@@ -790,9 +802,12 @@ namespace CodeGenerator
                     }
                     shape.Draw(e.Graphics, pen, brush);
 
-                    // вывод текущих значений входов, выходов и номеров меток фигур
-                    using var defaultbrush = new SolidBrush(pen.Color);
-                    shape.DrawWhenDebug(e.Graphics, defaultbrush);
+                    if (runEmulate)
+                    {
+                        // вывод текущих значений входов, выходов и номеров меток фигур
+                        using var defaultbrush = new SolidBrush(pen.Color);
+                        shape.DrawWhenDebug(e.Graphics, defaultbrush);
+                    }
                 }
                 // рисуем связи фигур из списка
                 foreach (var link in links.Where(x => x.Page == page.Number))
@@ -1436,6 +1451,7 @@ namespace CodeGenerator
             tsslStatus.Text = $"Смещение базовой точки: {drawPanel.Origin}, зум: {drawPanel.Zoom}";
             tsmiCut.Enabled = tsmiCopy.Enabled = tsbCut.Enabled = tsbCopy.Enabled = shapes.Any(x => x.Selected);
             tsmiPaste.Enabled = tsbPaste.Enabled = copycuted != null;
+            tsbRun.Checked = tsmiRun.Checked = runEmulate;
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1519,6 +1535,12 @@ namespace CodeGenerator
                 pagesToPrint = pages.Count;
                 printDocument1.Print();
             }
+        }
+
+        private void TsbRun_Click(object sender, EventArgs e)
+        {
+            runEmulate = !runEmulate;
+            drawPanel.Invalidate();
         }
     }
 }

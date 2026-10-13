@@ -54,11 +54,9 @@
             tsmiTools = new ToolStripMenuItem();
             tsmiTuning = new ToolStripMenuItem();
             tsmiParameters = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
+            tsmiRun = new ToolStripMenuItem();
             tsmiHelp = new ToolStripMenuItem();
-            tsmiContent = new ToolStripMenuItem();
-            tsmiIndex = new ToolStripMenuItem();
-            tsmiSearch = new ToolStripMenuItem();
-            toolStripSeparator5 = new ToolStripSeparator();
             tsmiAbout = new ToolStripMenuItem();
             toolStrip1 = new ToolStrip();
             tsbCreate = new ToolStripButton();
@@ -70,7 +68,7 @@
             tsbCopy = new ToolStripButton();
             tsbPaste = new ToolStripButton();
             toolStripSeparator7 = new ToolStripSeparator();
-            справкаToolStripButton = new ToolStripButton();
+            tsbRun = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             tsslStatus = new ToolStripStatusLabel();
             panLeft = new Panel();
@@ -268,7 +266,7 @@
             // 
             // tsmiTools
             // 
-            tsmiTools.DropDownItems.AddRange(new ToolStripItem[] { tsmiTuning, tsmiParameters });
+            tsmiTools.DropDownItems.AddRange(new ToolStripItem[] { tsmiTuning, tsmiParameters, toolStripMenuItem1, tsmiRun });
             tsmiTools.Name = "tsmiTools";
             tsmiTools.Size = new Size(95, 20);
             tsmiTools.Text = "&Инструменты";
@@ -276,44 +274,33 @@
             // tsmiTuning
             // 
             tsmiTuning.Name = "tsmiTuning";
-            tsmiTuning.Size = new Size(138, 22);
+            tsmiTuning.Size = new Size(180, 22);
             tsmiTuning.Text = "&Настройки";
             // 
             // tsmiParameters
             // 
             tsmiParameters.Name = "tsmiParameters";
-            tsmiParameters.Size = new Size(138, 22);
+            tsmiParameters.Size = new Size(180, 22);
             tsmiParameters.Text = "&Параметры";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(177, 6);
+            // 
+            // tsmiRun
+            // 
+            tsmiRun.Name = "tsmiRun";
+            tsmiRun.Size = new Size(180, 22);
+            tsmiRun.Text = "Запуск эмуляции";
+            tsmiRun.Click += TsbRun_Click;
             // 
             // tsmiHelp
             // 
-            tsmiHelp.DropDownItems.AddRange(new ToolStripItem[] { tsmiContent, tsmiIndex, tsmiSearch, toolStripSeparator5, tsmiAbout });
+            tsmiHelp.DropDownItems.AddRange(new ToolStripItem[] { tsmiAbout });
             tsmiHelp.Name = "tsmiHelp";
             tsmiHelp.Size = new Size(65, 20);
             tsmiHelp.Text = "&Справка";
-            // 
-            // tsmiContent
-            // 
-            tsmiContent.Name = "tsmiContent";
-            tsmiContent.Size = new Size(158, 22);
-            tsmiContent.Text = "&Содержимое";
-            // 
-            // tsmiIndex
-            // 
-            tsmiIndex.Name = "tsmiIndex";
-            tsmiIndex.Size = new Size(158, 22);
-            tsmiIndex.Text = "&Индекс";
-            // 
-            // tsmiSearch
-            // 
-            tsmiSearch.Name = "tsmiSearch";
-            tsmiSearch.Size = new Size(158, 22);
-            tsmiSearch.Text = "&Поиск";
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(155, 6);
             // 
             // tsmiAbout
             // 
@@ -323,7 +310,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, справкаToolStripButton });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, tsbRun });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -413,14 +400,16 @@
             toolStripSeparator7.Name = "toolStripSeparator7";
             toolStripSeparator7.Size = new Size(6, 25);
             // 
-            // справкаToolStripButton
+            // tsbRun
             // 
-            справкаToolStripButton.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            справкаToolStripButton.Image = (Image)resources.GetObject("справкаToolStripButton.Image");
-            справкаToolStripButton.ImageTransparentColor = Color.Magenta;
-            справкаToolStripButton.Name = "справкаToolStripButton";
-            справкаToolStripButton.Size = new Size(23, 22);
-            справкаToolStripButton.Text = "С&правка";
+            tsbRun.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRun.Image = Properties.Resources.run;
+            tsbRun.ImageTransparentColor = Color.Magenta;
+            tsbRun.Name = "tsbRun";
+            tsbRun.Size = new Size(23, 22);
+            tsbRun.Text = "Запуск эмуляции";
+            tsbRun.ToolTipText = "Запуск эмуляции алгоритма";
+            tsbRun.Click += TsbRun_Click;
             // 
             // statusStrip1
             // 
@@ -470,7 +459,7 @@
             tpLibrary.Padding = new Padding(3);
             tpLibrary.Size = new Size(292, 351);
             tpLibrary.TabIndex = 0;
-            tpLibrary.Text = "Библиотека";
+            tpLibrary.Text = "Библиотека компонентов";
             // 
             // tvLibrary
             // 
@@ -556,7 +545,6 @@
             // 
             // timerCalculate
             // 
-            timerCalculate.Enabled = true;
             timerCalculate.Tick += TimerCalculate_Tick;
             // 
             // timerInterface
@@ -649,10 +637,6 @@
         private ToolStripMenuItem tsmiTuning;
         private ToolStripMenuItem tsmiParameters;
         private ToolStripMenuItem tsmiHelp;
-        private ToolStripMenuItem tsmiContent;
-        private ToolStripMenuItem tsmiIndex;
-        private ToolStripMenuItem tsmiSearch;
-        private ToolStripSeparator toolStripSeparator5;
         private ToolStripMenuItem tsmiAbout;
         private ToolStrip toolStrip1;
         private ToolStripButton tsbCreate;
@@ -664,7 +648,7 @@
         private ToolStripButton tsbCopy;
         private ToolStripButton tsbPaste;
         private ToolStripSeparator toolStripSeparator7;
-        private ToolStripButton справкаToolStripButton;
+        private ToolStripButton tsbRun;
         private StatusStrip statusStrip1;
         private Panel panLeft;
         private Panel panRight;
@@ -684,5 +668,7 @@
         private System.Drawing.Printing.PrintDocument printDocument1;
         private PrintPreviewDialog printPreviewDialog1;
         private PrintDialog printDialog1;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem tsmiRun;
     }
 }

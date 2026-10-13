@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
@@ -14,6 +15,7 @@ namespace PluginSupport
                 return id;
             }
         }
+
         public int Page { get; set; }
 
         public abstract Shape? Source { get; set; }

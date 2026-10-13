@@ -7,8 +7,12 @@ namespace PluginSupport
         [Category("Owner"), DisplayName("Function")]
         public Shape? Owner { get; set; } = owner;
 
+        [Category("Owner"), DisplayName("Page")]
+        public string OwnerPage => Owner == null ? "" : $"{Owner.Page}";
+
         [Category("Owner"), DisplayName("Label")]
         public string OwnerLabel => Owner == null ? "" : $"L{Owner.Index + 1}";
+
         [Category("Owner"), DisplayName("Id")]
         public string OwnerId => Owner == null ? "" : $"{Owner.Id}";
 
