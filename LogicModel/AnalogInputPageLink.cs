@@ -90,5 +90,28 @@ namespace LogicModel
                 //}
             }
         }
+
+        /// <summary>
+        /// Добавление пунктов в контекстное меню
+        /// </summary>
+        /// <param name="point">Точка нажатия на элементе</param>
+        /// <param name="several">Признак выбора нескольких элементов</param>
+        /// <returns></returns>
+        public override ToolStripItem[] GetContextMenuItems(Point point, bool several)
+        {
+            List<ToolStripItem> items = [];
+            var item = new ToolStripMenuItem("Установить связь...");
+            item.Click += (s, e) =>
+            {
+            };
+            items.Add(item);
+            items.Add(new ToolStripSeparator());
+            item = new ToolStripMenuItem() { Text = "Удалить" };
+            item.Click += (s, e) =>
+            {
+            };
+            items.Add(item);
+            return [.. items];
+        }
     }
 }
