@@ -279,18 +279,16 @@ namespace CodeGenerator
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
 
             Cursor = Cursors.Default;
-            var shape = shapes.Count > 0 ? shapes[0] : null;
-            while (shape != null)
+            var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
+            shapes.Where(x => page == null || x.Page == page.Number).ToList().ForEach(shape => 
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
-                shape = shape.Prev;
-            }
-            links.ForEach(link => link.Hover = false);
+            });
+            links.Where(x => page == null || x.Page == page.Number).ToList().ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            shape = shapes.Count > 0 ? shapes[0] : null;
-            while (shape != null)
+            foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -310,7 +308,6 @@ namespace CodeGenerator
                 {
                     shape.Hover = true;
                 }
-                shape = shape.Prev;
             }
 
             if (leftPressed)
@@ -342,7 +339,7 @@ namespace CodeGenerator
                     List<Link> list = [];
                     for (var n = 0; n < shapes.Count; n++)
                     {
-                        shape = shapes[n];
+                        var shape = shapes[n];
                         if (shape.Selected)
                         {
                             shape.Location = Point.Add(shape.Location, new Size(dx, dy));
@@ -394,17 +391,14 @@ namespace CodeGenerator
                         var maxX = Math.Max(first.X, current.X);
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
-                        //drawPanel.Invalidate(/*rect*/);
                         var mode = current.X > first.X;
-                        shape = shapes.Count > 0 ? shapes[0] : null;
-                        while (shape != null)
+                        foreach (var shape in shapes.Where(x => page == null || x.Page == page.Number))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
                                 shape.Hover = true;
                             }
-                            shape = shape.Prev;
                         }
                     }
                 }
