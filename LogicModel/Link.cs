@@ -20,11 +20,15 @@ namespace LogicModel
         {
             get
             {
-                var minX = linkPoints.Min(x => x.X);
-                var maxX = linkPoints.Max(x => x.X);
-                var minY = linkPoints.Min(y => y.Y);
-                var maxY = linkPoints.Max(y => y.Y);
-                return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+                if (linkPoints.Length > 0)
+                {
+                    var minX = linkPoints.Min(x => x.X);
+                    var maxX = linkPoints.Max(x => x.X);
+                    var minY = linkPoints.Min(y => y.Y);
+                    var maxY = linkPoints.Max(y => y.Y);
+                    return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+                }
+                return Rectangle.Empty;
             }
         }
 

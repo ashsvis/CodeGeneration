@@ -143,7 +143,7 @@ namespace CodeGenerator
             firstShape = null;
             firstLinkPoint = null;
             pgProperties.SelectedObject = null;
-            foreach (var shape in ShapesFrom(page))
+            foreach (var shape in ShapesFrom(page, true))
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
@@ -271,9 +271,12 @@ namespace CodeGenerator
             }
         }
 
-        private List<Shape> ShapesFrom(Page? page)
+        private List<Shape> ShapesFrom(Page? page, bool reverse = false)
         {
-            return [.. shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+            var result = shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
+            if (reverse)
+                result.Reverse();
+            return result;
         }
 
         private List<Link> LinksFrom(Page? page)
@@ -296,7 +299,7 @@ namespace CodeGenerator
             });
             LinksFrom(page).ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in ShapesFrom(page))
+            foreach (var shape in ShapesFrom(page, true))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -514,7 +517,7 @@ namespace CodeGenerator
                     {
                         // построение связи данных между фигурами
                         linkBuilding = false;
-                        foreach (var shape in ShapesFrom(page).Select(x => x).Reverse())
+                        foreach (var shape in ShapesFrom(page, true))
                         {
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
@@ -646,12 +649,12 @@ namespace CodeGenerator
                 var shape = source.DeepClone();
                 shape.NewGuid();
                 shape.Location = Point.Add(shape.Location, new Size(12, 12));
-                shape.Selected = true;
                 shape.OnDelete += Shape_OnDelete;
                 shape.OnDeleteLink += Shape_OnDeleteLink;
                 shape.OnMakeCopy += Shape_OnMakeCopy;
                 shapes.Add(shape);
                 SortIndexByLocation();
+                shape.Selected = true;
                 modelChanged = true;
                 drawPanel.Invalidate();
             }
