@@ -722,18 +722,6 @@ namespace CodeGenerator
             }
             shapes.Sort(new ShapesComparer());
 
-            //создание ссылочного списка
-            var query = shapes.Select(x => x).Reverse().ToArray();
-            var first = query.Length > 0 ? query.First() : null;
-            var last = query.Length > 0 ? query.Last() : null;
-            for (var i = 0; i < query.Length; i++)
-            {
-                var shape = query[i];
-                shape.First = first;
-                shape.Prev = i > 0 ? query[i - 1] : null;
-                shape.Next = i < query.Length - 1 ? query[i + 1] : null;
-                shape.Last = last;
-            }
         }
 
         class ShapesComparer : IComparer<Shape>

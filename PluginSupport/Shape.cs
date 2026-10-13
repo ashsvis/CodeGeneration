@@ -21,10 +21,6 @@ namespace PluginSupport
             id = Guid.NewGuid();
         }
 
-        public Shape? First;
-        public Shape? Prev;
-        public Shape? Next;
-        public Shape? Last;
 
         [Category("Common"), DisplayName("Page"), ReadOnly(true)]
         public int Page { get; set; }
