@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -544,6 +545,7 @@ namespace CodeGenerator
                                         firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
                                         // сохранение настроек связи для цели
                                         shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
+                                        SortIndexByLocation();
                                         modelChanged = true;
                                     }
                                 }
@@ -677,6 +679,7 @@ namespace CodeGenerator
         {
             // сброс номеров страниц
             shapes.ForEach(shape => shape.Page = 0);
+            links.ForEach(link => link.Page = 0);
 
             // назначение номеров страниц на основании попадания в область листа
             foreach (var page in pages)
@@ -685,6 +688,11 @@ namespace CodeGenerator
                 {
                     var p = pages.FirstOrDefault(x => x.Bounds.Contains(shape.Bounds));
                     if (p != null) shape.Page = p.Number;
+                }
+                foreach (var link in links.Where(x => x.Page == 0))
+                {
+                    var p = pages.FirstOrDefault(x => x.Bounds.Contains(link.Bounds));
+                    if (p != null) link.Page = p.Number;
                 }
             }
 
@@ -741,62 +749,81 @@ namespace CodeGenerator
             foreach (var page in pages)
             {
                 page.Draw(e.Graphics, Color.FromArgb(127, Color.Gray));
-            }
-            // рисуем фигуры из списка
-            using var hoverpen = new Pen(Color.White);
-            using var selectpen = new Pen(Color.Teal);
-            using var selecthoverpen = new Pen(Color.CadetBlue);
-            using var hoverbrush = new SolidBrush(Color.Teal);
-            using var selectbrush = new SolidBrush(Color.Teal);
-            using var selecthoverbrush = new SolidBrush(Color.CadetBlue);
-            foreach (var shape in shapes)
-            {
-                using var brush = new SolidBrush(shape.Background);
-                if (shape.Hover && shape.Selected)
-                    shape.Draw(e.Graphics, selecthoverpen, brush);
-                else if (shape.Hover)
-                    shape.Draw(e.Graphics, hoverpen, brush);
-                else if (shape.CanOutputLink || shape.CanInputLink)
+
+                // рисуем фигуры из списка
+                using var hoverpen = new Pen(Color.White);
+                using var selectpen = new Pen(Color.Teal);
+                using var selecthoverpen = new Pen(Color.CadetBlue);
+                using var hoverbrush = new SolidBrush(Color.Teal);
+                using var selectbrush = new SolidBrush(Color.Teal);
+                using var selecthoverbrush = new SolidBrush(Color.CadetBlue);
+                foreach (var shape in shapes.Where(x => x.Page == page.Number))
                 {
-                    shape.Draw(e.Graphics, hoverpen, hoverbrush);
-                }
-                else if (shape.Selected)
-                    shape.Draw(e.Graphics, selectpen, brush);
-                else
-                {
+                    Pen pen;
+                    Brush brush;
                     using var defaultpen = new Pen(shape.Foreground);
-                    shape.Draw(e.Graphics, defaultpen, brush);
-                }
-            }
-            // рисуем связи фигур из списка
-            foreach (var link in links)
-            {
-                if (link.Hover && link.Selected)
-                    link.DrawLines(e.Graphics, selecthoverpen);
-                else if (link.Hover)
-                    link.DrawLines(e.Graphics, hoverpen);
-                else if (link.Selected)
-                    link.DrawLines(e.Graphics, selectpen);
-                else
-                {
-                    using var pen = new Pen(link.Foreground);
-                    link.DrawLines(e.Graphics, pen);
-                }
-            }
-            if (!dragShapes)
-            {
-                // рисуем присоединения связей фигур из списка
-                foreach (var link in links)
-                {
-                    if (link.Hover && link.Selected)
-                        link.DrawDots(e.Graphics, selecthoverbrush);
-                    else if (link.Hover)
-                        link.DrawDots(e.Graphics, hoverbrush);
-                    else if (link.Selected)
-                        link.DrawDots(e.Graphics, selectbrush);
+                    using var backgroundbrush = new SolidBrush(shape.Background);
+                    if (shape.Hover && shape.Selected)
+                    {
+                        pen = selecthoverpen;
+                        brush = backgroundbrush;
+                    }
+                    else if (shape.Hover)
+                    {
+                        pen = hoverpen;
+                        brush = backgroundbrush;
+                    }
+                    else if (shape.CanOutputLink || shape.CanInputLink)
+                    {
+                        pen = hoverpen;
+                        brush = hoverbrush;
+                    }
+                    else if (shape.Selected)
+                    {
+                        pen = selectpen;
+                        brush = backgroundbrush;
+                    }
                     else
                     {
-                        using var brush = new SolidBrush(link.Foreground);
+                        pen = defaultpen;
+                        brush = backgroundbrush;
+                    }
+                    shape.Draw(e.Graphics, pen, brush);
+
+                    // вывод текущих значений входов, выходов и номеров меток фигур
+                    using var defaultbrush = new SolidBrush(pen.Color);
+                    shape.DrawWhenDebug(e.Graphics, defaultbrush);
+                }
+                // рисуем связи фигур из списка
+                foreach (var link in links.Where(x => x.Page == page.Number))
+                {
+                    Pen pen;
+                    using var defaultpen = new Pen(link.Foreground);
+                    if (link.Hover && link.Selected)
+                        pen = selecthoverpen;
+                    else if (link.Hover)
+                        pen = hoverpen;
+                    else if (link.Selected)
+                        pen = selectpen;
+                    else
+                        pen = defaultpen;
+                    link.DrawLines(e.Graphics, pen);
+                }
+                if (!dragShapes)
+                {
+                    // рисуем присоединения связей фигур из списка
+                    foreach (var link in links.Where(x => x.Page == page.Number))
+                    {
+                        Brush brush;
+                        using var defaultbrush = new SolidBrush(link.Foreground);
+                        if (link.Hover && link.Selected)
+                            brush = selecthoverbrush;
+                        else if (link.Hover)
+                            brush = hoverbrush;
+                        else if (link.Selected)
+                            brush = selectbrush;
+                        else
+                            brush = defaultbrush;
                         link.DrawDots(e.Graphics, brush);
                     }
                 }
@@ -1461,6 +1488,7 @@ namespace CodeGenerator
         {
             if (pages.FirstOrDefault(x => x.Number == pageToPrint) is Page page)
             {
+                var number = page.Number;
                 var width = e.PageSettings.PrintableArea.Width;
                 var height = e.PageSettings.PrintableArea.Height;
                 var kfY = 5.0 * page.Height / width;
@@ -1469,11 +1497,11 @@ namespace CodeGenerator
                 e.Graphics?.TranslateTransform(dx, dy);
                 e.Graphics?.ScaleTransform((float)(1.0 / kfY), (float)(1.0 / kfY));
                 page?.Draw(e.Graphics, Color.Black);
-                foreach (var shape in shapes)
+                foreach (var shape in shapes.Where(x => x.Page == number))
                     shape.Draw(e.Graphics, Pens.Black, Brushes.White);
-                foreach (var link in links)
+                foreach (var link in links.Where(x => x.Page == number))
                     link.DrawLines(e.Graphics, Pens.Black);
-                foreach (var link in links)
+                foreach (var link in links.Where(x => x.Page == number))
                     link.DrawDots(e.Graphics, Brushes.Black);
                 e.Graphics?.ScaleTransform((float)kfY, (float)kfY);
                 e.Graphics?.TranslateTransform(-dx, -dy);

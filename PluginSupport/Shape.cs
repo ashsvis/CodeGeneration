@@ -62,10 +62,9 @@ namespace PluginSupport
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
-        public virtual GraphicsPath[] GetTextPaths()
-        {
-            return [];
-        }
+        public virtual GraphicsPath[] GetTextPaths() { return []; }
+
+        public virtual GraphicsPath[] GetValuesPaths() { return []; }
 
         public abstract TargetInfo[] GetTargets();
         public abstract PinInfo[] GetPinPoints();
@@ -84,6 +83,15 @@ namespace PluginSupport
             {
                 using var path = p;
                 g?.FillPath(text, path);
+            }
+        }
+
+        public virtual void DrawWhenDebug(Graphics? g, Brush brush)
+        {
+            foreach (var p in GetValuesPaths())
+            {
+                using var path = p;
+                g?.FillPath(brush, path);
             }
         }
 

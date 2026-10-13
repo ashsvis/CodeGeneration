@@ -14,6 +14,7 @@ namespace PluginSupport
                 return id;
             }
         }
+        public int Page { get; set; }
 
         public abstract Shape? Source { get; set; }
         public abstract Guid SourceId { get; set; }
