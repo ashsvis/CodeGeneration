@@ -66,10 +66,13 @@ namespace CodeGenerator
                 foreach (var key in dict.Keys)
                     types.TryAdd(key, dict[key]);
             }
-            const int totalPages = 5;
+            const int totalPages = 12;
+            const int totalPagesInRow = 10;
             for (var i = 1; i <= totalPages; i++)
             {
-                pages.Add(new Page(i, 420, 297) { PagesCount = totalPages });
+                var row = (i - 1) / totalPagesInRow;
+                var column = (i - 1) - row * totalPagesInRow;
+                pages.Add(new Page(i, 420, 297, row, column) { PagesCount = totalPages });
             }
         }
 
@@ -672,10 +675,24 @@ namespace CodeGenerator
 
         private void SortIndexByLocation()
         {
-            var n = 0;
-            foreach (var item in shapes.OrderBy(x => x.Location.X).ThenBy(x => x.Location.Y))
+            // сброс номеров страниц
+            shapes.ForEach(shape => shape.Page = 0);
+
+            // назначение номеров страниц на основании попадания в область листа
+            foreach (var page in pages)
             {
-                item.Index = n;
+                foreach (var shape in shapes.Where(x => x.Page == 0))
+                {
+                    var p = pages.FirstOrDefault(x => x.Bounds.Contains(shape.Bounds));
+                    if (p != null) shape.Page = p.Number;
+                }
+            }
+
+            // назначение порядкового индекса
+            var n = 0;
+            foreach (var shape in shapes.OrderBy(x => x.Page).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
+            {
+                shape.Index = n;    // назначение порядкового индекса
                 n++;
             }
             shapes.Sort(new ShapesComparer());
@@ -1442,14 +1459,15 @@ namespace CodeGenerator
 
         private void PrintDocument1_PrintPage(object sender, System.Drawing.Printing.PrintPageEventArgs e)
         {
-            var width = e.PageSettings.Landscape ? e.PageSettings.PaperSize.Height : e.PageSettings.PaperSize.Width; //e.PageSettings.PrintableArea;
-            var kf = 297f / 1169.6f * 5;
-            var page = pages.FirstOrDefault(x => x.Number == pageToPrint);
-            if (page != null)
+            if (pages.FirstOrDefault(x => x.Number == pageToPrint) is Page page)
             {
-                //var width = 1654; // page.Width;
-                e.Graphics?.TranslateTransform(82 - (pageToPrint - 1) * width, 20);
-                e.Graphics?.ScaleTransform(1 / kf, 1 / kf);
+                var width = e.PageSettings.PrintableArea.Width;
+                var height = e.PageSettings.PrintableArea.Height;
+                var kfY = 5.0 * page.Height / width;
+                var dx = 82 - page.Column * height;
+                var dy = 20 - page.Row * width;
+                e.Graphics?.TranslateTransform(dx, dy);
+                e.Graphics?.ScaleTransform((float)(1.0 / kfY), (float)(1.0 / kfY));
                 page?.Draw(e.Graphics, Color.Black);
                 foreach (var shape in shapes)
                     shape.Draw(e.Graphics, Pens.Black, Brushes.White);
@@ -1457,8 +1475,8 @@ namespace CodeGenerator
                     link.DrawLines(e.Graphics, Pens.Black);
                 foreach (var link in links)
                     link.DrawDots(e.Graphics, Brushes.Black);
-                e.Graphics?.ScaleTransform(kf, kf);
-                e.Graphics?.TranslateTransform(-82 + (pageToPrint - 1) * width, -20);
+                e.Graphics?.ScaleTransform((float)kfY, (float)kfY);
+                e.Graphics?.TranslateTransform(-dx, -dy);
             }
             e.HasMorePages = pagesToPrint > 1;
             pageToPrint++;

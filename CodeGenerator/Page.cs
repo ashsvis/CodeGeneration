@@ -1,17 +1,20 @@
 namespace CodeGenerator
 {
-    public class Page(int number, int width, int height)
+    public class Page(int number, int width, int height, int row, int column)
     {
+        const int kf = 5;
         public int Number { get; set; } = number;
         public int PagesCount { get; set; }
         public int Width { get; set; } = width;
         public int Height { get; set; } = height;
+        public int Row { get; } = row;
+        public int Column { get; } = column;
 
-        public Rectangle Bounds => new((Number - 1) * Width, 0, Width, Height);
+        public Rectangle Bounds => new(Column * Width * kf - 100, Row * Height * kf - 25, Width * kf, Height * kf);
 
         public void Draw(Graphics? graphics, Color foreground)
         {
-            StampAssistant.DrawPageBorder(graphics, new Point((Number - 1) * Width, 0), Width, Height, foreground, Number, PagesCount);
+            StampAssistant.DrawPageBorder(graphics, new Point(Column * Width, Row * Height), Width, Height, foreground, Number, PagesCount);
         }
     }
 }

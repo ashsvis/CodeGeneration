@@ -26,6 +26,8 @@ namespace PluginSupport
         public Shape? Next;
         public Shape? Last;
 
+        public int Page { get; set; }
+
         [Browsable(false)]
         public Point Location { get; set; }
 
