@@ -1,9 +1,10 @@
 using PluginSupport;
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class DigitalOutputPageLink : Func
+    public class DigitalOutputPageLink : Func, IPageLink
     {
         public DigitalOutputPageLink()
         {
@@ -13,6 +14,9 @@ namespace LogicModel
             Outputs = [];
             CalculateHeight();
         }
+
+        [ReadOnly(true)]
+        public int Number { get; set; }
 
         public override DigitalOutputPageLink DeepClone()
         {
@@ -31,6 +35,8 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+
+        public ValueKind ValueKind => ValueKind.DO;
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -57,10 +63,10 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Near;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = "—сылка # на лист(ы) #";
+            var fname = $"—сылка {Number} на лист(ы) #";
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             rect.Width = sz.Width;
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, 
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, 
                 fontFunc.Size, new Point(rect.Left + 12, rect.Top + rect.Height / 2), sf);
             paths.Add(path);
             return [.. paths];
@@ -89,6 +95,11 @@ namespace LogicModel
                 //    base.Calculate();
                 //}
             }
+        }
+
+        public void SetLinkNumber(int number)
+        {
+            Number = number;
         }
     }
 }

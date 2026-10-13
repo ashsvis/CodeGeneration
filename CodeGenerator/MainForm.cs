@@ -329,7 +329,7 @@ namespace CodeGenerator
                     dragShapes = true;
                 if (dragShapes)
                 {
-                    var ctrl = ModifierKeys.HasFlag(Keys.Control);
+                    //var ctrl = ModifierKeys.HasFlag(Keys.Control);
                     // начинаем перемещение фигур
                     var ePoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                     var dx = ePoint.X - firstPoint.X;
@@ -343,6 +343,7 @@ namespace CodeGenerator
                         shapes.ForEach(x => x.Selected = false);
                         links.ForEach(x => x.Selected = false);
                         PasteFromXml(copyed, shapes, links, loc);
+                        SortIndexByLocation();
                         dragCopiedShapes = false;
                         modelChanged = true;
                     }
@@ -713,7 +714,7 @@ namespace CodeGenerator
                 }
             }
 
-            // назначение порядкового индекса
+            // назначение порядкового индекса для фигур
             var n = 0;
             foreach (var shape in shapes.OrderBy(x => x.Page).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
             {
@@ -722,6 +723,24 @@ namespace CodeGenerator
             }
             shapes.Sort(new ShapesComparer());
 
+            // назначение порядкового индекса для исходящих внеших ссылок
+            n = 1;
+            foreach (var page in pages)
+            {
+                foreach (var shape in ShapesFrom(page))
+                {
+                    if (shape is IPageLink link)
+                    {
+                        switch (link.ValueKind)
+                        {
+                            case ValueKind.DO:
+                            case ValueKind.AO:
+                                link.SetLinkNumber(n++);
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         class ShapesComparer : IComparer<Shape>

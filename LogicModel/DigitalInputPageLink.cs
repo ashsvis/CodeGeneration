@@ -32,6 +32,8 @@ namespace LogicModel
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
+        public static ValueKind ValueKind => ValueKind.DI;
+
         public override GraphicsPath[] GetGraphicsPaths()
         {
             var paths = base.GetGraphicsPaths().ToList();
@@ -58,7 +60,7 @@ namespace LogicModel
             var path = new GraphicsPath();
             var fname = "—сылка # с листа #";
             var pinPoint = GetOutputPinPoint(0) ?? Point.Empty;
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold,
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular,
                 fontFunc.Size, Point.Add(pinPoint, new Size(-24, 0)), sf);
             paths.Add(path);
             return [.. paths];
