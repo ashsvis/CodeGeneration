@@ -274,24 +274,24 @@
             // tsmiTuning
             // 
             tsmiTuning.Name = "tsmiTuning";
-            tsmiTuning.Size = new Size(180, 22);
+            tsmiTuning.Size = new Size(170, 22);
             tsmiTuning.Text = "&Настройки";
             // 
             // tsmiParameters
             // 
             tsmiParameters.Name = "tsmiParameters";
-            tsmiParameters.Size = new Size(180, 22);
+            tsmiParameters.Size = new Size(170, 22);
             tsmiParameters.Text = "&Параметры";
             // 
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(177, 6);
+            toolStripMenuItem1.Size = new Size(167, 6);
             // 
             // tsmiRun
             // 
             tsmiRun.Name = "tsmiRun";
-            tsmiRun.Size = new Size(180, 22);
+            tsmiRun.Size = new Size(170, 22);
             tsmiRun.Text = "Запуск эмуляции";
             tsmiRun.Click += TsbRun_Click;
             // 
@@ -563,6 +563,7 @@
             printPreviewDialog1.Icon = (Icon)resources.GetObject("printPreviewDialog1.Icon");
             printPreviewDialog1.Name = "printPreviewDialog1";
             printPreviewDialog1.Visible = false;
+            printPreviewDialog1.Shown += PrintPreviewDialog1_Shown;
             // 
             // printDocument1
             // 
