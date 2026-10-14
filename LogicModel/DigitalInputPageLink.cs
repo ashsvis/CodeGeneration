@@ -32,8 +32,6 @@ namespace LogicModel
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
-        public static ValueKind ValueKind => ValueKind.DI;
-
         public override GraphicsPath[] GetGraphicsPaths()
         {
             var paths = base.GetGraphicsPaths().ToList();
@@ -107,9 +105,7 @@ namespace LogicModel
             items.Add(item);
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Удалить" };
-            item.Click += (s, e) => 
-            { 
-            };  
+            item.Click += (s, e) => Delete();
             items.Add(item);
             return [.. items];
         }

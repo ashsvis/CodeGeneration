@@ -197,9 +197,14 @@ namespace PluginSupport
             items.Add(item);
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Удалить" };
-            item.Click += (s, e) => OnDelete?.Invoke(this, EventArgs.Empty);  
+            item.Click += (s, e) => Delete();  
             items.Add(item);
             return [.. items];
+        }
+
+        public void Delete()
+        {
+            OnDelete?.Invoke(this, EventArgs.Empty);
         }
 
         public abstract void Calculate();

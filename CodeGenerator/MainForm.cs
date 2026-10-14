@@ -731,13 +731,7 @@ namespace CodeGenerator
                 {
                     if (shape is IPageLink link)
                     {
-                        switch (link.ValueKind)
-                        {
-                            case ValueKind.DO:
-                            case ValueKind.AO:
-                                link.SetLinkNumber(n++);
-                                break;
-                        }
+                        link.SetLinkNumber(n++);
                     }
                 }
             }
