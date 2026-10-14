@@ -113,7 +113,11 @@ namespace LogicModel
         public override ToolStripItem[] GetContextMenuItems(Point point, bool several)
         {
             List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem("Установить связь...");
+            var item = new ToolStripMenuItem() { Text = "Свойства..." };
+            item.Click += (s, e) => ShowProperties();
+            items.Add(item);
+            items.Add(new ToolStripSeparator());
+            item = new ToolStripMenuItem("Установить связь...");
             item.Click += (s, e) =>
             {
             };
