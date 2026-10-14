@@ -115,11 +115,15 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Near;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = Targets.Count == 1
-                ? $"—сылка {Number} на лист {Targets[0].Page}"
-                : Targets.Count > 1
-                    ? $"—сылка {Number} на листы {string.Join(", ", Targets.OrderBy(x => x.Page).Select(x => x.Page).Distinct())}"
-                    : $"—сылка {Number} с листа {Page} (никуда)";
+            var fname = $"—сылка {Number} с листа {Page} (никуда)";
+            if (Targets.Count > 0)
+            {
+                var items = Targets.OrderBy(x => x.Page).Select(x => x.Page).Distinct().ToArray();
+                if (items.Length == 1)
+                    fname = $"—сылка {Number} на лист {items[0]}";
+                else
+                    fname = $"—сылка {Number} на листы {string.Join(", ", items)}";
+            }
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             rect.Width = sz.Width;
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular,
