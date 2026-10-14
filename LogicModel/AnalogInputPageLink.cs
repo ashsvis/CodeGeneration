@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
 namespace LogicModel
@@ -48,6 +49,9 @@ namespace LogicModel
             return [.. paths];
         }
 
+        [ReadOnly(true)]
+        public AnalogOutputPageLink? SourcePageLink;
+
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
@@ -56,7 +60,7 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Far;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = "—сылка # с листа #";
+            var fname = SourcePageLink != null ? $"—сылка {SourcePageLink.Number} с листа {SourcePageLink.Page}" : "—сылка с листа (ниоткуда)";
             var pinPoint = GetOutputPinPoint(0) ?? Point.Empty;
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular,
                 fontFunc.Size, Point.Add(pinPoint, new Size(-24, 0)), sf);
@@ -80,7 +84,7 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0].Value > 0;
+                //var result = Inputs[0].Value > 0;
                 //if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 //{
                 //    Outputs[0].Value = result ? 1 : 0;
@@ -101,12 +105,28 @@ namespace LogicModel
             var item = new ToolStripMenuItem() { Text = "—войства..." };
             item.Click += (s, e) => ShowProperties();
             items.Add(item);
-            items.Add(new ToolStripSeparator());
-            item = new ToolStripMenuItem("”становить св€зь...");
-            item.Click += (s, e) =>
+            var results = Query(typeof(AnalogOutputPageLink));
+            if (results.Length > 0)
             {
-            };
-            items.Add(item);
+                items.Add(new ToolStripSeparator());
+                item = new ToolStripMenuItem("”становить св€зь");
+                foreach (var r in results)
+                {
+                    if (r is AnalogOutputPageLink analog)
+                    {
+                        var dropItem = new ToolStripMenuItem() { Text = $"—сылка {analog.Number} с листа {analog.Page}" };
+                        dropItem.Click += (s, e) =>
+                        {
+                            SourcePageLink?.Targets.Remove(this);
+                            SourcePageLink = analog;
+                            if (!SourcePageLink.Targets.Contains(this))
+                                SourcePageLink.Targets.Add(this);
+                        };
+                        item.DropDownItems.Add(dropItem);
+                    }
+                }
+                items.Add(item);
+            }
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "”далить" };
             item.Click += (s, e) => Delete();

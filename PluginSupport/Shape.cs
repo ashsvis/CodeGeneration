@@ -56,6 +56,7 @@ namespace PluginSupport
         public event EventHandler? OnShowProperties;
         public event EventHandler? OnDelete;
         public event EventHandler? OnMakeCopy;
+        public event QueryEventHandler? OnQuery;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -202,6 +203,13 @@ namespace PluginSupport
             return [.. items];
         }
 
+        public object[] Query(params object[] args)
+        {
+            var arg = new QueryEventArgs(args);
+            OnQuery?.Invoke(this, arg);
+            return arg.Results;
+        }
+
         public void ShowProperties()
         {
             OnShowProperties?.Invoke(this, EventArgs.Empty);
@@ -212,7 +220,7 @@ namespace PluginSupport
             OnMakeCopy?.Invoke(this, EventArgs.Empty);
         }
 
-        public void Delete()
+        public virtual void Delete()
         {
             OnDelete?.Invoke(this, EventArgs.Empty);
         }
@@ -246,4 +254,12 @@ namespace PluginSupport
     }
 
     public delegate void DeleteLinkFromTargetEventHandler(object sender, DeleteLinkFromTargetEventArgs e);
+
+    public class QueryEventArgs(object[] args) : EventArgs
+    {
+        public object[] Args { get; set; } = args;
+        public object[] Results { get; set; } = [];
+    }
+
+    public delegate void QueryEventHandler(object sender, QueryEventArgs e);
 }

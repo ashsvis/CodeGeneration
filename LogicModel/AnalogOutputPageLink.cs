@@ -1,5 +1,4 @@
 using PluginSupport;
-using System;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
@@ -18,6 +17,9 @@ namespace LogicModel
 
         [ReadOnly(true)]
         public int Number { get; set; }
+
+        [Browsable(false)]
+        public List<AnalogInputPageLink> Targets = [];
 
         public override AnalogOutputPageLink DeepClone()
         {
@@ -55,7 +57,6 @@ namespace LogicModel
             return [.. paths];
         }
 
-
         public override GraphicsPath[] GetTextPaths()
         {
             var paths = base.GetTextPaths().ToList();
@@ -65,7 +66,11 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Near;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = $"—сылка {Number} на лист(ы) #";
+            var fname = Targets.Count == 1
+                ? $"—сылка {Number} на лист {Targets[0].Page}"
+                : Targets.Count > 1
+                    ? $"—сылка {Number} на листы {string.Join(", ", Targets.OrderBy(x => x.Page).Select(x => x.Page).Distinct())}"
+                    : $"—сылка {Number} с листа {Page} (никуда)";
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             rect.Width = sz.Width;
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular,
@@ -90,7 +95,7 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0].Value > 0;
+                //var result = Inputs[0].Value > 0;
                 //if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
                 //{
                 //    Outputs[0].Value = result ? 1 : 0;
@@ -115,12 +120,6 @@ namespace LogicModel
             List<ToolStripItem> items = [];
             var item = new ToolStripMenuItem() { Text = "—войства..." };
             item.Click += (s, e) => ShowProperties();
-            items.Add(item);
-            items.Add(new ToolStripSeparator());
-            item = new ToolStripMenuItem("”становить св€зь...");
-            item.Click += (s, e) =>
-            {
-            };
             items.Add(item);
             items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "”далить" };

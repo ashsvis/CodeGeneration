@@ -142,7 +142,6 @@ namespace CodeGenerator
                 ShapesFrom(page).ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
-            //pgProperties.SelectedObject = null;
             foreach (var shape in ShapesFrom(page))
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -152,8 +151,6 @@ namespace CodeGenerator
                     {
                         if (e.Button == MouseButtons.Left)
                         {
-                            //pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == outputIndex);
-                            //tcUtilites.SelectedTab = tpProperties;
                             firstShape = shape;
                             linkBuilding = true;
                             firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
@@ -175,8 +172,6 @@ namespace CodeGenerator
                         shapeFound = true;
                         if (e.Button == MouseButtons.Left)
                         {
-                            //pgProperties.SelectedObject = shape.GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == inputIndex);
-                            //tcUtilites.SelectedTab = tpProperties;
                             if (runEmulate)
                             {
                                 if (!shape.IsLinked(inputIndex))
@@ -206,11 +201,6 @@ namespace CodeGenerator
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                         contextMenu.Show(drawPanel, e.Location);
                     }
-                    //else if (e.Button == MouseButtons.Left)
-                    //{
-                    //    pgProperties.SelectedObject = shape;
-                    //    tcUtilites.SelectedTab = tpProperties;
-                    //}
                     break;
                 }
             }
@@ -245,7 +235,7 @@ namespace CodeGenerator
                 link.Selected = false;
             });
             var selected = ShapesFrom(page).Where(x => x.Selected).ToList();
-            var found = false;
+            ////var found = false;
             foreach (var link in LinksFrom(page))
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
@@ -254,21 +244,21 @@ namespace CodeGenerator
                 {
                     link.Selected = true;
                     link.Hover = true;
-                    found = true;
+                    ////found = true;
                 }
             }
-            if (!found)
-            {
-                foreach (var link in LinksFrom(page))
-                {
-                    var sourceShape = selected.FirstOrDefault(x => x == link.Source);
-                    if (sourceShape != null)
-                    {
-                        link.Selected = true;
-                        link.Hover = true;
-                    }
-                }
-            }
+            ////if (!found)
+            ////{
+            ////    foreach (var link in LinksFrom(page))
+            ////    {
+            ////        var sourceShape = selected.FirstOrDefault(x => x == link.Source);
+            ////        if (sourceShape != null)
+            ////        {
+            ////            link.Selected = true;
+            ////            link.Hover = true;
+            ////        }
+            ////    }
+            ////}
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
@@ -633,6 +623,7 @@ namespace CodeGenerator
             shape.OnDelete += Shape_OnDelete;
             shape.OnDeleteLink += Shape_OnDeleteLink;
             shape.OnMakeCopy += Shape_OnMakeCopy;
+            shape.OnQuery += Shape_OnQuery;
         }
 
         private void UnsubscribeShapeEvents(Shape shape)
@@ -641,6 +632,18 @@ namespace CodeGenerator
             shape.OnDelete -= Shape_OnDelete;
             shape.OnDeleteLink -= Shape_OnDeleteLink;
             shape.OnMakeCopy -= Shape_OnMakeCopy;
+            shape.OnQuery -= Shape_OnQuery;
+        }
+
+        private void Shape_OnQuery(object sender, QueryEventArgs e)
+        {
+            List<object> items = [];
+            foreach (var arg in e.Args)
+            {
+                if (arg is Type type)
+                    items.AddRange(shapes.Where(x => x.GetType() == type));
+            }
+            e.Results = [..items];
         }
 
         private void Shape_OnShowProperties(object? sender, EventArgs e)
@@ -771,14 +774,11 @@ namespace CodeGenerator
 
             // назначение порядкового индекса для исходящих внеших ссылок
             n = 1;
-            foreach (var page in pages)
+            foreach (var shape in shapes.OrderBy(x => x.Index))
             {
-                foreach (var shape in ShapesFrom(page))
+                if (shape is IPageLink link)
                 {
-                    if (shape is IPageLink link)
-                    {
-                        link.SetLinkNumber(n++);
-                    }
+                    link.SetLinkNumber(n++);
                 }
             }
         }
@@ -1064,7 +1064,10 @@ namespace CodeGenerator
                 foreach (var shape in shapesForDelete)
                     UnsubscribeShapeEvents(shape);
                 foreach (var shape in shapesForDelete)
+                {
+                    shape.Delete();
                     shapes.Remove(shape);
+                }
                 SortIndexByLocation();
                 modelChanged = true;
                 drawPanel.Invalidate();
