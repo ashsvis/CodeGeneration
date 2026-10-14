@@ -143,7 +143,7 @@ namespace CodeGenerator
             firstShape = null;
             firstLinkPoint = null;
             pgProperties.SelectedObject = null;
-            foreach (var shape in ShapesFrom(page, true))
+            foreach (var shape in ShapesFrom(page))
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
@@ -271,19 +271,6 @@ namespace CodeGenerator
             }
         }
 
-        private List<Shape> ShapesFrom(Page? page, bool reverse = false)
-        {
-            var result = shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
-            if (reverse)
-                result.Reverse();
-            return result;
-        }
-
-        private List<Link> LinksFrom(Page? page)
-        {
-            return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
-        }
-
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
@@ -299,7 +286,7 @@ namespace CodeGenerator
             });
             LinksFrom(page).ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in ShapesFrom(page, true))
+            foreach (var shape in ShapesFrom(page))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -518,7 +505,7 @@ namespace CodeGenerator
                     {
                         // построение связи данных между фигурами
                         linkBuilding = false;
-                        foreach (var shape in ShapesFrom(page, true))
+                        foreach (var shape in ShapesFrom(page))
                         {
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
@@ -693,8 +680,49 @@ namespace CodeGenerator
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(shapes, links, item)]);
         }
 
+        private readonly Dictionary<Page, List<Shape>> cacheShapes = [];
+        private readonly List<Shape> cacheNoPageShapes = [];
+
+        private void ClearCache()
+        {
+            cacheShapes.Clear();
+            cacheNoPageShapes.Clear();
+        }
+
+        private List<Shape> ShapesFrom(Page? page)
+        {
+            if (page == null)
+            {
+                if (cacheNoPageShapes.Count > 0)
+                    return cacheNoPageShapes;
+            }
+            else
+            {
+                if (cacheShapes.TryGetValue(page, out List<Shape>? value) && value.Count > 0)
+                    return value;
+            }
+            var result = shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
+            result.Reverse();
+            if (page == null)
+                cacheNoPageShapes.AddRange(result);
+            else
+            {
+                if (!cacheShapes.ContainsKey(page))
+                    cacheShapes.Add(page, []);
+                cacheShapes[page].AddRange(result);
+            }
+            return result;
+        }
+
+        private List<Link> LinksFrom(Page? page)
+        {
+            return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+        }
+
         private void SortIndexByLocation()
         {
+            ClearCache();
+
             // сброс номеров страниц
             shapes.ForEach(shape => shape.Page = 0);
             links.ForEach(link => link.Page = 0);
