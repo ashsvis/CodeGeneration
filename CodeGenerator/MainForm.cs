@@ -681,6 +681,10 @@ namespace CodeGenerator
                 // если найдены оба, то отписывается
                 if (source != null && target != null)
                     link.UnlinkToLocation(source, target);
+                if (source is IPageTargetLink plink)
+                {
+                    plink.RemoveTargetFromOutput(target, link.TargetPinIndex);
+                }
                 // удаляем визуальную ссылку
                 links.Remove(link);
                 UpdateOtherLinks(link);

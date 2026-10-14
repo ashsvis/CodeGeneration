@@ -192,5 +192,10 @@ namespace LogicModel
             items.Add(item);
             return [.. items];
         }
+
+        public void RemoveTargetFromOutput(Shape? target, int targetPinIndex)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class DigitalInputPageLink : Func
+    public class DigitalInputPageLink : Func, IPageTargetLink
     {
         public DigitalInputPageLink()
         {
@@ -32,6 +32,8 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder | AllowedFuncProperties.ShowPins |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+
+        public ValueKind ValueKind => ValueKind.Digital;
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -131,6 +133,21 @@ namespace LogicModel
         {
             SourcePageLink?.Targets.Remove(this);
             base.Delete();
+        }
+
+        public void RemoveTargetFromOutput(Shape? target, int targetPinIndex)
+        {
+            foreach (var output in Outputs)
+            {
+                foreach (var tar in output.Targets)
+                {
+                    if (tar.Owner == target && tar.PinIndex == targetPinIndex)
+                    {
+                        tar.Owner = null;
+                        tar.PinIndex = 0;
+                    }
+                }
+            }
         }
     }
 }
