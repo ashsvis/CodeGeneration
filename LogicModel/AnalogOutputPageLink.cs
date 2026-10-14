@@ -155,12 +155,12 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                //var result = Inputs[0].Value > 0;
-                //if (Outputs.Length > 0 && (Outputs[0].Value > 0) != result)
-                //{
-                //    Outputs[0].Value = result ? 1 : 0;
-                //    base.Calculate();
-                //}
+                var result = Inputs[0].Value;
+                foreach (var target in Targets)
+                {
+                    target.SetInputValue(0, result);
+                }
+                Transfer();
             }
         }
 

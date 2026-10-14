@@ -298,7 +298,7 @@ namespace LogicModel
                             p.AddString($"{(value > 0 ? 'T' : 'F')}", fontFunc.FontFamily, (int)FontStyle.Bold, 10f, t, sf);
                             break;
                         case ValueKind.Analog:
-                            var text = double.IsNaN(value) ? "?" : $"{value:0.#}";
+                            var text = double.IsNaN(value) ? "?" : Math.Abs(value) > 100000 ? $"{value:E}" : $"{value:0.#}";
                             if (target.IsOutput)
                             {
                                 sf.Alignment = StringAlignment.Near;
@@ -539,6 +539,11 @@ namespace LogicModel
         }
 
         public override void Calculate()
+        {
+            Transfer();
+        }
+
+        public void Transfer()
         {
             for (int i = 0; i < Outputs.Length; i++)
             {

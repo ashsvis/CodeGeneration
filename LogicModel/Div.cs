@@ -35,7 +35,7 @@ namespace LogicModel
                 if (Outputs.Length > 0 && Outputs[0].Value != result)
                 {
                     Outputs[0].Value = result;
-                    base.Calculate();
+                    Transfer();
                 }
             }
         }
