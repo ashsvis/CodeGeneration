@@ -776,7 +776,7 @@ namespace CodeGenerator
             n = 1;
             foreach (var shape in shapes.OrderBy(x => x.Index))
             {
-                if (shape is IPageLink link)
+                if (shape is IPageSourceLink link)
                 {
                     link.SetLinkNumber(n++);
                 }
@@ -1262,6 +1262,21 @@ namespace CodeGenerator
                 }
             }
             SortIndexByLocation();
+
+            // подключение внешних ссылок
+            foreach (var shape in shapes)
+            {
+                if (shape is IPageSourceLink plink)
+                {
+                    foreach (var id in plink.GetIdsForConnect())
+                    {
+                        var target = shapes.FirstOrDefault(shape => shape.Id == id);
+                        if (target == null) continue;
+                        plink.AddTarget(target);
+                    }
+                }
+            }
+
             drawPanel.Invalidate();
         }
 

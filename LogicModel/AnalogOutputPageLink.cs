@@ -1,10 +1,11 @@
 using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class AnalogOutputPageLink : Func, IPageLink
+    public class AnalogOutputPageLink : Func, IPageSourceLink
     {
         public AnalogOutputPageLink()
         {
@@ -40,6 +41,54 @@ namespace LogicModel
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public ValueKind ValueKind => ValueKind.Analog;
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (Targets.Count > 0)
+            {
+                var xtargets = new XElement("Targets");
+                xfunc.Add(xtargets);
+                foreach (var target in Targets)
+                {
+                    var xtarget = new XElement("Id", target.Id);
+                    xtargets.Add(xtarget);
+                }
+            }
+            return xfunc;
+        }
+
+        private readonly List<Guid> targets = [];
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            targets.Clear();
+            var xTargets = xfunc.Element("Targets");
+            if (xTargets != null)
+            {
+                foreach (var xid in xTargets.Elements("Id"))
+                {
+                    var id = ParseHelper.ParseGuid(xid.Value, Guid.Empty);
+                    if (id == Guid.Empty) continue;
+                    targets.Add(id);
+                }
+            }
+        }
+
+        public Guid[] GetIdsForConnect()
+        {
+            return [.. targets];
+        }
+
+        public void AddTarget(Shape shape)
+        {
+            if (shape is AnalogInputPageLink plink)
+            {
+                plink.SourcePageLink = this;
+                Targets.Add(plink);
+            }
+        }
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
@@ -114,6 +163,11 @@ namespace LogicModel
         public void SetLinkNumber(int number)
         {
             Number = number;
+        }
+
+        public int GetLinkNumber()
+        {
+            return Number;
         }
 
         /// <summary>
