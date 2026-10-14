@@ -133,5 +133,11 @@ namespace LogicModel
             items.Add(item);
             return [.. items];
         }
+
+        public override void Delete()
+        {
+            SourcePageLink?.Targets.Remove(this);
+            base.Delete();
+        }
     }
 }

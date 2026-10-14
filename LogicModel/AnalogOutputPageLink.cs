@@ -79,6 +79,13 @@ namespace LogicModel
             return [.. paths];
         }
 
+        public override void Delete()
+        {
+            foreach (var item in Targets)
+                item.SourcePageLink = null;
+            base.Delete();
+        }
+
         public override bool ContainsPoint(Point point, float width)
         {
             using var pen = new Pen(Foreground, width);
