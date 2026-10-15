@@ -98,6 +98,8 @@ namespace CodeGenerator
         private bool addShapes = false;
         private Shape? addShape;
 
+        private Page? currentPage;
+
         private bool movePasted = false;
         private XElement? copycuted;
         private (GraphicsPath[], Rectangle) pasted;
@@ -108,6 +110,12 @@ namespace CodeGenerator
         {
             firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
             var page = pages.FirstOrDefault(x => x.Bounds.Contains(firstPoint));
+            if (page != null && page != currentPage || page == null)
+            {
+                currentPage = page;
+                shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+                links.ForEach(link => { link.Selected = false; link.Hover = false; });
+            }
             ribbonRect = Rectangle.Empty;
             frameBuilding = false;
             leftPressed = e.Button == MouseButtons.Left;
@@ -139,8 +147,8 @@ namespace CodeGenerator
                 link.Hover = false;
                 link.Selected = false;
             });
-            if (!ctrl && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) == 1)
-                ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
+            if (!ctrl && shapes.Count(x => x.Selected) == 1)
+                shapes.ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
             foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
@@ -166,7 +174,7 @@ namespace CodeGenerator
                     else if (shape.IsInputTargetsPoint(point, out int inputIndex))
                     {
                         var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
-                        if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
+                        if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
                             shapes.ForEach(shape => shape.Selected = false);
                         shape.Selected = true;
                         shape.Hover = true;
@@ -230,7 +238,7 @@ namespace CodeGenerator
 
         private void SelectLinksForBothSelectedShapes(Page? page)
         {
-            links.ForEach(link =>
+            ModelAssistant.LinksFrom(page, links).ForEach(link =>
             {
                 link.Hover = false;
                 link.Selected = false;
@@ -307,7 +315,6 @@ namespace CodeGenerator
                     dragShapes = true;
                 if (dragShapes)
                 {
-                    //var ctrl = ModifierKeys.HasFlag(Keys.Control);
                     // начинаем перемещение фигур
                     var ePoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                     var dx = ePoint.X - firstPoint.X;
@@ -635,6 +642,7 @@ namespace CodeGenerator
             shape.OnDeleteLink += Shape_OnDeleteLink;
             shape.OnMakeCopy += Shape_OnMakeCopy;
             shape.OnQuery += Shape_OnQuery;
+            shape.OnChange += Shape_OnChange;
         }
 
         private void UnsubscribeShapeEvents(Shape shape)
@@ -644,6 +652,13 @@ namespace CodeGenerator
             shape.OnDeleteLink -= Shape_OnDeleteLink;
             shape.OnMakeCopy -= Shape_OnMakeCopy;
             shape.OnQuery -= Shape_OnQuery;
+            shape.OnChange -= Shape_OnChange;
+        }
+
+        private void Shape_OnChange(object? sender, EventArgs e)
+        {
+            modelChanged = true;
+            drawPanel.Invalidate();
         }
 
         private void Shape_OnQuery(object sender, QueryEventArgs e)

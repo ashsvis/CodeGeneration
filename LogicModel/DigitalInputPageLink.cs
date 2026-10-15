@@ -116,6 +116,7 @@ namespace LogicModel
                             SourcePageLink = digital;
                             if (!SourcePageLink.Targets.Contains(this))
                                 SourcePageLink.Targets.Add(this);
+                            Changed();
                         };
                         item.DropDownItems.Add(dropItem);
                     }

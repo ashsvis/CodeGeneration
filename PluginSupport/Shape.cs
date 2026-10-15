@@ -57,6 +57,7 @@ namespace PluginSupport
         public event EventHandler? OnDelete;
         public event EventHandler? OnMakeCopy;
         public event QueryEventHandler? OnQuery;
+        public event EventHandler? OnChange;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -223,6 +224,11 @@ namespace PluginSupport
         public virtual void Delete()
         {
             OnDelete?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void Changed()
+        {
+            OnChange?.Invoke(this, EventArgs.Empty);
         }
 
         public abstract void Calculate();
