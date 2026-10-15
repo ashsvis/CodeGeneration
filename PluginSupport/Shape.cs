@@ -58,6 +58,7 @@ namespace PluginSupport
         public event EventHandler? OnMakeCopy;
         public event QueryEventHandler? OnQuery;
         public event EventHandler? OnChange;
+        public event ClickEventHandler? OnClick;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
 
@@ -231,6 +232,19 @@ namespace PluginSupport
             OnChange?.Invoke(this, EventArgs.Empty);
         }
 
+        public virtual void Click()
+        {
+            //OnClick?.Invoke(this, new ClickEventArgs((args) => 
+            //{ 
+            
+            //}, []));
+        }
+
+        protected void Click(Action<MouseButtons, object[]> action,  params object[] args)
+        {
+            OnClick?.Invoke(this, new ClickEventArgs(action, args));
+        }
+
         public abstract void Calculate();
         protected abstract void CalculateHeight();
         public abstract int CountInputs();
@@ -268,4 +282,12 @@ namespace PluginSupport
     }
 
     public delegate void QueryEventHandler(object sender, QueryEventArgs e);
+
+    public class ClickEventArgs(Action<MouseButtons, object[]> action, object[] args) : EventArgs
+    {
+        public Action<MouseButtons, object[]> Action { get; set; } = action;
+        public object[] Args { get; set; } = args;
+    }
+
+    public delegate void ClickEventHandler(object sender, ClickEventArgs e);
 }

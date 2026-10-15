@@ -160,7 +160,7 @@ namespace CodeGenerator
                         if (e.Button == MouseButtons.Left)
                         {
                             firstShape = shape;
-                            linkBuilding = runEmulate ? false : true;
+                            linkBuilding = !runEmulate;
                             firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
                         }
                         else if (e.Button == MouseButtons.Right && !runEmulate)
@@ -175,8 +175,8 @@ namespace CodeGenerator
                         var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
                         if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
                             shapes.ForEach(shape => shape.Selected = false);
-                        shape.Selected = runEmulate ? false : true;
-                        shape.Hover = runEmulate ? false : true;
+                        shape.Selected = !runEmulate;
+                        shape.Hover = !runEmulate;
                         shapeFound = true;
                         if (e.Button == MouseButtons.Left)
                         {
@@ -199,12 +199,16 @@ namespace CodeGenerator
                     var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
                         ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
-                    shape.Selected = runEmulate ? false : true;
-                    shape.Hover = runEmulate ? false : true;
+                    shape.Selected = !runEmulate;
+                    shape.Hover = !runEmulate;
                     shapeFound = true;
-                    dragShapesPreview = runEmulate ? false : true;
+                    dragShapesPreview = !runEmulate;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (e.Button == MouseButtons.Right && !runEmulate)
+                    if (runEmulate)
+                    {
+                        shape.Click();
+                    }
+                    else if (e.Button == MouseButtons.Right)
                     {
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                         contextMenu.Show(drawPanel, e.Location);
@@ -233,7 +237,7 @@ namespace CodeGenerator
                 //});
 
                 //ничего не выбрано, рисуем рамку выбора
-                frameBuilding = runEmulate ? false : true;
+                frameBuilding = !runEmulate;
             }
             drawPanel.Invalidate();
         }
@@ -253,8 +257,8 @@ namespace CodeGenerator
                 var targetShape = selected.FirstOrDefault(x => x == link.Target);
                 if (sourceShape != null && targetShape != null)
                 {
-                    link.Selected = runEmulate ? false : true;
-                    link.Hover = runEmulate ? false : true;
+                    link.Selected = !runEmulate;
+                    link.Hover = !runEmulate;
                     ////found = true;
                 }
             }
@@ -278,6 +282,7 @@ namespace CodeGenerator
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
 
             Cursor = Cursors.Default;
+            //Cursor.Hide();
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
@@ -294,20 +299,27 @@ namespace CodeGenerator
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
                     Cursor = Cursors.Cross;
-                    shape.CanOutputLink = runEmulate ? false : true;
+                    shape.CanOutputLink = !runEmulate;
+                    break;
                 }
                 else if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                        shape.CanInputLink = runEmulate ? false : firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                        shape.CanInputLink = !runEmulate && firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
                     else
                         shape.CanInputLink = false;
-                    shape.Hover = runEmulate ? false : !linkBuilding;
+                    shape.Hover = !runEmulate && !linkBuilding;
+                    break;
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
-                    shape.Hover = runEmulate ? false : true;
+                    shape.Hover = !runEmulate;
+                    if (runEmulate)
+                    {
+                        Cursor = Cursors.Hand;
+                    }
+                    break;
                 }
             }
 
@@ -316,7 +328,7 @@ namespace CodeGenerator
                 currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 if (!dragShapes && dragShapesPreview &&
                     (Math.Abs(firstPoint.X - ((Point)currentPoint).X) > 3 || Math.Abs(firstPoint.Y - ((Point)currentPoint).Y) > 3))
-                    dragShapes = runEmulate ? false : true;
+                    dragShapes = !runEmulate;
                 if (dragShapes)
                 {
                     // начинаем перемещение фигур
@@ -373,7 +385,7 @@ namespace CodeGenerator
                         }
                         link.SetPoints(pts);
                     }
-                    modelChanged = runEmulate ? false : true;
+                    modelChanged = !runEmulate;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 }
                 else if (linkBuilding)
@@ -398,7 +410,7 @@ namespace CodeGenerator
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
-                                shape.Hover = runEmulate ? false : true;
+                                shape.Hover = !runEmulate;
                             }
                         }
                     }
@@ -501,7 +513,7 @@ namespace CodeGenerator
                         }
 
                         SortIndexByLocation();
-                        modelChanged = runEmulate ? false : true;
+                        modelChanged = !runEmulate;
                         drawPanel.Refresh();
                         Cursor = Cursors.Default;
                         Cursor.Hide();
@@ -555,7 +567,7 @@ namespace CodeGenerator
                                             // сохранение настроек связи для цели
                                             shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
                                             SortIndexByLocation();
-                                            modelChanged = runEmulate ? false : true;
+                                            modelChanged = !runEmulate;
                                         }
                                     }
                                 }
@@ -583,7 +595,7 @@ namespace CodeGenerator
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
-                                shape.Selected = runEmulate ? false : true;
+                                shape.Selected = !runEmulate;
                             }
                         }
                         SelectLinksForBothSelectedShapes(page);
@@ -647,6 +659,7 @@ namespace CodeGenerator
             shape.OnMakeCopy += Shape_OnMakeCopy;
             shape.OnQuery += Shape_OnQuery;
             shape.OnChange += Shape_OnChange;
+            shape.OnClick += Shape_OnClick;
         }
 
         private void UnsubscribeShapeEvents(Shape shape)
@@ -657,6 +670,12 @@ namespace CodeGenerator
             shape.OnMakeCopy -= Shape_OnMakeCopy;
             shape.OnQuery -= Shape_OnQuery;
             shape.OnChange -= Shape_OnChange;
+            shape.OnClick -= Shape_OnClick;
+        }
+
+        private void Shape_OnClick(object sender, ClickEventArgs e)
+        {
+            e.Action?.Invoke(MouseButtons, e.Args);
         }
 
         private void Shape_OnChange(object? sender, EventArgs e)
@@ -837,7 +856,7 @@ namespace CodeGenerator
             }
 
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && !addShapes)
+            if (MouseButtons.HasFlag(MouseButtons.None) && !addShapes && !runEmulate)
             {
                 if (currentPoint is Point point)
                 {
@@ -989,7 +1008,7 @@ namespace CodeGenerator
                         if (addShape != null)
                         {
                             tvLibrary.SelectedNode = node;
-                            addShapes = runEmulate ? false : true;
+                            addShapes = !runEmulate;
                             if (addShapes)
                             {
                                 var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = addShape }, DragDropEffects.Copy);
@@ -1620,6 +1639,8 @@ namespace CodeGenerator
         {
             runEmulate = !runEmulate;
             timerCalculate.Enabled = runEmulate;
+            UnselectAll();
+            if (runEmulate) Cursor.Show(); else Cursor.Hide();
             drawPanel.Invalidate();
         }
     }

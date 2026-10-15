@@ -1,4 +1,5 @@
 using PluginSupport;
+using System;
 using System.Drawing.Drawing2D;
 
 namespace LogicModel
@@ -74,6 +75,18 @@ namespace LogicModel
                     Transfer();
                 }
             }
+        }
+
+        public override void Click()
+        {
+            Click(ChangeEmulateValue);
+        }
+
+        private void ChangeEmulateValue(MouseButtons mouseButtons, params object[] args)
+        {
+            var result = Outputs[0].Value;
+            Outputs[0].Value = result > 0 ? 0 : 1;
+            Transfer();
         }
     }
 }

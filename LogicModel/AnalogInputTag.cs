@@ -30,5 +30,20 @@ namespace LogicModel
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }
+
+        public override void Click()
+        {
+            Click(ChangeEmulateValue);
+        }
+
+        private void ChangeEmulateValue(MouseButtons mouseButtons, params object[] args)
+        {
+            var result = Outputs[0].Value;
+            if (mouseButtons == MouseButtons.Left)
+                Outputs[0].Value = result + 1;
+            else if (mouseButtons == MouseButtons.Right)
+                Outputs[0].Value = result - 1;
+            Transfer();
+        }
     }
 }
