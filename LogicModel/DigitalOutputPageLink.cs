@@ -11,6 +11,8 @@ namespace LogicModel
         {
             FuncName = "D-->";
             FuncDesc = "Исходящая дискретная ссылка со страницы";
+            Width = BaseWidth * 3;
+            Height = BaseHeight / 2;
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [];
             CalculateHeight();
@@ -94,6 +96,8 @@ namespace LogicModel
         {
             var paths = base.GetGraphicsPaths().ToList();
             var rect = Bounds;
+            rect.Width = BaseWidth;
+            rect.Height = BaseHeight;
             var path = new GraphicsPath();
             var pinPoint = GetInputPinPoint(0) ?? Point.Empty;
             path.AddLine(new Point(pinPoint.X, pinPoint.Y - rect.Height / 8), new Point(pinPoint.X + rect.Width / 4, pinPoint.Y));

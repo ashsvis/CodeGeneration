@@ -1492,6 +1492,7 @@ namespace CodeGenerator
                 drawPanel.Invalidate();
                 copycuted = null;
                 pasted.Item2 = Rectangle.Empty;
+                TraceAssistant.InitField(shapes, links);
             }
             finally
             {

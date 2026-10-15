@@ -13,7 +13,7 @@ namespace CodeGenerator
         /// <summary>
         /// Построение поля для трассировки связей
         /// </summary>
-        private static void InitField(IEnumerable<Shape> shapes, IEnumerable<Link> links)
+        public static void InitField(IEnumerable<Shape> shapes, IEnumerable<Link> links)
         {
             if (shapes.Any())
             {
