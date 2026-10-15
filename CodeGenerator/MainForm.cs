@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
@@ -75,6 +76,8 @@ namespace CodeGenerator
                 var column = (i - 1) - row * totalPagesInRow;
                 pages.Add(new Page(i, 420, 297, row, column) { PagesCount = totalPages });
             }
+
+            backgroundWorker1.RunWorkerAsync();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -693,7 +696,7 @@ namespace CodeGenerator
                 if (arg is Type type)
                     items.AddRange(shapes.Where(x => x.GetType() == type));
             }
-            e.Results = [..items];
+            e.Results = [.. items];
         }
 
         private void Shape_OnShowProperties(object? sender, EventArgs e)
@@ -1085,7 +1088,7 @@ namespace CodeGenerator
 
         private void RemoveSelected()
         {
-            timerCalculate.Enabled = false;
+            //timerCalculate.Enabled = false;
             try
             {
                 Cursor = Cursors.WaitCursor;
@@ -1124,7 +1127,7 @@ namespace CodeGenerator
             }
             finally
             {
-                timerCalculate.Enabled = runEmulate;
+                //timerCalculate.Enabled = runEmulate;
             }
         }
 
@@ -1132,7 +1135,7 @@ namespace CodeGenerator
         {
             if (sender is Shape shapeForDelete)
             {
-                timerCalculate.Enabled = false;
+                //timerCalculate.Enabled = false;
                 try
                 {
                     // сбор связей, которые используются удаляемыми элементами
@@ -1159,7 +1162,7 @@ namespace CodeGenerator
                 }
                 finally
                 {
-                    timerCalculate.Enabled = runEmulate;
+                    //timerCalculate.Enabled = runEmulate;
                 }
             }
         }
@@ -1530,7 +1533,7 @@ namespace CodeGenerator
 
         private void ClearAll()
         {
-            timerCalculate.Enabled = false;
+            //timerCalculate.Enabled = false;
             try
             {
                 links.Clear();
@@ -1549,7 +1552,7 @@ namespace CodeGenerator
             }
             finally
             {
-                timerCalculate.Enabled = runEmulate;
+                //timerCalculate.Enabled = runEmulate;
             }
         }
 
@@ -1663,9 +1666,38 @@ namespace CodeGenerator
         private void TsbRun_Click(object sender, EventArgs e)
         {
             runEmulate = !runEmulate;
-            timerCalculate.Enabled = runEmulate;
+            //timerCalculate.Enabled = runEmulate;
             UnselectAll();
             if (runEmulate) Cursor.Show(); else Cursor.Hide();
+            drawPanel.Invalidate();
+        }
+
+        private void BackgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            var worker = (BackgroundWorker)sender;
+            var ms = DateTime.Now.Millisecond / 100;
+            while (!worker.CancellationPending)
+            {
+                var now = DateTime.Now.Millisecond / 100;
+                if (now != ms)
+                {
+                    ms = now;
+                    worker.ReportProgress(ms);
+                }
+            }
+            
+        }
+
+        private void backgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        {
+            if (!runEmulate) return;
+            foreach (var shape in shapes)
+                shape.Calculate();
+            foreach (var shape in shapes)
+            {
+                if (shape is ICycle cycle)
+                    cycle.SwitchOffSubscibers();
+            }
             drawPanel.Invalidate();
         }
     }

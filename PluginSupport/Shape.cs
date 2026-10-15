@@ -145,7 +145,7 @@ namespace PluginSupport
         public abstract void SetInputSource(int index, Shape source, int pinIndex, Guid linkId);
         public abstract void RemoveInputSource(int index);
         public abstract void SetOutputTarget(int index, Shape target, int pinIndex, Guid linkId);
-        public abstract void RemoveOutputTarget(int index, Shape target, int pinIndex);
+        public abstract void RemoveOutputTarget(int index, Shape? target, int pinIndex);
 
         public abstract Point? GetInputPinPoint(int index);
         public abstract Guid GetInputPinLinkId(int index);

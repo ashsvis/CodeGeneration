@@ -83,11 +83,11 @@
             panCenter = new Panel();
             contextMenu = new ContextMenuStrip(components);
             testToolStripMenuItem = new ToolStripMenuItem();
-            timerCalculate = new System.Windows.Forms.Timer(components);
             timerInterface = new System.Windows.Forms.Timer(components);
             printPreviewDialog1 = new PrintPreviewDialog();
             printDocument1 = new System.Drawing.Printing.PrintDocument();
             printDialog1 = new PrintDialog();
+            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -543,10 +543,6 @@
             testToolStripMenuItem.Size = new Size(93, 22);
             testToolStripMenuItem.Text = "test";
             // 
-            // timerCalculate
-            // 
-            timerCalculate.Tick += TimerCalculate_Tick;
-            // 
             // timerInterface
             // 
             timerInterface.Enabled = true;
@@ -573,6 +569,13 @@
             // printDialog1
             // 
             printDialog1.UseEXDialog = true;
+            // 
+            // backgroundWorker1
+            // 
+            backgroundWorker1.WorkerReportsProgress = true;
+            backgroundWorker1.WorkerSupportsCancellation = true;
+            backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
+            backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
             // 
             // MainForm
             // 
@@ -664,12 +667,12 @@
         private ToolStripStatusLabel tsslStatus;
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem testToolStripMenuItem;
-        private System.Windows.Forms.Timer timerCalculate;
         private System.Windows.Forms.Timer timerInterface;
         private System.Drawing.Printing.PrintDocument printDocument1;
         private PrintPreviewDialog printPreviewDialog1;
         private PrintDialog printDialog1;
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripMenuItem tsmiRun;
+        private System.ComponentModel.BackgroundWorker backgroundWorker1;
     }
 }

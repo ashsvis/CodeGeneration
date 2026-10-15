@@ -517,7 +517,7 @@ namespace LogicModel
             }
         }
 
-        public override void RemoveOutputTarget(int index, Shape target, int pinIndex)
+        public override void RemoveOutputTarget(int index, Shape? target, int pinIndex)
         {
             if (index >= 0 && index < Outputs.Length)
                 Outputs[index].Targets.RemoveAll(x => x.PinIndex == pinIndex && x.Owner == target);
