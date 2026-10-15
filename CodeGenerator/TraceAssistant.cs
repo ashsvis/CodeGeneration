@@ -4,6 +4,7 @@ namespace CodeGenerator
 {
     public static class TraceAssistant
     {
+        private const int margin = 3;
         private const int step = 12;
         private static Cell[,]? field;
 
@@ -19,7 +20,7 @@ namespace CodeGenerator
                 Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
                 foreach (var shape in shapes.Skip(1))
                     rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
-                rect.Inflate(step * 5, step * 5);
+                rect.Inflate(step * margin, step * margin);
                 field = new Cell[rect.Width / step + 1, rect.Height / step + 1];
                 // инициализация поля трассировки связей
                 for (int i = 0; i < field.GetLength(0); i++)
@@ -104,17 +105,15 @@ namespace CodeGenerator
                 field = null;
         }
 
-        public static List<Point> BuildWaveInField(IEnumerable<Shape> shapes, IEnumerable<Link> links, PluginSupport.Link link)
+        public static List<Point> BuildWaveInField(Page? page, IEnumerable<Shape> shapes, IEnumerable<Link> links, PluginSupport.Link link)
         {
             List<Point> points = [];
-            InitField(shapes, links);
+            InitField(ModelAssistant.ShapesFrom(page, shapes), ModelAssistant.LinksFrom(page, links));
             if (field == null) return points;
-            // очистка старых точек линии связи
-            ////link.SetPoints([]);
-            Rectangle rect = Rectangle.Ceiling(shapes.First().Bounds);
-            foreach (var shape in shapes.Skip(1))
+            Rectangle rect = Rectangle.Ceiling(ModelAssistant.ShapesFrom(page, shapes).First().Bounds);
+            foreach (var shape in ModelAssistant.ShapesFrom(page, shapes).Skip(1))
                 rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
-            rect.Inflate(step * 5, step * 5);
+            rect.Inflate(step * margin, step * margin);
             // установка начальной точки волны
             var n = 1;
             var start = link.StartPoint;
@@ -127,7 +126,7 @@ namespace CodeGenerator
                 field[px, py].Empty = ThroughPassage.None;
             }
             // поиск других связей из этого же выхода
-            foreach (var other in links.Where(x => x != link && x.StartPoint == link.StartPoint))
+            foreach (var other in ModelAssistant.LinksFrom(page, links).Where(x => x != link && x.StartPoint == link.StartPoint))
             {
                 foreach (var pt in other.GetPoints())
                 {

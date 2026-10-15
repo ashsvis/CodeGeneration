@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -132,17 +133,17 @@ namespace CodeGenerator
             dragShapesPreview = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
-            ShapesFrom(page).ForEach(shape => shape.Hover = false);
-            LinksFrom(page).ForEach(link =>
+            ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Hover = false);
+            ModelAssistant.LinksFrom(page, links).ForEach(link =>
             {
                 link.Hover = false;
                 link.Selected = false;
             });
-            if (!ctrl && ShapesFrom(page).Count(x => x.Selected) == 1)
-                ShapesFrom(page).ForEach(shape => shape.Selected = false);
+            if (!ctrl && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) == 1)
+                ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
-            foreach (var shape in ShapesFrom(page))
+            foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
             {
                 var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
@@ -164,8 +165,8 @@ namespace CodeGenerator
                     }
                     else if (shape.IsInputTargetsPoint(point, out int inputIndex))
                     {
-                        var other = ShapesFrom(page).Where(x => x.Selected).Contains(shape);
-                        if (!other && ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
+                        var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
+                        if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
                             shapes.ForEach(shape => shape.Selected = false);
                         shape.Selected = true;
                         shape.Hover = true;
@@ -188,9 +189,9 @@ namespace CodeGenerator
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
-                    var other = ShapesFrom(page).Where(x => x.Selected).Contains(shape);
-                    if (!other && ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
-                        ShapesFrom(page).ForEach(shape => shape.Selected = false);
+                    var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
+                    if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
+                        ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
                     shape.Selected = true;
                     shape.Hover = true;
                     shapeFound = true;
@@ -211,12 +212,12 @@ namespace CodeGenerator
             }
             else
             {
-                ShapesFrom(page).ForEach(shape =>
+                ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
                 {
                     shape.Selected = false;
                     shape.Hover = false;
                 });
-                LinksFrom(page).ForEach(link =>
+                ModelAssistant.LinksFrom(page, links).ForEach(link =>
                 {
                     link.Hover = false;
                     link.Selected = false;
@@ -234,9 +235,9 @@ namespace CodeGenerator
                 link.Hover = false;
                 link.Selected = false;
             });
-            var selected = ShapesFrom(page).Where(x => x.Selected).ToList();
+            var selected = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).ToList();
             ////var found = false;
-            foreach (var link in LinksFrom(page))
+            foreach (var link in ModelAssistant.LinksFrom(page, links))
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
                 var targetShape = selected.FirstOrDefault(x => x == link.Target);
@@ -268,15 +269,15 @@ namespace CodeGenerator
 
             Cursor = Cursors.Default;
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
-            ShapesFrom(page).ForEach(shape =>
+            ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
             });
-            LinksFrom(page).ForEach(link => link.Hover = false);
+            ModelAssistant.LinksFrom(page, links).ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in ShapesFrom(page))
+            foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
@@ -381,7 +382,7 @@ namespace CodeGenerator
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
                         var mode = current.X > first.X;
-                        foreach (var shape in ShapesFrom(page))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -418,7 +419,7 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
                         List<Shape> shapesList = [];
-                        foreach (var shape in ShapesFrom(page))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
                         {
                             if (shape.Selected && !shapesList.Contains(shape))
                             {
@@ -431,7 +432,7 @@ namespace CodeGenerator
                                 }
                             }
                         }
-                        foreach (var link in LinksFrom(page))
+                        foreach (var link in ModelAssistant.LinksFrom(page, links))
                         {
                             if (link.Selected)
                             {
@@ -471,18 +472,21 @@ namespace CodeGenerator
 
                         linksList.RemoveAll(x => x.Source != null && shapesList.Contains(x.Source) && x.Target != null && shapesList.Contains(x.Target));
 
-                        linksList.ForEach(x =>
+                        if (page != null)
                         {
-                            if (x.Source != null && x.Source.GetOutputPinPoint(0) is Point spoint)
-                                x.StartPoint = spoint;
-                            if (x.Target != null && x.Target.GetInputPinPoint(x.TargetPinIndex) is Point tpoint)
-                                x.EndPoint = tpoint;
-                            x.SetPoints([]);
-                        });
-                        foreach (var link in linksList.OrderByDescending(x => x.Length))
-                        {
-                            var points = TraceAssistant.BuildWaveInField(shapes, links, link);
-                            link.SetPoints([.. points]);
+                            linksList.ForEach(x =>
+                            {
+                                if (x.Source != null && x.Source.GetOutputPinPoint(0) is Point spoint)
+                                    x.StartPoint = spoint;
+                                if (x.Target != null && x.Target.GetInputPinPoint(x.TargetPinIndex) is Point tpoint)
+                                    x.EndPoint = tpoint;
+                                x.SetPoints([]);
+                            });
+                            foreach (var link in linksList.OrderByDescending(x => x.Length))
+                            {
+                                var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
+                                link.SetPoints([.. points]);
+                            }
                         }
 
                         SortIndexByLocation();
@@ -495,14 +499,21 @@ namespace CodeGenerator
                     {
                         // построение связи данных между фигурами
                         linkBuilding = false;
-                        foreach (var shape in ShapesFrom(page))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
                         {
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index) &&
                                 firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index))
                             {
-                                if (linked.Page == shape.Page)
+                                if (linked.Page == 0 || shape.Page == 0)
+                                {
+                                    MessageBox.Show("Для создания связи" +
+                                        "\nразмещайте соединяемые фигуры" +
+                                        "\nв пределах одного листа.",
+                                        "Создание связи", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                }
+                                else if (linked.Page == shape.Page)
                                 {
                                     // создание представления связи
                                     var type = shape.GetLinkTypeToCreate();
@@ -516,7 +527,7 @@ namespace CodeGenerator
                                             link.StartPoint = (Point)startPoint;
                                             link.EndPoint = (Point)endPoint;
                                             // построение волны и точек визуальной связи
-                                            var points = TraceAssistant.BuildWaveInField(shapes, links, link);
+                                            var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
 
                                             link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
                                             links.Add(link);
@@ -553,10 +564,10 @@ namespace CodeGenerator
                     else if (frameBuilding)
                     {
                         frameBuilding = false;
-                        ShapesFrom(page).ForEach(shape => shape.Selected = false);
+                        ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
-                        foreach (var shape in ShapesFrom(page))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -695,6 +706,7 @@ namespace CodeGenerator
 
         private void UpdateOtherLinks(PluginSupport.Link link)
         {
+            if (link.Page == 0) return;
             // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
             // очищаем массив внутренних точек
             foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
@@ -702,51 +714,12 @@ namespace CodeGenerator
             // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
             // перестраиваем массив внутренних точек
             foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderByDescending(x => x.Length))
-                item.SetPoints([.. TraceAssistant.BuildWaveInField(shapes, links, item)]);
-        }
-
-        private readonly Dictionary<Page, List<Shape>> cacheShapes = [];
-        private readonly List<Shape> cacheNoPageShapes = [];
-
-        private void ClearCache()
-        {
-            cacheShapes.Clear();
-            cacheNoPageShapes.Clear();
-        }
-
-        private List<Shape> ShapesFrom(Page? page)
-        {
-            if (page == null)
-            {
-                if (cacheNoPageShapes.Count > 0)
-                    return cacheNoPageShapes;
-            }
-            else
-            {
-                if (cacheShapes.TryGetValue(page, out List<Shape>? value) && value.Count > 0)
-                    return value;
-            }
-            var result = shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
-            result.Reverse();
-            if (page == null)
-                cacheNoPageShapes.AddRange(result);
-            else
-            {
-                if (!cacheShapes.ContainsKey(page))
-                    cacheShapes.Add(page, []);
-                cacheShapes[page].AddRange(result);
-            }
-            return result;
-        }
-
-        private List<Link> LinksFrom(Page? page)
-        {
-            return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+                item.SetPoints([.. TraceAssistant.BuildWaveInField(null, shapes, links, item)]);
         }
 
         private void SortIndexByLocation()
         {
-            ClearCache();
+            ModelAssistant.ClearCache();
 
             // сброс номеров страниц
             shapes.ForEach(shape => shape.Page = 0);
@@ -816,88 +789,7 @@ namespace CodeGenerator
         {
             foreach (var page in pages)
             {
-                page.Draw(e.Graphics, Color.FromArgb(127, Color.Gray));
-
-                // рисуем фигуры из списка
-                using var hoverpen = new Pen(Color.White);
-                using var selectpen = new Pen(Color.Teal);
-                using var selecthoverpen = new Pen(Color.CadetBlue);
-                using var hoverbrush = new SolidBrush(Color.Teal);
-                using var selectbrush = new SolidBrush(Color.Teal);
-                using var selecthoverbrush = new SolidBrush(Color.CadetBlue);
-                foreach (var shape in shapes.Where(x => x.Page == page.Number))
-                {
-                    Pen pen;
-                    Brush brush;
-                    using var defaultpen = new Pen(shape.Foreground);
-                    using var backgroundbrush = new SolidBrush(shape.Background);
-                    if (shape.Hover && shape.Selected)
-                    {
-                        pen = selecthoverpen;
-                        brush = backgroundbrush;
-                    }
-                    else if (shape.Hover)
-                    {
-                        pen = hoverpen;
-                        brush = backgroundbrush;
-                    }
-                    else if (shape.CanOutputLink || shape.CanInputLink)
-                    {
-                        pen = hoverpen;
-                        brush = hoverbrush;
-                    }
-                    else if (shape.Selected)
-                    {
-                        pen = selectpen;
-                        brush = backgroundbrush;
-                    }
-                    else
-                    {
-                        pen = defaultpen;
-                        brush = backgroundbrush;
-                    }
-                    shape.Draw(e.Graphics, pen, brush);
-
-                    if (runEmulate)
-                    {
-                        // вывод текущих значений входов, выходов и номеров меток фигур
-                        using var defaultbrush = new SolidBrush(pen.Color);
-                        shape.DrawWhenDebug(e.Graphics, defaultbrush);
-                    }
-                }
-                // рисуем связи фигур из списка
-                foreach (var link in links.Where(x => x.Page == page.Number))
-                {
-                    Pen pen;
-                    using var defaultpen = new Pen(link.Foreground);
-                    if (link.Hover && link.Selected)
-                        pen = selecthoverpen;
-                    else if (link.Hover)
-                        pen = hoverpen;
-                    else if (link.Selected)
-                        pen = selectpen;
-                    else
-                        pen = defaultpen;
-                    link.DrawLines(e.Graphics, pen);
-                }
-                if (!dragShapes)
-                {
-                    // рисуем присоединения связей фигур из списка
-                    foreach (var link in links.Where(x => x.Page == page.Number))
-                    {
-                        Brush brush;
-                        using var defaultbrush = new SolidBrush(link.Foreground);
-                        if (link.Hover && link.Selected)
-                            brush = selecthoverbrush;
-                        else if (link.Hover)
-                            brush = hoverbrush;
-                        else if (link.Selected)
-                            brush = selectbrush;
-                        else
-                            brush = defaultbrush;
-                        link.DrawDots(e.Graphics, brush);
-                    }
-                }
+                DrawInPage(e.Graphics, page);
             }
 
             // рисуем перетягиваемую из библиотеки фигуру
@@ -962,7 +854,91 @@ namespace CodeGenerator
             }
 
             // рисуем поле трассировки связей
-            //TraceAssistant.DrawField(e.Graphics);
+            TraceAssistant.DrawField(e.Graphics);
+        }
+
+        private void DrawInPage(Graphics? graphics, Page? page)
+        {
+            page?.Draw(graphics, Color.FromArgb(127, Color.Gray));
+            var hoverpen = new Pen(Color.White);
+            var selectpen = new Pen(Color.Teal);
+            var selecthoverpen = new Pen(Color.CadetBlue);
+            var hoverbrush = new SolidBrush(Color.Teal);
+            var selectbrush = new SolidBrush(Color.Teal);
+            var selecthoverbrush = new SolidBrush(Color.CadetBlue);
+            foreach (var shape in shapes.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+            {
+                Pen pen;
+                Brush brush;
+                var defaultpen = new Pen(shape.Foreground);
+                var backgroundbrush = new SolidBrush(shape.Background);
+                if (shape.Hover && shape.Selected)
+                {
+                    pen = selecthoverpen;
+                    brush = backgroundbrush;
+                }
+                else if (shape.Hover)
+                {
+                    pen = hoverpen;
+                    brush = backgroundbrush;
+                }
+                else if (shape.CanOutputLink || shape.CanInputLink)
+                {
+                    pen = hoverpen;
+                    brush = hoverbrush;
+                }
+                else if (shape.Selected)
+                {
+                    pen = selectpen;
+                    brush = backgroundbrush;
+                }
+                else
+                {
+                    pen = defaultpen;
+                    brush = backgroundbrush;
+                }
+                shape.Draw(graphics, pen, brush);
+
+                if (runEmulate)
+                {
+                    // вывод текущих значений входов, выходов и номеров меток фигур
+                    using var defaultbrush = new SolidBrush(pen.Color);
+                    shape.DrawWhenDebug(graphics, defaultbrush);
+                }
+            }
+            // рисуем связи фигур из списка
+            foreach (var link in links.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+            {
+                Pen pen;
+                using var defaultpen = new Pen(link.Foreground);
+                if (link.Hover && link.Selected)
+                    pen = selecthoverpen;
+                else if (link.Hover)
+                    pen = hoverpen;
+                else if (link.Selected)
+                    pen = selectpen;
+                else
+                    pen = defaultpen;
+                link.DrawLines(graphics, pen);
+            }
+            if (!dragShapes)
+            {
+                // рисуем присоединения связей фигур из списка
+                foreach (var link in links.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+                {
+                    Brush brush;
+                    using var defaultbrush = new SolidBrush(link.Foreground);
+                    if (link.Hover && link.Selected)
+                        brush = selecthoverbrush;
+                    else if (link.Hover)
+                        brush = hoverbrush;
+                    else if (link.Selected)
+                        brush = selectbrush;
+                    else
+                        brush = defaultbrush;
+                    link.DrawDots(graphics, brush);
+                }
+            }
         }
 
         private void TsmiExit_Click(object sender, EventArgs e)
