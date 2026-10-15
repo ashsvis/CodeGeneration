@@ -1,5 +1,4 @@
 using PluginSupport;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -67,7 +66,7 @@ namespace CodeGenerator
                 foreach (var key in dict.Keys)
                     types.TryAdd(key, dict[key]);
             }
-            const int totalPages = 12;
+            const int totalPages = 5;
             const int totalPagesInRow = 10;
             for (var i = 1; i <= totalPages; i++)
             {
@@ -161,10 +160,10 @@ namespace CodeGenerator
                         if (e.Button == MouseButtons.Left)
                         {
                             firstShape = shape;
-                            linkBuilding = true;
+                            linkBuilding = runEmulate ? false : true;
                             firstLinkPoint = shape.GetOutputPinPoint(outputIndex);
                         }
-                        else if (e.Button == MouseButtons.Right)
+                        else if (e.Button == MouseButtons.Right && !runEmulate)
                         {
                             contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                             contextMenu.Show(drawPanel, e.Location);
@@ -176,8 +175,8 @@ namespace CodeGenerator
                         var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
                         if (!other && shapes.Count(x => x.Selected) > 1 && !ctrl)
                             shapes.ForEach(shape => shape.Selected = false);
-                        shape.Selected = true;
-                        shape.Hover = true;
+                        shape.Selected = runEmulate ? false : true;
+                        shape.Hover = runEmulate ? false : true;
                         shapeFound = true;
                         if (e.Button == MouseButtons.Left)
                         {
@@ -187,7 +186,7 @@ namespace CodeGenerator
                                     shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
                             }
                         }
-                        else if (e.Button == MouseButtons.Right)
+                        else if (e.Button == MouseButtons.Right && !runEmulate)
                         {
                             contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                             contextMenu.Show(drawPanel, e.Location);
@@ -200,12 +199,12 @@ namespace CodeGenerator
                     var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
                         ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
-                    shape.Selected = true;
-                    shape.Hover = true;
+                    shape.Selected = runEmulate ? false : true;
+                    shape.Hover = runEmulate ? false : true;
                     shapeFound = true;
-                    dragShapesPreview = true;
+                    dragShapesPreview = runEmulate ? false : true;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (e.Button == MouseButtons.Right)
+                    if (e.Button == MouseButtons.Right && !runEmulate)
                     {
                         contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
                         contextMenu.Show(drawPanel, e.Location);
@@ -220,18 +219,21 @@ namespace CodeGenerator
             }
             else
             {
-                ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
-                {
-                    shape.Selected = false;
-                    shape.Hover = false;
-                });
-                ModelAssistant.LinksFrom(page, links).ForEach(link =>
-                {
-                    link.Hover = false;
-                    link.Selected = false;
-                });
+                UnselectAll();
+
+                //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
+                //{
+                //    shape.Selected = false;
+                //    shape.Hover = false;
+                //});
+                //ModelAssistant.LinksFrom(page, links).ForEach(link =>
+                //{
+                //    link.Hover = false;
+                //    link.Selected = false;
+                //});
+
                 //ничего не выбрано, рисуем рамку выбора
-                frameBuilding = true;
+                frameBuilding = runEmulate ? false : true;
             }
             drawPanel.Invalidate();
         }
@@ -251,8 +253,8 @@ namespace CodeGenerator
                 var targetShape = selected.FirstOrDefault(x => x == link.Target);
                 if (sourceShape != null && targetShape != null)
                 {
-                    link.Selected = true;
-                    link.Hover = true;
+                    link.Selected = runEmulate ? false : true;
+                    link.Hover = runEmulate ? false : true;
                     ////found = true;
                 }
             }
@@ -277,6 +279,8 @@ namespace CodeGenerator
 
             Cursor = Cursors.Default;
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
+            if (page != null && page != currentPage || page == null)
+                currentPage = page;
             ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
             {
                 shape.Hover = false;
@@ -290,20 +294,20 @@ namespace CodeGenerator
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
                     Cursor = Cursors.Cross;
-                    shape.CanOutputLink = true;
+                    shape.CanOutputLink = runEmulate ? false : true;
                 }
                 else if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                        shape.CanInputLink = firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                        shape.CanInputLink = runEmulate ? false : firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
                     else
                         shape.CanInputLink = false;
-                    shape.Hover = !linkBuilding;
+                    shape.Hover = runEmulate ? false : !linkBuilding;
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
-                    shape.Hover = true;
+                    shape.Hover = runEmulate ? false : true;
                 }
             }
 
@@ -312,7 +316,7 @@ namespace CodeGenerator
                 currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 if (!dragShapes && dragShapesPreview &&
                     (Math.Abs(firstPoint.X - ((Point)currentPoint).X) > 3 || Math.Abs(firstPoint.Y - ((Point)currentPoint).Y) > 3))
-                    dragShapes = true;
+                    dragShapes = runEmulate ? false : true;
                 if (dragShapes)
                 {
                     // начинаем перемещение фигур
@@ -369,7 +373,7 @@ namespace CodeGenerator
                         }
                         link.SetPoints(pts);
                     }
-                    modelChanged = true;
+                    modelChanged = runEmulate ? false : true;
                     firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 }
                 else if (linkBuilding)
@@ -394,7 +398,7 @@ namespace CodeGenerator
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
-                                shape.Hover = true;
+                                shape.Hover = runEmulate ? false : true;
                             }
                         }
                     }
@@ -497,7 +501,7 @@ namespace CodeGenerator
                         }
 
                         SortIndexByLocation();
-                        modelChanged = true;
+                        modelChanged = runEmulate ? false : true;
                         drawPanel.Refresh();
                         Cursor = Cursors.Default;
                         Cursor.Hide();
@@ -551,7 +555,7 @@ namespace CodeGenerator
                                             // сохранение настроек связи для цели
                                             shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
                                             SortIndexByLocation();
-                                            modelChanged = true;
+                                            modelChanged = runEmulate ? false : true;
                                         }
                                     }
                                 }
@@ -579,7 +583,7 @@ namespace CodeGenerator
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
                             {
-                                shape.Selected = true;
+                                shape.Selected = runEmulate ? false : true;
                             }
                         }
                         SelectLinksForBothSelectedShapes(page);
@@ -680,6 +684,7 @@ namespace CodeGenerator
 
         private void Shape_OnMakeCopy(object? sender, EventArgs e)
         {
+            if (runEmulate) return;
             if (sender is Shape source)
             {
                 shapes.ForEach(shape => shape.Selected = false);
@@ -697,6 +702,7 @@ namespace CodeGenerator
 
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
+            if (runEmulate) return;
             var linksForDelete = links.Where(x => x.Source == e.Source &&
                 x.Target == e.Target && x.TargetPinIndex == e.TargetPinIndex).ToList();
             foreach (var link in linksForDelete)
@@ -983,13 +989,16 @@ namespace CodeGenerator
                         if (addShape != null)
                         {
                             tvLibrary.SelectedNode = node;
-                            addShapes = true;
-                            var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = addShape }, DragDropEffects.Copy);
-                            if (ret == DragDropEffects.None)
+                            addShapes = runEmulate ? false : true;
+                            if (addShapes)
                             {
-                                addShapes = false;
-                                addShape = null;
-                                Cursor = Cursors.Default;
+                                var ret = tvLibrary.DoDragDrop(new DragedInfo { Shape = addShape }, DragDropEffects.Copy);
+                                if (ret == DragDropEffects.None)
+                                {
+                                    addShapes = false;
+                                    addShape = null;
+                                    Cursor = Cursors.Default;
+                                }
                             }
                         }
                     }
@@ -1511,17 +1520,20 @@ namespace CodeGenerator
 
         private void TsmiCopy_Click(object sender, EventArgs e)
         {
+            if (runEmulate) return;
             copycuted = CopySelectedToXml();
         }
 
         private void TsmiCut_Click(object sender, EventArgs e)
         {
+            if (runEmulate) return;
             copycuted = CopySelectedToXml();
             RemoveSelected();
         }
 
         private void TsmiPaste_Click(object sender, EventArgs e)
         {
+            if (runEmulate) return;
             if (copycuted != null && !movePasted)
             {
                 shapes.ForEach(x => x.Selected = false);
@@ -1533,8 +1545,10 @@ namespace CodeGenerator
 
         private void TsmiSelectAll_Click(object sender, EventArgs e)
         {
-            shapes.ForEach(x => x.Selected = true);
-            links.ForEach(x => x.Selected = true);
+            if (runEmulate) return;
+            UnselectAll();
+            ModelAssistant.ShapesFrom(currentPage, shapes).ForEach(x => x.Selected = true);
+            ModelAssistant.LinksFrom(currentPage, links).ForEach(x => x.Selected = true);
             drawPanel.Invalidate();
         }
 
