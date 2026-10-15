@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -951,7 +952,19 @@ namespace CodeGenerator
             {
                 Pen pen;
                 using var defaultpen = new Pen(link.Foreground);
-                if (link.Hover && link.Selected)
+                if (runEmulate)
+                {
+                    if (link.Source != null && link.Source.GetOutputValueKind() == ValueKind.Digital)
+                    {
+                        if (link.Source.GetOutputValue() > 0)
+                            pen = Pens.Lime;
+                        else
+                            pen = Pens.Red;
+                    }
+                    else
+                        pen = defaultpen;
+                }
+                else if (link.Hover && link.Selected)
                     pen = selecthoverpen;
                 else if (link.Hover)
                     pen = hoverpen;
@@ -968,7 +981,19 @@ namespace CodeGenerator
                 {
                     Brush brush;
                     using var defaultbrush = new SolidBrush(link.Foreground);
-                    if (link.Hover && link.Selected)
+                    if (runEmulate)
+                    {
+                        if (link.Source != null && link.Source.GetOutputValueKind() == ValueKind.Digital)
+                        {
+                            if (link.Source.GetOutputValue() > 0)
+                                brush = Brushes.Lime;
+                            else
+                                brush = Brushes.Red;
+                        }
+                        else
+                            brush = defaultbrush;
+                    }
+                    else if (link.Hover && link.Selected)
                         brush = selecthoverbrush;
                     else if (link.Hover)
                         brush = hoverbrush;
