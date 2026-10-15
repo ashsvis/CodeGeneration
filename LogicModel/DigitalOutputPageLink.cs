@@ -145,14 +145,7 @@ namespace LogicModel
 
         public override bool ContainsPoint(Point point, float width)
         {
-            using var pen = new Pen(Foreground, width);
-            foreach (var p in GetTextPaths())
-            {
-                using var path = p;
-                if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
-                    return true;
-            }
-            return false;
+            return Bounds.Contains(point);
         }
 
         public override void Calculate()

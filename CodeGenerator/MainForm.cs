@@ -869,7 +869,7 @@ namespace CodeGenerator
             }
 
             // рисуем поле трассировки связей
-            TraceAssistant.DrawField(e.Graphics);
+            //TraceAssistant.DrawField(e.Graphics);
         }
 
         private void DrawInPage(Graphics? graphics, Page? page)
