@@ -62,6 +62,15 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Вычитание") { Tag = typeof(Sub) });
             nodesGroup.Nodes.Add(new TreeNode("Умножение") { Tag = typeof(Mul) });
             nodesGroup.Nodes.Add(new TreeNode("Деление") { Tag = typeof(Div) });
+            //
+            nodesGroup = new TreeNode("Сравнение");
+            items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Равно") { Tag = typeof(Eq) });
+            nodesGroup.Nodes.Add(new TreeNode("Не равно") { Tag = typeof(Ne) });
+            nodesGroup.Nodes.Add(new TreeNode("Больше") { Tag = typeof(Gt) });
+            nodesGroup.Nodes.Add(new TreeNode("Больше или равно") { Tag = typeof(Ge) });
+            nodesGroup.Nodes.Add(new TreeNode("Меньше") { Tag = typeof(Lt) });
+            nodesGroup.Nodes.Add(new TreeNode("Меньше или равно") { Tag = typeof(Le) });
             return [.. items];
         }
 
