@@ -11,6 +11,9 @@
     <Compile Update="DrawPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="InputValueForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>

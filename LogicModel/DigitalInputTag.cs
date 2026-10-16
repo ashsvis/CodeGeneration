@@ -77,9 +77,10 @@ namespace LogicModel
             }
         }
 
-        public override void Click()
+        public override void Click(bool runEmulate, int clicks)
         {
-            Click(ChangeEmulateValue);
+            if (runEmulate && clicks == 1)
+                Click(ChangeEmulateValue);
         }
 
         private void ChangeEmulateValue(MouseButtons mouseButtons, params object[] args)

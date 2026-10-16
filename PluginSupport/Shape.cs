@@ -232,7 +232,7 @@ namespace PluginSupport
             OnChange?.Invoke(this, EventArgs.Empty);
         }
 
-        public virtual void Click()
+        public virtual void Click(bool runEmulate, int clicks)
         {
             //OnClick?.Invoke(this, new ClickEventArgs((args) => 
             //{ 

@@ -87,7 +87,7 @@
             printPreviewDialog1 = new PrintPreviewDialog();
             printDocument1 = new System.Drawing.Printing.PrintDocument();
             printDialog1 = new PrintDialog();
-            backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            emulateBackground = new System.ComponentModel.BackgroundWorker();
             menuStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
@@ -570,12 +570,13 @@
             // 
             printDialog1.UseEXDialog = true;
             // 
-            // backgroundWorker1
+            // emulateBackground
             // 
-            backgroundWorker1.WorkerReportsProgress = true;
-            backgroundWorker1.WorkerSupportsCancellation = true;
-            backgroundWorker1.DoWork += BackgroundWorker1_DoWork;
-            backgroundWorker1.ProgressChanged += backgroundWorker1_ProgressChanged;
+            emulateBackground.WorkerReportsProgress = true;
+            emulateBackground.WorkerSupportsCancellation = true;
+            emulateBackground.DoWork += EmulateBackground_DoWork;
+            emulateBackground.ProgressChanged += EmulateBackground_ProgressChanged;
+            emulateBackground.RunWorkerCompleted += EmulateBackground_RunWorkerCompleted;
             // 
             // MainForm
             // 
@@ -673,6 +674,6 @@
         private PrintDialog printDialog1;
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripMenuItem tsmiRun;
-        private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.ComponentModel.BackgroundWorker emulateBackground;
     }
 }

@@ -80,5 +80,20 @@ namespace LogicModel
             }
             return infos;
         }
+
+        public override void Click(bool runEmulate, int clicks)
+        {
+            if (!runEmulate && clicks == 2)
+                Click(ChangeText);
+        }
+
+        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm();
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+
+            }
+        }
     }
 }

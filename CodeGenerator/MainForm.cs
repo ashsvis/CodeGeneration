@@ -76,8 +76,6 @@ namespace CodeGenerator
                 var column = (i - 1) - row * totalPagesInRow;
                 pages.Add(new Page(i, 420, 297, row, column) { PagesCount = totalPages });
             }
-
-            backgroundWorker1.RunWorkerAsync();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -208,9 +206,11 @@ namespace CodeGenerator
                     shapeFound = true;
                     dragShapesPreview = !runEmulate;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (runEmulate)
+                    if (e.Button == MouseButtons.Left && ModifierKeys.HasFlag(Keys.Alt))
                     {
-                        shape.Click();
+                        shape.Click(runEmulate, e.Clicks);
+                        dragShapesPreview = false;
+                        dragCopiedShapes = false;
                     }
                     else if (e.Button == MouseButtons.Right)
                     {
@@ -228,18 +228,6 @@ namespace CodeGenerator
             else
             {
                 UnselectAll();
-
-                //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
-                //{
-                //    shape.Selected = false;
-                //    shape.Hover = false;
-                //});
-                //ModelAssistant.LinksFrom(page, links).ForEach(link =>
-                //{
-                //    link.Hover = false;
-                //    link.Selected = false;
-                //});
-
                 //ничего не выбрано, рисуем рамку выбора
                 frameBuilding = !runEmulate;
             }
@@ -254,7 +242,6 @@ namespace CodeGenerator
                 link.Selected = false;
             });
             var selected = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).ToList();
-            ////var found = false;
             foreach (var link in ModelAssistant.LinksFrom(page, links))
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
@@ -263,21 +250,8 @@ namespace CodeGenerator
                 {
                     link.Selected = !runEmulate;
                     link.Hover = !runEmulate;
-                    ////found = true;
                 }
             }
-            ////if (!found)
-            ////{
-            ////    foreach (var link in LinksFrom(page))
-            ////    {
-            ////        var sourceShape = selected.FirstOrDefault(x => x == link.Source);
-            ////        if (sourceShape != null)
-            ////        {
-            ////            link.Selected = true;
-            ////            link.Hover = true;
-            ////        }
-            ////    }
-            ////}
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
@@ -286,7 +260,6 @@ namespace CodeGenerator
             currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
 
             Cursor = Cursors.Default;
-            //Cursor.Hide();
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
@@ -302,7 +275,8 @@ namespace CodeGenerator
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
-                    Cursor = Cursors.Cross;
+                    if (!runEmulate)
+                        Cursor = Cursors.Cross;
                     shape.CanOutputLink = !runEmulate;
                     break;
                 }
@@ -319,7 +293,7 @@ namespace CodeGenerator
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = !runEmulate;
-                    if (runEmulate)
+                    if (runEmulate && ModifierKeys.HasFlag(Keys.Alt))
                     {
                         Cursor = Cursors.Hand;
                     }
@@ -1057,18 +1031,6 @@ namespace CodeGenerator
             }
         }
 
-        private void TimerCalculate_Tick(object sender, EventArgs e)
-        {
-            foreach (var shape in shapes)
-                shape.Calculate();
-            foreach (var shape in shapes)
-            {
-                if (shape is ICycle cycle)
-                    cycle.SwitchOffSubscibers();
-            }
-            drawPanel.Invalidate();
-        }
-
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -1088,82 +1050,66 @@ namespace CodeGenerator
 
         private void RemoveSelected()
         {
-            //timerCalculate.Enabled = false;
-            try
+            Cursor = Cursors.WaitCursor;
+            Cursor.Show();
+            // сбор элементов для удаления на основании их выбранности
+            var shapesForDelete = shapes.Where(x => x.Selected).ToList();
+            // сбор связей, которые используются удаляемыми элементами
+            var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
+            foreach (var link in linksForDelete)
             {
-                Cursor = Cursors.WaitCursor;
-                Cursor.Show();
-                // сбор элементов для удаления на основании их выбранности
-                var shapesForDelete = shapes.Where(x => x.Selected).ToList();
-                // сбор связей, которые используются удаляемыми элементами
-                var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
-                foreach (var link in linksForDelete)
-                {
-                    // ищем источник и цель
-                    var source = shapes.FirstOrDefault(x => x == link.Source);
-                    var target = shapes.FirstOrDefault(x => x == link.Target);
+                // ищем источник и цель
+                var source = shapes.FirstOrDefault(x => x == link.Source);
+                var target = shapes.FirstOrDefault(x => x == link.Target);
 
-                    // если найдены оба, то отписывается
-                    if (source != null && target != null)
-                        link.UnlinkToLocation(source, target);
+                // если найдены оба, то отписывается
+                if (source != null && target != null)
+                    link.UnlinkToLocation(source, target);
 
-                    // удаляем визуальную ссылку
-                    links.Remove(link);
-                    UpdateOtherLinks(link);
-                }
-                // для всех удаляемых элементов
-                foreach (var shape in shapesForDelete)
-                    UnsubscribeShapeEvents(shape);
-                foreach (var shape in shapesForDelete)
-                {
-                    shape.Delete();
-                    shapes.Remove(shape);
-                }
-                SortIndexByLocation();
-                modelChanged = true;
-                drawPanel.Invalidate();
-                Cursor = Cursors.Default;
-                Cursor.Hide();
+                // удаляем визуальную ссылку
+                links.Remove(link);
+                UpdateOtherLinks(link);
             }
-            finally
+            // для всех удаляемых элементов
+            foreach (var shape in shapesForDelete)
+                UnsubscribeShapeEvents(shape);
+            foreach (var shape in shapesForDelete)
             {
-                //timerCalculate.Enabled = runEmulate;
+                shape.Delete();
+                shapes.Remove(shape);
             }
+            SortIndexByLocation();
+            modelChanged = true;
+            drawPanel.Invalidate();
+            Cursor = Cursors.Default;
+            Cursor.Hide();
         }
 
         private void Shape_OnDelete(object? sender, EventArgs e)
         {
             if (sender is Shape shapeForDelete)
             {
-                //timerCalculate.Enabled = false;
-                try
+                // сбор связей, которые используются удаляемыми элементами
+                var linksForDelete = links.Where(x => shapeForDelete == x.Source || shapeForDelete == x.Target).ToList();
+                foreach (var link in linksForDelete)
                 {
-                    // сбор связей, которые используются удаляемыми элементами
-                    var linksForDelete = links.Where(x => shapeForDelete == x.Source || shapeForDelete == x.Target).ToList();
-                    foreach (var link in linksForDelete)
-                    {
-                        // ищем источник и цель
-                        var source = shapes.FirstOrDefault(x => x == link.Source);
-                        var target = shapes.FirstOrDefault(x => x == link.Target);
-                        // если найдены оба, то отписывается
-                        if (source != null && target != null)
-                            link.UnlinkToLocation(source, target);
-                        // удаляем визуальную ссылку
-                        links.Remove(link);
-                        UpdateOtherLinks(link);
-                    }
-                    shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
-                    shapeForDelete.OnDelete -= Shape_OnDelete;
-                    shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
-                    shapes.Remove(shapeForDelete);
-                    SortIndexByLocation();
-                    modelChanged = true;
-                    drawPanel.Invalidate();
+                    // ищем источник и цель
+                    var source = shapes.FirstOrDefault(x => x == link.Source);
+                    var target = shapes.FirstOrDefault(x => x == link.Target);
+                    // если найдены оба, то отписывается
+                    if (source != null && target != null)
+                        link.UnlinkToLocation(source, target);
+                    // удаляем визуальную ссылку
+                    links.Remove(link);
+                    UpdateOtherLinks(link);
                 }
-                finally
-                {
-                    //timerCalculate.Enabled = runEmulate;
-                }
+                shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
+                shapeForDelete.OnDelete -= Shape_OnDelete;
+                shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
+                shapes.Remove(shapeForDelete);
+                SortIndexByLocation();
+                modelChanged = true;
+                drawPanel.Invalidate();
             }
         }
 
@@ -1533,27 +1479,19 @@ namespace CodeGenerator
 
         private void ClearAll()
         {
-            //timerCalculate.Enabled = false;
-            try
-            {
-                links.Clear();
-                // для всех удаляемых элементов
-                foreach (var shape in shapes)
-                    UnsubscribeShapeEvents(shape);
-                shapes.Clear();
-                modelChanged = false;
-                fileName = string.Empty;
-                Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
-                drawPanel.Reset();
-                drawPanel.Invalidate();
-                copycuted = null;
-                pasted.Item2 = Rectangle.Empty;
-                TraceAssistant.InitField(shapes, links);
-            }
-            finally
-            {
-                //timerCalculate.Enabled = runEmulate;
-            }
+            links.Clear();
+            // для всех удаляемых элементов
+            foreach (var shape in shapes)
+                UnsubscribeShapeEvents(shape);
+            shapes.Clear();
+            modelChanged = false;
+            fileName = string.Empty;
+            Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+            drawPanel.Reset();
+            drawPanel.Invalidate();
+            copycuted = null;
+            pasted.Item2 = Rectangle.Empty;
+            TraceAssistant.InitField(shapes, links);
         }
 
         private void TimerInterface_Tick(object sender, EventArgs e)
@@ -1665,14 +1603,24 @@ namespace CodeGenerator
 
         private void TsbRun_Click(object sender, EventArgs e)
         {
-            runEmulate = !runEmulate;
-            //timerCalculate.Enabled = runEmulate;
             UnselectAll();
-            if (runEmulate) Cursor.Show(); else Cursor.Hide();
+            if (!runEmulate && !emulateBackground.IsBusy)
+            {
+                if (!emulateBackground.IsBusy)
+                {
+                    emulateBackground.RunWorkerAsync();
+                    Cursor.Show();
+                }
+            }
+            else
+            {
+                emulateBackground.CancelAsync();
+                Cursor.Hide();
+            }
             drawPanel.Invalidate();
         }
 
-        private void BackgroundWorker1_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        private void EmulateBackground_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
             var worker = (BackgroundWorker)sender;
             var ms = DateTime.Now.Millisecond / 100;
@@ -1685,12 +1633,11 @@ namespace CodeGenerator
                     worker.ReportProgress(ms);
                 }
             }
-            
+
         }
 
-        private void backgroundWorker1_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
+        private void EmulateBackground_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
-            if (!runEmulate) return;
             foreach (var shape in shapes)
                 shape.Calculate();
             foreach (var shape in shapes)
@@ -1698,6 +1645,13 @@ namespace CodeGenerator
                 if (shape is ICycle cycle)
                     cycle.SwitchOffSubscibers();
             }
+            runEmulate = true;
+            drawPanel.Invalidate();
+        }
+
+        private void EmulateBackground_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            runEmulate = false;
             drawPanel.Invalidate();
         }
     }
