@@ -28,7 +28,23 @@ namespace LogicModel
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
                 Outputs = [],
+                TagName = TagName,
             };
+        }
+
+        public override void Click(bool runEmulate)
+        {
+            if (!runEmulate)
+                Click(ChangeText);
+        }
+
+        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm { StrValue = TagName ?? "" };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                TagName = dlg.StrValue;
+            }
         }
     }
 }

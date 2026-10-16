@@ -1,11 +1,13 @@
 using PluginSupport;
-using System;
 using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
 namespace LogicModel
 {
     public class DigitalInputTag : Func
     {
+        public string? TagName { get; set; }
+
         public DigitalInputTag()
         {
             FuncDesc = "Тег дискретного входа";
@@ -32,6 +34,7 @@ namespace LogicModel
                 FuncDesc = FuncDesc,
                 Inputs = [],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
+                TagName = TagName,
             };
         }
 
@@ -52,8 +55,8 @@ namespace LogicModel
             var paths = base.GetTextPaths().ToList();
             var rect = Bounds;
             rect.Inflate(rect.Height / 4, 0);
-            var fname = FuncName ?? "";
-            using var fontFunc = new Font("Segoe UI", 12f);
+            var fname = TagName ?? FuncName ?? "";
+            using var fontFunc = new Font("Consolas", 14f);
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
@@ -77,10 +80,12 @@ namespace LogicModel
             }
         }
 
-        public override void Click(bool runEmulate, int clicks)
+        public override void Click(bool runEmulate)
         {
-            if (runEmulate && clicks == 1)
+            if (runEmulate)
                 Click(ChangeEmulateValue);
+            else
+                Click(ChangeText);
         }
 
         private void ChangeEmulateValue(MouseButtons mouseButtons, params object[] args)
@@ -88,6 +93,37 @@ namespace LogicModel
             var result = Outputs[0].Value;
             Outputs[0].Value = result > 0 ? 0 : 1;
             Transfer();
+        }
+
+        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm { StrValue = TagName ?? "" };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                TagName = dlg.StrValue;
+                Changed();
+            }
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (!string.IsNullOrEmpty(TagName))
+            {
+                var xname = new XElement("Name", TagName);
+                xfunc.Add(xname);
+            }
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            var xName = xfunc.Element("Name");
+            if (xName != null)
+            {
+                TagName = xName.Value;
+            }
         }
     }
 }

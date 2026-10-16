@@ -37,6 +37,9 @@ namespace PluginSupport
                 tbValue.TextAlign = HorizontalAlignment.Left;
                 AcceptButton = null;
                 Height += value.Length * 22;
+                tbValue.Focus();
+                tbValue.SelectionStart = 0;
+                tbValue.SelectionLength = 0;
                 tbValue.SelectAll();
             }
         }
@@ -66,6 +69,14 @@ namespace PluginSupport
         }
 
         private int _ivalue;
+
+        private void TbValue_TextChanged(object sender, EventArgs e)
+        {
+            if (tbValue.Multiline)
+            {
+                Height = 119 + tbValue.Lines.Length * 22;
+            }
+        }
 
         [DefaultValue(null)]
         public int IntValue

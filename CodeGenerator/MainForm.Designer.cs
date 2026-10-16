@@ -459,7 +459,7 @@
             tpLibrary.Padding = new Padding(3);
             tpLibrary.Size = new Size(292, 351);
             tpLibrary.TabIndex = 0;
-            tpLibrary.Text = "Библиотека компонентов";
+            tpLibrary.Text = "Библиотека";
             // 
             // tvLibrary
             // 
@@ -506,7 +506,8 @@
             // splitterLeft
             // 
             splitterLeft.Location = new Point(300, 49);
-            splitterLeft.MinSize = 0;
+            splitterLeft.MinExtra = 10;
+            splitterLeft.MinSize = 20;
             splitterLeft.Name = "splitterLeft";
             splitterLeft.Size = new Size(3, 379);
             splitterLeft.TabIndex = 5;

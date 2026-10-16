@@ -109,13 +109,26 @@ namespace CodeGenerator
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
-            firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+            firstPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             var page = pages.FirstOrDefault(x => x.Bounds.Contains(firstPoint));
             if (page != null && page != currentPage || page == null)
             {
                 currentPage = page;
                 shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
                 links.ForEach(link => { link.Selected = false; link.Hover = false; });
+            }
+            if (e.Button == MouseButtons.Left && e.Clicks > 1 && !runEmulate)
+            {
+                foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
+                {
+                    if (shape.ContainsPoint(firstPoint, 5f / (float)drawPanel.Zoom))
+                    {
+                        shape.Click(runEmulate);
+                        break;
+                    }
+                }
+
+                return;
             }
             ribbonRect = Rectangle.Empty;
             frameBuilding = false;
@@ -152,9 +165,9 @@ namespace CodeGenerator
                 shapes.ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
+            var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
             {
-                var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 if (shape.IsPointInTargets(point))
                 {
                     if (shape.IsOuputTargetsPoint(point, out int outputIndex))
@@ -206,9 +219,9 @@ namespace CodeGenerator
                     shapeFound = true;
                     dragShapesPreview = !runEmulate;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (e.Button == MouseButtons.Left && ModifierKeys.HasFlag(Keys.Alt))
+                    if (e.Button == MouseButtons.Left && runEmulate)
                     {
-                        shape.Click(runEmulate, e.Clicks);
+                        shape.Click(runEmulate);
                         dragShapesPreview = false;
                         dragCopiedShapes = false;
                     }

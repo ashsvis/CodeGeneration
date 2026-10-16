@@ -28,13 +28,16 @@ namespace LogicModel
                 FuncDesc = FuncDesc,
                 Inputs = [],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
+                TagName = TagName,
             };
         }
 
-        public override void Click(bool runEmulate, int clicks)
+        public override void Click(bool runEmulate)
         {
-            if (runEmulate && clicks == 1)
+            if (runEmulate)
                 Click(ChangeEmulateValue);
+            else
+                Click(ChangeText);
         }
 
         private void ChangeEmulateValue(MouseButtons mouseButtons, params object[] args)
@@ -45,6 +48,15 @@ namespace LogicModel
             else if (mouseButtons == MouseButtons.Right)
                 Outputs[0].Value = result - 1;
             Transfer();
+        }
+
+        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm { StrValue = TagName ?? "" };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                TagName = dlg.StrValue;
+            }
         }
     }
 }

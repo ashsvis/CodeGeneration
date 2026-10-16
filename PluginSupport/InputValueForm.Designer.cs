@@ -28,63 +28,67 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tbValue = new System.Windows.Forms.TextBox();
-            this.btnOk = new System.Windows.Forms.Button();
-            this.btnCancel = new System.Windows.Forms.Button();
-            this.SuspendLayout();
+            tbValue = new TextBox();
+            btnOk = new Button();
+            btnCancel = new Button();
+            SuspendLayout();
             // 
             // tbValue
             // 
-            this.tbValue.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbValue.Location = new System.Drawing.Point(13, 13);
-            this.tbValue.MaxLength = 60;
-            this.tbValue.Name = "tbValue";
-            this.tbValue.Size = new System.Drawing.Size(342, 22);
-            this.tbValue.TabIndex = 0;
+            tbValue.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tbValue.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            tbValue.Location = new Point(13, 13);
+            tbValue.MaxLength = 60;
+            tbValue.Name = "tbValue";
+            tbValue.Size = new Size(342, 25);
+            tbValue.TabIndex = 0;
+            tbValue.TextChanged += TbValue_TextChanged;
             // 
             // btnOk
             // 
-            this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Location = new System.Drawing.Point(194, 42);
-            this.btnOk.Name = "btnOk";
-            this.btnOk.Size = new System.Drawing.Size(75, 23);
-            this.btnOk.TabIndex = 1;
-            this.btnOk.Text = "Ввод";
-            this.btnOk.UseVisualStyleBackColor = true;
+            btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnOk.DialogResult = DialogResult.OK;
+            btnOk.FlatStyle = FlatStyle.Flat;
+            btnOk.Font = new Font("Segoe UI", 9.75F);
+            btnOk.Location = new Point(194, 47);
+            btnOk.Name = "btnOk";
+            btnOk.Size = new Size(75, 26);
+            btnOk.TabIndex = 1;
+            btnOk.Text = "Ввод";
+            btnOk.UseVisualStyleBackColor = true;
             // 
             // btnCancel
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(280, 42);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 2;
-            this.btnCancel.Text = "Отмена";
-            this.btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancel.DialogResult = DialogResult.Cancel;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Font = new Font("Segoe UI", 9.75F);
+            btnCancel.Location = new Point(280, 47);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(75, 26);
+            btnCancel.TabIndex = 2;
+            btnCancel.Text = "Отмена";
+            btnCancel.UseVisualStyleBackColor = true;
             // 
             // InputValueForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 14F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(367, 75);
-            this.Controls.Add(this.btnCancel);
-            this.Controls.Add(this.btnOk);
-            this.Controls.Add(this.tbValue);
-            this.Font = new System.Drawing.Font("Tahoma", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
-            this.MinimumSize = new System.Drawing.Size(373, 24);
-            this.Name = "InputValueForm";
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Введите значение";
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(7F, 14F);
+            AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = btnCancel;
+            ClientSize = new Size(367, 80);
+            Controls.Add(btnCancel);
+            Controls.Add(btnOk);
+            Controls.Add(tbValue);
+            Font = new Font("Tahoma", 9F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            MinimumSize = new Size(373, 24);
+            Name = "InputValueForm";
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Введите значение";
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
