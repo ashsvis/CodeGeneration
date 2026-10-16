@@ -432,76 +432,18 @@ namespace CodeGenerator
                         Cursor.Show();
                         dragShapesPreview = false;
                         dragShapes = false;
-                        List<Shape> shapesList = [];
                         foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
-                        {
-                            if (shape.Selected && !shapesList.Contains(shape))
-                            {
-                                shape.Location = MovePointToGrid(shape.Location);
-                                shapesList.Add(shape);
-                                foreach (var link in links.Where(x => x.Source == shape).ToList())
-                                {
-                                    if (link.Source != null && !shapesList.Contains(link.Source))
-                                        shapesList.Add(link.Source);
-                                }
-                            }
-                        }
+                            shape.Location = MovePointToGrid(shape.Location);
                         foreach (var link in ModelAssistant.LinksFrom(page, links))
                         {
-                            if (link.Selected)
-                            {
-                                link.StartPoint = MovePointToGrid(link.StartPoint);
-                                link.EndPoint = MovePointToGrid(link.EndPoint);
-                                var pts = link.GetPoints();
-                                for (var i = 0; i < pts.Length; i++)
-                                    pts[i] = MovePointToGrid(pts[i]);
-                                link.SetPoints(pts);
-                            }
+                            var source = ModelAssistant.ShapesFrom(page, shapes).FirstOrDefault(x => x.Id == link.SourceId);
+                            if (source != null && source.GetOutputPinPoint(link.SourcePinIndex) is Point sourcePinPoint)
+                                link.StartPoint = sourcePinPoint;
+                            var target = ModelAssistant.ShapesFrom(page, shapes).FirstOrDefault(x => x.Id == link.TargetId);
+                            if (target != null && target.GetInputPinPoint(link.TargetPinIndex) is Point targetPinPoint)
+                                link.EndPoint = targetPinPoint;
                         }
-                        List<Link> linksList = [];
-                        foreach (var shape in shapesList)
-                        {
-                            shape.Location = MovePointToGrid(shape.Location);
-                            var linksFromSource = links.Where(x => x.Source == shape);
-                            foreach (var link in linksFromSource)
-                            {
-                                if (!linksList.Contains(link))
-                                    linksList.Add(link);
-                            }
-                            for (var i = 0; i < shape.CountInputs(); i++)
-                            {
-                                var link = links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                                if (link != null && !linksList.Contains(link))
-                                {
-                                    linksList.Add(link);
-                                    linksFromSource = links.Where(x => x != link && x.Source == link.Source);
-                                    foreach (var link2 in linksFromSource)
-                                    {
-                                        if (!linksList.Contains(link2))
-                                            linksList.Add(link2);
-                                    }
-                                }
-                            }
-                        }
-
-                        linksList.RemoveAll(x => x.Source != null && shapesList.Contains(x.Source) && x.Target != null && shapesList.Contains(x.Target));
-
-                        if (page != null)
-                        {
-                            linksList.ForEach(x =>
-                            {
-                                if (x.Source != null && x.Source.GetOutputPinPoint(0) is Point spoint)
-                                    x.StartPoint = spoint;
-                                if (x.Target != null && x.Target.GetInputPinPoint(x.TargetPinIndex) is Point tpoint)
-                                    x.EndPoint = tpoint;
-                                x.SetPoints([]);
-                            });
-                            foreach (var link in linksList.OrderByDescending(x => x.Length))
-                            {
-                                var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
-                                link.SetPoints([.. points]);
-                            }
-                        }
+                        UpdateLinksOnPage(page);
 
                         SortIndexByLocation();
                         modelChanged = !runEmulate;
@@ -746,6 +688,14 @@ namespace CodeGenerator
             // перестраиваем массив внутренних точек
             foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderByDescending(x => x.Length))
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(null, shapes, links, item)]);
+        }
+
+        private void UpdateLinksOnPage(Page? page)
+        {
+            foreach (var item in ModelAssistant.LinksFrom(page, links))
+                item.SetPoints([]);
+            foreach (var item in ModelAssistant.LinksFrom(page, links))
+                item.SetPoints([.. TraceAssistant.BuildWaveInField(page, shapes, links, item)]);
         }
 
         private void SortIndexByLocation()
