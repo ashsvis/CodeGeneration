@@ -142,7 +142,7 @@ namespace CodeGenerator
                     if (copycuted != null)
                     {
                         PasteFromXml(copycuted, shapes, links, firstPoint);
-                        SortIndexByLocation();
+                        SortAndAssignToPages();
                         modelChanged = true;
                     }
                 }
@@ -334,7 +334,7 @@ namespace CodeGenerator
                         shapes.ForEach(x => x.Selected = false);
                         links.ForEach(x => x.Selected = false);
                         PasteFromXml(copyed, shapes, links, loc);
-                        SortIndexByLocation();
+                        SortAndAssignToPages();
                         dragCopiedShapes = false;
                         modelChanged = true;
                     }
@@ -444,7 +444,7 @@ namespace CodeGenerator
                         }
                         UpdateLinksOnPage(page);
 
-                        SortIndexByLocation();
+                        SortAndAssignToPages();
                         modelChanged = !runEmulate;
                         drawPanel.Refresh();
                         Cursor = Cursors.Default;
@@ -498,7 +498,7 @@ namespace CodeGenerator
                                             firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
                                             // сохранение настроек св€зи дл€ цели
                                             shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
-                                            SortIndexByLocation();
+                                            SortAndAssignToPages();
                                             modelChanged = !runEmulate;
                                         }
                                     }
@@ -576,7 +576,7 @@ namespace CodeGenerator
                     shape.Selected = true;
                     SubscribeShapeEvents(shape);
                     shapes.Add(shape);
-                    SortIndexByLocation();
+                    SortAndAssignToPages();
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }
@@ -644,7 +644,7 @@ namespace CodeGenerator
                 shape.Location = Point.Add(shape.Location, new Size(12, 12));
                 SubscribeShapeEvents(shape);
                 shapes.Add(shape);
-                SortIndexByLocation();
+                SortAndAssignToPages();
                 shape.Selected = true;
                 modelChanged = true;
                 drawPanel.Invalidate();
@@ -656,6 +656,7 @@ namespace CodeGenerator
             if (runEmulate) return;
             var linksForDelete = links.Where(x => x.Source == e.Source &&
                 x.Target == e.Target && x.TargetPinIndex == e.TargetPinIndex).ToList();
+            List<int> pageIndexes = [];
             foreach (var link in linksForDelete)
             {
                 // ищем источник и цель
@@ -670,34 +671,40 @@ namespace CodeGenerator
                 }
                 // удал€ем визуальную ссылку
                 links.Remove(link);
-                UpdateOtherLinks(link);
+                //UpdateOtherLinks(link);
+                pageIndexes.Add(link.Page);
                 modelChanged = true;
+            }
+            foreach (var index in pageIndexes.Distinct())
+            {
+                var page = pages.FirstOrDefault(x => x.Number == index);
+                UpdateLinksOnPage(page);
             }
             drawPanel.Invalidate();
         }
 
-        private void UpdateOtherLinks(PluginSupport.Link link)
-        {
-            if (link.Page == 0) return;
-            // дл€ всех визуальных св€зей, начало выходит из одной точки с перестраиваемой св€зью
-            // очищаем массив внутренних точек
-            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
-                item.SetPoints([]);
-            // дл€ всех визуальных св€зей, начало выходит из одной точки с перестраиваемой св€зью
-            // перестраиваем массив внутренних точек
-            foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderByDescending(x => x.Length))
-                item.SetPoints([.. TraceAssistant.BuildWaveInField(null, shapes, links, item)]);
-        }
+        //private void UpdateOtherLinks(PluginSupport.Link link)
+        //{
+        //    if (link.Page == 0) return;
+        //    // дл€ всех визуальных св€зей, начало выходит из одной точки с перестраиваемой св€зью
+        //    // очищаем массив внутренних точек
+        //    foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
+        //        item.SetPoints([]);
+        //    // дл€ всех визуальных св€зей, начало выходит из одной точки с перестраиваемой св€зью
+        //    // перестраиваем массив внутренних точек
+        //    foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
+        //        item.SetPoints([.. TraceAssistant.BuildWaveInField(null, shapes, links, item)]);
+        //}
 
         private void UpdateLinksOnPage(Page? page)
         {
             foreach (var item in ModelAssistant.LinksFrom(page, links))
                 item.SetPoints([]);
-            foreach (var item in ModelAssistant.LinksFrom(page, links))
+            foreach (var item in ModelAssistant.LinksFrom(page, links).OrderBy(x => x.Length))
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(page, shapes, links, item)]);
         }
 
-        private void SortIndexByLocation()
+        private void SortAndAssignToPages()
         {
             ModelAssistant.ClearCache();
 
@@ -710,12 +717,12 @@ namespace CodeGenerator
             {
                 foreach (var shape in shapes.Where(x => x.Page == 0))
                 {
-                    var p = pages.FirstOrDefault(x => x.Bounds.Contains(shape.Bounds));
+                    var p = pages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
                     if (p != null) shape.Page = p.Number;
                 }
                 foreach (var link in links.Where(x => x.Page == 0))
                 {
-                    var p = pages.FirstOrDefault(x => x.Bounds.Contains(link.Bounds));
+                    var p = pages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
                     if (p != null) link.Page = p.Number;
                 }
             }
@@ -1018,6 +1025,7 @@ namespace CodeGenerator
             var shapesForDelete = shapes.Where(x => x.Selected).ToList();
             // сбор св€зей, которые используютс€ удал€емыми элементами
             var linksForDelete = links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
+            List<int> pageIndexes = [];
             foreach (var link in linksForDelete)
             {
                 // ищем источник и цель
@@ -1028,19 +1036,30 @@ namespace CodeGenerator
                 if (source != null && target != null)
                     link.UnlinkToLocation(source, target);
 
+                pageIndexes.Add(link.Page);
+
                 // удал€ем визуальную ссылку
                 links.Remove(link);
-                UpdateOtherLinks(link);
+                //UpdateOtherLinks(link);
             }
             // дл€ всех удал€емых элементов
             foreach (var shape in shapesForDelete)
                 UnsubscribeShapeEvents(shape);
             foreach (var shape in shapesForDelete)
             {
+                pageIndexes.Add(shape.Page);
+
                 shape.Delete();
                 shapes.Remove(shape);
             }
-            SortIndexByLocation();
+            SortAndAssignToPages();
+
+            foreach (var index in pageIndexes.Distinct())
+            {
+                var page = pages.FirstOrDefault(x => x.Number == index);
+                UpdateLinksOnPage(page);
+            }
+
             modelChanged = true;
             drawPanel.Invalidate();
             Cursor = Cursors.Default;
@@ -1049,30 +1068,37 @@ namespace CodeGenerator
 
         private void Shape_OnDelete(object? sender, EventArgs e)
         {
-            if (sender is Shape shapeForDelete)
+            if (sender is Shape shape)
             {
-                // сбор св€зей, которые используютс€ удал€емыми элементами
-                var linksForDelete = links.Where(x => shapeForDelete == x.Source || shapeForDelete == x.Target).ToList();
-                foreach (var link in linksForDelete)
-                {
-                    // ищем источник и цель
-                    var source = shapes.FirstOrDefault(x => x == link.Source);
-                    var target = shapes.FirstOrDefault(x => x == link.Target);
-                    // если найдены оба, то отписываетс€
-                    if (source != null && target != null)
-                        link.UnlinkToLocation(source, target);
-                    // удал€ем визуальную ссылку
-                    links.Remove(link);
-                    UpdateOtherLinks(link);
-                }
-                shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
-                shapeForDelete.OnDelete -= Shape_OnDelete;
-                shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
-                shapes.Remove(shapeForDelete);
-                SortIndexByLocation();
-                modelChanged = true;
-                drawPanel.Invalidate();
+                UnselectAll();
+                shape.Selected = true;
+                RemoveSelected();
             }
+
+            //if (sender is Shape shapeForDelete)
+            //{
+            //    // сбор св€зей, которые используютс€ удал€емыми элементами
+            //    var linksForDelete = links.Where(x => shapeForDelete == x.Source || shapeForDelete == x.Target).ToList();
+            //    foreach (var link in linksForDelete)
+            //    {
+            //        // ищем источник и цель
+            //        var source = shapes.FirstOrDefault(x => x == link.Source);
+            //        var target = shapes.FirstOrDefault(x => x == link.Target);
+            //        // если найдены оба, то отписываетс€
+            //        if (source != null && target != null)
+            //            link.UnlinkToLocation(source, target);
+            //        // удал€ем визуальную ссылку
+            //        links.Remove(link);
+            //        UpdateOtherLinks(link);
+            //    }
+            //    shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
+            //    shapeForDelete.OnDelete -= Shape_OnDelete;
+            //    shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
+            //    shapes.Remove(shapeForDelete);
+            //    SortAndAssignToPages();
+            //    modelChanged = true;
+            //    drawPanel.Invalidate();
+            //}
         }
 
         private void TsmiSave_Click(object sender, EventArgs e)
@@ -1220,7 +1246,7 @@ namespace CodeGenerator
                     }
                 }
             }
-            SortIndexByLocation();
+            SortAndAssignToPages();
 
             // подключение внешних ссылок
             foreach (var shape in shapes)

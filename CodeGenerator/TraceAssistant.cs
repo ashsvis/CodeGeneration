@@ -36,7 +36,7 @@ namespace CodeGenerator
                     var bounds = shape.Bounds;
                     var dx = (bounds.X - rect.X) / step;
                     var dy = (bounds.Y - rect.Y) / step;
-                    for (int i = -1; i < bounds.Width / step + 2; i++)
+                    for (int i = 0; i < bounds.Width / step + 2; i++)
                     {
                         for (var j = 0; j < bounds.Height / step + 1; j++)
                         {
