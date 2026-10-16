@@ -127,7 +127,6 @@ namespace CodeGenerator
                         break;
                     }
                 }
-
                 return;
             }
             ribbonRect = Rectangle.Empty;
@@ -149,7 +148,7 @@ namespace CodeGenerator
                 return;
             }
 
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && !runEmulate)
                 contextMenu.Items.Clear();
             dragShapes = false;
             dragShapesPreview = false;
@@ -198,13 +197,31 @@ namespace CodeGenerator
                             if (runEmulate)
                             {
                                 if (!shape.IsLinked(inputIndex))
-                                    shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
+                                {
+                                    if (shape.GetInputValueKnd(inputIndex) == ValueKind.Digital)
+                                        shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
+                                    else if (shape.GetInputValueKnd(inputIndex) == ValueKind.Analog)
+                                        shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) + 1);
+                                }
                             }
                         }
-                        else if (e.Button == MouseButtons.Right && !runEmulate)
+                        else if (e.Button == MouseButtons.Right)
                         {
-                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
-                            contextMenu.Show(drawPanel, e.Location);
+                            if (runEmulate)
+                            {
+                                if (!shape.IsLinked(inputIndex))
+                                {
+                                    if (shape.GetInputValueKnd(inputIndex) == ValueKind.Digital)
+                                        shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
+                                    else if (shape.GetInputValueKnd(inputIndex) == ValueKind.Analog)
+                                        shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) - 1);
+                                }
+                            }
+                            else
+                            {
+                                contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                                contextMenu.Show(drawPanel, e.Location);
+                            }
                         }
                         break;
                     }
@@ -219,16 +236,16 @@ namespace CodeGenerator
                     shapeFound = true;
                     dragShapesPreview = !runEmulate;
                     dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (e.Button == MouseButtons.Left && runEmulate)
+                    if (e.Button == MouseButtons.Right && !runEmulate)
+                    {
+                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
+                        contextMenu.Show(drawPanel, e.Location);
+                    }
+                    else if (runEmulate)
                     {
                         shape.Click(runEmulate);
                         dragShapesPreview = false;
                         dragCopiedShapes = false;
-                    }
-                    else if (e.Button == MouseButtons.Right)
-                    {
-                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, shapes.Count(x => x.Selected) > 1));
-                        contextMenu.Show(drawPanel, e.Location);
                     }
                     break;
                 }
