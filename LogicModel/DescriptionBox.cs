@@ -31,6 +31,7 @@ namespace LogicModel
                 FuncDesc = FuncDesc,
                 Inputs = [.. Inputs.Select(x => x.DeepClone())],
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
+                Lines = Lines,
             };
         }
 

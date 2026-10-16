@@ -44,12 +44,8 @@ namespace LogicModel
                     Outputs[0].Value = result;
                     Transfer();
                     if (lastState == false)
-                    {
                         lastState = true;
-                    }
                 }
-                Outputs[0].Value = 0;
-                Transfer();
             }
         }
 
