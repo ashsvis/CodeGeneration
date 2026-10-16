@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class AnalogOutputTag : DigitalInputTag
+    public class AnalogOutputTag : DigitalInputTag, IAcceptClick
     {
         public AnalogOutputTag()
         {
@@ -16,6 +16,7 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+        public new bool CanAcceptClick => false;
 
         public override AnalogOutputTag DeepClone()
         {

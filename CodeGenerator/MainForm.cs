@@ -306,10 +306,9 @@ namespace CodeGenerator
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = !runEmulate;
-                    if (runEmulate && ModifierKeys.HasFlag(Keys.Alt))
-                    {
+                    if (runEmulate && shape is IAcceptClick accept && 
+                        accept.CanAcceptClick)
                         Cursor = Cursors.Hand;
-                    }
                     break;
                 }
             }

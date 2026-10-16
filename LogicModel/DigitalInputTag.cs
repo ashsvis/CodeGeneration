@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class DigitalInputTag : Func
+    public class DigitalInputTag : Func, IAcceptClick
     {
         public string? TagName { get; set; }
 
@@ -22,6 +22,8 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+
+        public bool CanAcceptClick => true;
 
         public override DigitalInputTag DeepClone()
         {
