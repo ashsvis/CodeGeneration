@@ -11,6 +11,7 @@ namespace LogicModel
         public ValueKind Kind { get; set; }
         public bool IsInverted { get; set; }
 
+        public bool IsLinked => Targets.Count > 0;
         public List<PinInfo> Targets { get; set; } = [];
 
         public PinOutput DeepClone()
@@ -34,7 +35,7 @@ namespace LogicModel
 
         public bool NoDataToWrite()
         {
-            return Value == 0 && !IsInverted;
+            return IsLinked || Value == 0 && !IsInverted;
         }
 
         public XElement WriteContent()

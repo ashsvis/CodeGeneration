@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CodeGenerator
 {
@@ -700,19 +701,6 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        //private void UpdateOtherLinks(PluginSupport.Link link)
-        //{
-        //    if (link.Page == 0) return;
-        //    // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-        //    // очищаем массив внутренних точек
-        //    foreach (var item in links.Where(x => x.StartPoint == link.StartPoint))
-        //        item.SetPoints([]);
-        //    // для всех визуальных связей, начало выходит из одной точки с перестраиваемой связью
-        //    // перестраиваем массив внутренних точек
-        //    foreach (var item in links.Where(x => x.StartPoint == link.StartPoint).OrderBy(x => x.Length))
-        //        item.SetPoints([.. TraceAssistant.BuildWaveInField(null, shapes, links, item)]);
-        //}
-
         private void UpdateLinksOnPage(Page? page)
         {
             foreach (var item in ModelAssistant.LinksFrom(page, links))
@@ -1257,14 +1245,25 @@ namespace CodeGenerator
                         var target = shapes.FirstOrDefault(x => x.Id == link.TargetId);
                         if (source != null && target != null)
                         {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            // построение волны и точек визуальной связи
+                            //var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [] /*[.. link.GetPoints()]*/);
                             links.Add(link);
                         }
                     }
                 }
             }
             SortAndAssignToPages();
-
+            foreach (var page in pages)
+            {
+                foreach (var link in ModelAssistant.LinksFrom(page, links))
+                {
+                    // построение волны и точек визуальной связи
+                    var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
+                    link.SetPoints([..points]);
+                }
+                UpdateLinksOnPage(page);
+            }
             // подключение внешних ссылок
             foreach (var shape in shapes)
             {

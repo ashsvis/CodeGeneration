@@ -75,7 +75,7 @@ namespace LogicModel
             }
             xlink.Add(new XAttribute("Start", $"{StartPoint.X},{StartPoint.Y}"));
             xlink.Add(new XAttribute("End", $"{EndPoint.X},{EndPoint.Y}"));
-            xlink.Add(new XAttribute("Points", string.Join(" ", linkPoints.Select(p => $"{p.X},{p.Y}"))));
+            //xlink.Add(new XAttribute("Points", string.Join(" ", linkPoints.Select(p => $"{p.X},{p.Y}"))));
             return xlink;
         }
 
@@ -108,22 +108,22 @@ namespace LogicModel
                 if (vals.Length == 2)
                     EndPoint = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
             }
-            var sPoints = xlink.Attribute("Points")?.Value;
-            if (!string.IsNullOrWhiteSpace(sPoints))
-            {
-                var pvals = sPoints.Split(' ');
-                List<Point> points = [];
-                foreach (var p in pvals)
-                {
-                    var vals = p.Split(',');
-                    if (vals.Length == 2)
-                    {
-                        var point = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
-                        points.Add(point);
-                    }
-                }
-                SetPoints([.. points]);
-            }
+            //var sPoints = xlink.Attribute("Points")?.Value;
+            //if (!string.IsNullOrWhiteSpace(sPoints))
+            //{
+            //    var pvals = sPoints.Split(' ');
+            //    List<Point> points = [];
+            //    foreach (var p in pvals)
+            //    {
+            //        var vals = p.Split(',');
+            //        if (vals.Length == 2)
+            //        {
+            //            var point = new Point(ParseHelper.ParseInteger(vals[0], 0), ParseHelper.ParseInteger(vals[1], 0));
+            //            points.Add(point);
+            //        }
+            //    }
+            //    SetPoints([.. points]);
+            //}
         }
 
         public override GraphicsPath[] GetLinesPaths()

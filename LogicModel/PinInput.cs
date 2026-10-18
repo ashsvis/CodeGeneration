@@ -34,7 +34,7 @@ namespace LogicModel
 
         public bool NoDataToWrite()
         {
-            return Value == 0 && !IsInverted;
+            return IsLinked || Value == 0 && !IsInverted;
         }
 
         public XElement WriteContent()
