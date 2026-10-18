@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <ApplicationIcon>icons8-логика-others-96.ico</ApplicationIcon>
+    <ApplicationIcon>icons8-логика-others-128.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="icons8-логика-others-96.ico" />
+    <Content Include="icons8-логика-others-128.ico" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,6 @@
 ﻿using PluginSupport;
 using System.Drawing.Drawing2D;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using System.Xml.Linq;
 
 namespace LogicModel
 {
@@ -43,7 +43,10 @@ namespace LogicModel
 
                 double result;
                 if (Inputs[0].IsLinked)
+                {
                     result = Inputs[0].Value;
+                    Value = result;
+                }
                 else
                 {
                     result = Inputs[0].Value = Value;
@@ -71,6 +74,7 @@ namespace LogicModel
                 if (Inputs.Length > 0)
                 {
                     Inputs[0].Value = Value;
+                    Changed();
                 }
             }
         }
@@ -81,7 +85,7 @@ namespace LogicModel
             // вывод времени задержки
             var path = new GraphicsPath();
             var fnumber = Value.ToString();
-            using var fontNumber = new Font("Consolas", 14f);
+            using var fontNumber = new Font("Arial Narrow", 14f);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
             using var sf = new StringFormat();
@@ -90,6 +94,27 @@ namespace LogicModel
             path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Regular, fontNumber.Size, trect, sf);
             paths.Add(path);
             return [.. paths];
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (Math.Abs(Value) > double.Epsilon)
+            {
+                var xvalue = new XElement("Value", Value.ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")));
+                xfunc.Add(xvalue);
+            }
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            var xvalue = xfunc.Element("Value")?.Value;
+            if (xvalue != null)
+            {
+                Value = ParseHelper.ParseDouble(xvalue, System.Globalization.CultureInfo.GetCultureInfo("en-US"), 0);
+            }
         }
     }
 }
