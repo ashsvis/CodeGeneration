@@ -1,21 +1,27 @@
+using LogicModel.Selectors;
 using PluginSupport;
 
 namespace LogicModel
 {
-    public class Div : Add
+    public class Sela : Seld
     {
-        public Div()
+        public Sela()
         {
-            FuncName = "DIV";
-            FuncDesc = "Деление";
-            Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
+            FuncName = "SEL";
+            FuncDesc = "Выбор сигнала";
+            Inputs = [new PinInput { Name = "0/1" }, 
+                new PinInput { Name = "0", Kind = ValueKind.Analog }, 
+                new PinInput { Name = "1", Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 
-        public override Div DeepClone()
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
+        public override Sela DeepClone()
         {
-            return new Div()
+            return new Sela()
             {
                 id = Id,
                 Index = this.Index,
@@ -31,7 +37,10 @@ namespace LogicModel
         {
             if (Inputs.Length > 0)
             {
-                var result = Inputs[0].Value / Inputs[1].Value;
+                var choose = Inputs[0].Value > 0;
+                var input0 = Inputs[1].Value;
+                var input1 = Inputs[2].Value;
+                var result = choose ? input1 : input0;
                 if (Outputs.Length > 0 && Outputs[0].Value != result)
                 {
                     Outputs[0].Value = result;

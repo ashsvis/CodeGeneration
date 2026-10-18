@@ -11,13 +11,13 @@ namespace LogicModel
 {
     public partial class PluginLogic
     {
-        static partial void AddTreeNodeItems(List<TreeNode> items)
+        static partial void AddTreeNodeLogicItems(List<TreeNode> items)
         {
             TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    var types = new Tuple<string, string, string, string>[] { new("Or", "1", "Дизъюнкция", "||"), new("And", "&", "Конъюнкция", "&&") };
-    foreach (var type in types)
+    var logicTypes = new Tuple<string, string, string, string>[] { new("Or", "1", "Дизъюнкция", "||"), new("And", "&", "Конъюнкция", "&&") };
+    foreach (var type in logicTypes)
     {
 #>
             nodesGroup = new TreeNode("<#= type.Item3 #>") { Tag = typeof(<#= type.Item1 #>2) };
@@ -35,7 +35,7 @@ namespace LogicModel
     }
 
 <#
-    foreach (var type in types)
+    foreach (var type in logicTypes)
     for (var i = 2; i <= inputCount; i++)
     {
         List<string> holderValues = [];

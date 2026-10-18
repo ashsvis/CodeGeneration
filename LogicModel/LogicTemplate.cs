@@ -4,7 +4,7 @@ namespace LogicModel
 {
     public partial class PluginLogic
     {
-        static partial void AddTreeNodeItems(List<TreeNode> items)
+        static partial void AddTreeNodeLogicItems(List<TreeNode> items)
         {
             TreeNode nodesGroup;
             nodesGroup = new TreeNode("Дизъюнкция") { Tag = typeof(Or2) };

@@ -1,0 +1,83 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+using PluginSupport;
+
+namespace LogicModel
+{
+    public partial class PluginLogic
+    {
+        static partial void AddTreeNodeArithmeticItems(TreeNodeCollection items)
+        {
+<#
+    var arithmeticTypes = new Tuple<string, string, string, string>[] 
+    { 
+        new("Add", "ADD", "Сложение", "+"),
+        new("Sub", "SUB", "Вычитание", "-"),
+        new("Mul", "MUL", "Умножение", "*"),
+        new("Div", "DIV", "Деление", "/"),
+    };
+    foreach (var type in arithmeticTypes)
+    {
+#>
+            items.Add(new TreeNode("<#= type.Item3 #>") { Tag = typeof(<#= type.Item1 #>) });
+<#
+    }
+#>
+        }
+    }
+
+<#
+    foreach (var type in arithmeticTypes)
+    {
+#>
+    public class <#= type.Item1 #> : Func
+    {
+        public <#= type.Item1 #>()
+        {
+            FuncName = "<#= type.Item2 #>";
+            FuncDesc = "<#= type.Item3 #>";
+            Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            CalculateHeight();
+        }
+
+        public override <#= type.Item1 #> DeepClone()
+        {
+            return new <#= type.Item1 #>()
+            {
+                id = Id,
+                Index = this.Index,
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [.. Inputs.Select(x => x.DeepClone())],
+                Outputs = [.. Outputs.Select(x => x.DeepClone())],
+            };
+        }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted);
+
+        public override void Calculate()
+        {
+            if (Inputs.Length > 0)
+            {
+                var result = Inputs[0].Value <#= type.Item4 #> Inputs[1].Value;
+                if (Outputs.Length > 0 && Outputs[0].Value != result)
+                {
+                    Outputs[0].Value = result;
+                    Transfer();
+                }
+            }
+        }
+    }
+
+<#
+    }
+#>
+}

@@ -1,29 +1,27 @@
 using PluginSupport;
 
-namespace LogicModel
+namespace LogicModel.Selectors
 {
-    public class Sela : Seld
+    public class Seld : Func
     {
-        public Sela()
+        public Seld()
         {
             FuncName = "SEL";
             FuncDesc = "Выбор сигнала";
-            Inputs = [new PinInput { Name = "0/1" }, 
-                new PinInput { Name = "0", Kind = ValueKind.Analog }, 
-                new PinInput { Name = "1", Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
+            Inputs = [new PinInput { Name = "0/1" }, new PinInput { Name = "0" }, new PinInput { Name = "1" }];
+            Outputs = [new PinOutput { }];
             CalculateHeight();
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted);
+                AllowedFuncProperties.PinInverted;
 
-        public override Sela DeepClone()
+        public override Seld DeepClone()
         {
-            return new Sela()
+            return new Seld()
             {
                 id = Id,
-                Index = this.Index,
+                Index = Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,
@@ -37,12 +35,12 @@ namespace LogicModel
             if (Inputs.Length > 0)
             {
                 var choose = Inputs[0].Value > 0;
-                var input0 = Inputs[1].Value;
-                var input1 = Inputs[2].Value;
+                var input0 = Inputs[1].Value > 0;
+                var input1 = Inputs[2].Value > 0;
                 var result = choose ? input1 : input0;
-                if (Outputs.Length > 0 && Outputs[0].Value != result)
+                if (Outputs.Length > 0 && Outputs[0].Value > 0 != result)
                 {
-                    Outputs[0].Value = result;
+                    Outputs[0].Value = result ? 1 : 0;
                     Transfer();
                 }
             }

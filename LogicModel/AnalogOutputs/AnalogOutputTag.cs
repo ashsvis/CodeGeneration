@@ -1,6 +1,7 @@
+using LogicModel.DigitalInputs;
 using PluginSupport;
 
-namespace LogicModel
+namespace LogicModel.AnalogOutputs
 {
     public class AnalogOutputTag : DigitalInputTag, IAcceptClick
     {
@@ -23,7 +24,7 @@ namespace LogicModel
             return new AnalogOutputTag()
             {
                 id = Id,
-                Index = this.Index,
+                Index = Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

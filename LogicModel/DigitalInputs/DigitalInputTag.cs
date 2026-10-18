@@ -2,7 +2,7 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-namespace LogicModel
+namespace LogicModel.DigitalInputs
 {
     public class DigitalInputTag : Func, IAcceptClick
     {
@@ -30,7 +30,7 @@ namespace LogicModel
             return new DigitalInputTag()
             {
                 id = Id,
-                Index = this.Index,
+                Index = Index,
                 Location = Location,
                 FuncName = FuncName,
                 FuncDesc = FuncDesc,

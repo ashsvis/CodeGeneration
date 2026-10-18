@@ -23,6 +23,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="ArithmeticTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ArithmeticTemplate.tt</DependentUpon>
+    </None>
+    <None Include="CompareTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CompareTemplate.tt</DependentUpon>
+    </None>
     <None Include="LogicTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -35,6 +45,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="ArithmeticTemplate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ArithmeticTemplate.cs</LastGenOutput>
+    </None>
+    <None Update="CompareTemplate.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>CompareTemplate.cs</LastGenOutput>
+    </None>
     <None Update="LogicTemplate.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>LogicTemplate.cs</LastGenOutput>
@@ -46,6 +64,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="ArithmeticTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ArithmeticTemplate.tt</DependentUpon>
+    </Compile>
+    <Compile Update="CompareTemplate.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CompareTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Update="LogicTemplate.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

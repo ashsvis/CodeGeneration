@@ -1,4 +1,8 @@
-﻿using PluginSupport;
+﻿using LogicModel.AnalogInputs;
+using LogicModel.AnalogOutputs;
+using LogicModel.DigitalInputs;
+using LogicModel.Selectors;
+using PluginSupport;
 
 namespace LogicModel
 {
@@ -31,7 +35,7 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной аналоговый") { Tag = typeof(AnalogOutputTag) });
             //
             items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
-            AddTreeNodeItems(items);
+            AddTreeNodeLogicItems(items);
             items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
             //
             nodesGroup = new TreeNode("Триггеры");
@@ -58,23 +62,17 @@ namespace LogicModel
             //
             nodesGroup = new TreeNode("Арифметика");
             items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("Сложение") { Tag = typeof(Add) });
-            nodesGroup.Nodes.Add(new TreeNode("Вычитание") { Tag = typeof(Sub) });
-            nodesGroup.Nodes.Add(new TreeNode("Умножение") { Tag = typeof(Mul) });
-            nodesGroup.Nodes.Add(new TreeNode("Деление") { Tag = typeof(Div) });
+            AddTreeNodeArithmeticItems(nodesGroup.Nodes);
             //
             nodesGroup = new TreeNode("Сравнение");
             items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("Равно") { Tag = typeof(Eq) });
-            nodesGroup.Nodes.Add(new TreeNode("Не равно") { Tag = typeof(Ne) });
-            nodesGroup.Nodes.Add(new TreeNode("Больше") { Tag = typeof(Gt) });
-            nodesGroup.Nodes.Add(new TreeNode("Больше или равно") { Tag = typeof(Ge) });
-            nodesGroup.Nodes.Add(new TreeNode("Меньше") { Tag = typeof(Lt) });
-            nodesGroup.Nodes.Add(new TreeNode("Меньше или равно") { Tag = typeof(Le) });
+            AddTreeNodeCompareItems(nodesGroup.Nodes);
             return [.. items];
         }
 
-        static partial void AddTreeNodeItems(List<TreeNode> items);
+        static partial void AddTreeNodeLogicItems(List<TreeNode> items);
+        static partial void AddTreeNodeCompareItems(TreeNodeCollection items);
+        static partial void AddTreeNodeArithmeticItems(TreeNodeCollection items);
 
         public Dictionary<string, Type> GetTypes()
         {
