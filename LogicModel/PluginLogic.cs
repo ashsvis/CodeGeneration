@@ -20,6 +20,8 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговая входящая ссылка") { Tag = typeof(AnalogInputPageLink) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговый ввод") { Tag = typeof(AnalogInput) });
+            nodesGroup.Nodes.Add(new TreeNode("Флаг") { Tag = typeof(Flag) });
+            nodesGroup.Nodes.Add(new TreeNode("Число") { Tag = typeof(Numeric) });
             //
             nodesGroup = new TreeNode("Вывод сигнала");
             items.Add(nodesGroup);

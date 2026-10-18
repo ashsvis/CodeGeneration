@@ -42,7 +42,7 @@ namespace LogicModel
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 

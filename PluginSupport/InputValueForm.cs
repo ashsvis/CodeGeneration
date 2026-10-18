@@ -44,23 +44,47 @@ namespace PluginSupport
             }
         }
 
-        private float _fvalue;
+        //private float _fvalue;
+
+        //[DefaultValue(null)]
+        //public float FloatValue
+        //{
+        //    get
+        //    {
+        //        Text = @"Введите натуральное число";
+        //        var fp = CultureInfo.GetCultureInfo("en-US");
+        //        float.TryParse(tbValue.Text.Replace(',', '.'), NumberStyles.Float, fp, out _fvalue);
+        //        return _fvalue;
+        //    }
+        //    set
+        //    {
+        //        _fvalue = value;
+        //        var fp = CultureInfo.GetCultureInfo("en-US");
+        //        tbValue.Text = _fvalue.ToString(fp);
+        //        tbValue.Multiline = false;
+        //        tbValue.TextAlign = HorizontalAlignment.Right;
+        //        AcceptButton = btnOk;
+        //        tbValue.SelectAll();
+        //    }
+        //}
+
+        private double _dvalue;
 
         [DefaultValue(null)]
-        public float FloatValue
+        public double DoubleValue
         {
             get
             {
                 Text = @"Введите натуральное число";
                 var fp = CultureInfo.GetCultureInfo("en-US");
-                float.TryParse(tbValue.Text.Replace(',', '.'), NumberStyles.Float, fp, out _fvalue);
-                return _fvalue;
+                double.TryParse(tbValue.Text.Replace(',', '.'), NumberStyles.Float, fp, out _dvalue);
+                return _dvalue;
             }
             set
             {
-                _fvalue = value;
+                _dvalue = value;
                 var fp = CultureInfo.GetCultureInfo("en-US");
-                tbValue.Text = _fvalue.ToString(fp);
+                tbValue.Text = _dvalue.ToString(fp);
                 tbValue.Multiline = false;
                 tbValue.TextAlign = HorizontalAlignment.Right;
                 AcceptButton = btnOk;

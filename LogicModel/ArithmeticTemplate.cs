@@ -20,7 +20,7 @@ namespace LogicModel
             FuncName = "ADD";
             FuncDesc = "Сложение";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 
@@ -62,7 +62,7 @@ namespace LogicModel
             FuncName = "SUB";
             FuncDesc = "Вычитание";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 
@@ -104,7 +104,7 @@ namespace LogicModel
             FuncName = "MUL";
             FuncDesc = "Умножение";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 
@@ -146,7 +146,7 @@ namespace LogicModel
             FuncName = "DIV";
             FuncDesc = "Деление";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
-            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
 
