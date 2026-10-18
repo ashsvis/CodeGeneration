@@ -1,4 +1,3 @@
-using LogicModel.DigitalInputs;
 using PluginSupport;
 
 namespace LogicModel

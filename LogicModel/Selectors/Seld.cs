@@ -1,6 +1,6 @@
 using PluginSupport;
 
-namespace LogicModel.Selectors
+namespace LogicModel
 {
     public class Seld : Func
     {

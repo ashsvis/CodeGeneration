@@ -1,8 +1,4 @@
-﻿using LogicModel.AnalogInputs;
-using LogicModel.AnalogOutputs;
-using LogicModel.DigitalInputs;
-using LogicModel.Selectors;
-using PluginSupport;
+﻿using PluginSupport;
 
 namespace LogicModel
 {

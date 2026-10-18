@@ -2,7 +2,7 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-namespace LogicModel.DigitalInputs
+namespace LogicModel
 {
     public class DigitalInputTag : Func, IAcceptClick
     {

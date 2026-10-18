@@ -1,7 +1,6 @@
-using LogicModel.DigitalInputs;
 using PluginSupport;
 
-namespace LogicModel.AnalogInputs
+namespace LogicModel
 {
     public class AnalogInputTag : DigitalInputTag, IAcceptClick
     {
