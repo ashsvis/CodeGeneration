@@ -9,8 +9,11 @@ namespace LogicModel
         public TreeNode[] TreeNodeItems()
         {
             List<TreeNode> items = [];
-            items.Add(new TreeNode("Дескриптор сигнала") { Tag = typeof(DescriptionBox) });
             TreeNode nodesGroup;
+            nodesGroup = new TreeNode("Текст");
+            items.Add(nodesGroup);
+            nodesGroup.Nodes.Add(new TreeNode("Комментарий") { Tag = typeof(Comment) });
+            nodesGroup.Nodes.Add(new TreeNode("Дескриптор сигнала") { Tag = typeof(DescriptionBox) });
             //
             nodesGroup = new TreeNode("Ввод сигнала");
             items.Add(nodesGroup);

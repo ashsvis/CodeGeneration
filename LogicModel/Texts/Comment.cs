@@ -1,0 +1,117 @@
+using PluginSupport;
+using System.ComponentModel;
+using System.Drawing.Drawing2D;
+using System.Xml.Linq;
+
+namespace LogicModel
+{
+    public class Comment : Func, ITraceTransparent
+    {
+        public string[] Lines = [""];
+
+        public Comment()
+        {
+            FuncDesc = "Описание параметра";
+            FuncName = "COMMENT";
+            Width = 48 * 4;
+            Height = 48 / 8;
+            Inputs = [];
+            Outputs = [];
+            Background = SystemColors.Control;
+            CalculateHeight();
+        }
+
+        public override Comment DeepClone()
+        {
+            return new Comment()
+            {
+                id = Id,
+                Index = this.Index,
+                Location = Location,
+                FuncName = FuncName,
+                FuncDesc = FuncDesc,
+                Inputs = [],
+                Outputs = [],
+                Lines = Lines,
+            };
+        }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowPins | AllowedFuncProperties.ShowBorder |
+                AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
+
+        private bool IsEmpty => Lines.Length == 0 || Lines.Length == 1 && string.IsNullOrWhiteSpace(Lines[0]);
+
+
+        protected override void CalculateHeight()
+        {
+            var fname = IsEmpty ? FuncName ?? "" : string.Join("\n", Lines);
+            using var fontFunc = new Font("Arial Narrow", 14f);
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
+            Width = (int)(sz.Width / 1.3);
+            Height = 6;
+        }
+
+        [Browsable(false)]
+        public override Rectangle Bounds => new(Location.X, Location.Y, 1, 1);
+
+        public override GraphicsPath[] GetTextPaths()
+        {
+            var paths = base.GetTextPaths().ToList();
+            var rect = Bounds;
+            var fname = IsEmpty ? FuncName ?? "" : string.Join("\n", Lines);
+            using var fontFunc = new Font("Arial Narrow", 14f);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Near;
+            sf.LineAlignment = StringAlignment.Center;
+            var path = new GraphicsPath();
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, fontFunc.Size, new Point(rect.Left, rect.Top + rect.Height / 2), sf);
+            paths.Add(path);
+            return [.. paths];
+        }
+
+        public override void Click(bool runEmulate)
+        {
+            if (!runEmulate)
+                Click(ChangeText);
+        }
+
+        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm { LinesValue = Lines };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Lines = dlg.LinesValue;
+                Changed();
+            }
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (!IsEmpty)
+            {
+                var xlines = new XElement("Lines");
+                xfunc.Add(xlines);
+                foreach (var line in Lines)
+                    xlines.Add(new XElement("Line", line));
+            }
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            var xlines = xfunc.Element("Lines");
+            if (xlines != null)
+            {
+                List<string> lines = [];
+                foreach (var xline in xlines.Elements("Line"))
+                    lines.Add(xline.Value);
+                Lines = [.. lines];
+            }
+            else
+                Lines = [];
+        }
+    }
+}

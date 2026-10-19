@@ -33,6 +33,7 @@ namespace CodeGenerator
                 // указание занятых ячеек поля, на которых размещены фигуры и связи
                 foreach (var shape in shapes)
                 {
+                    if (shape is ITraceTransparent) continue;
                     var bounds = shape.Bounds;
                     var dx = (bounds.X - rect.X) / step;
                     var dy = (bounds.Y - rect.Y) / step;

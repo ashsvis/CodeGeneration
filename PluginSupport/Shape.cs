@@ -109,6 +109,12 @@ namespace PluginSupport
                 if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
                     return true;
             }
+            foreach (var p in GetTextPaths())
+            {
+                using var path = p;
+                if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
+                    return true;
+            }
             return false;
         }
 
