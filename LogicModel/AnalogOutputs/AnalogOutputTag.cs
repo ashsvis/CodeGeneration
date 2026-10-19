@@ -47,5 +47,10 @@ namespace LogicModel
                 TagName = dlg.StrValue;
             }
         }
+
+        public override void DrawWhenDebug(Graphics? g, Brush defaultBrush)
+        {
+            // stub
+        }
     }
 }
