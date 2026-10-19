@@ -3,7 +3,9 @@ using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public class Comment : Func, ITraceTransparent
     {
@@ -53,7 +55,14 @@ namespace LogicModel
         }
 
         [Browsable(false)]
-        public override Rectangle Bounds => new(Location.X, Location.Y, 1, 1);
+        public override Rectangle Bounds
+        {
+            get
+            {
+                CalculateHeight();
+                return new(Location.X, Location.Y, Width, Height);
+            }
+        }
 
         public override GraphicsPath[] GetTextPaths()
         {

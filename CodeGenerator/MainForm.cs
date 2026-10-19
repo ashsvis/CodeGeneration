@@ -276,55 +276,16 @@ namespace CodeGenerator
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
-            currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+            currentPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
 
             Cursor = Cursors.Default;
             var page = pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
-            ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
-            {
-                shape.Hover = false;
-                shape.CanInputLink = false;
-                shape.CanOutputLink = false;
-            });
-            ModelAssistant.LinksFrom(page, links).ForEach(link => link.Hover = false);
-            var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            /*
-             * требуется оптимизация производительности
-             * 
-            foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
-            {
-                if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
-                {
-                    if (!runEmulate)
-                        Cursor = Cursors.Cross;
-                    shape.CanOutputLink = !runEmulate;
-                    break;
-                }
-                else if (shape.IsInputTargetsPoint(point, out int index))
-                {
-                    Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
-                    if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                        shape.CanInputLink = !runEmulate && firstShape.Page == shape.Page && firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
-                    else
-                        shape.CanInputLink = false;
-                    shape.Hover = !runEmulate && !linkBuilding;
-                    break;
-                }
-                else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
-                {
-                    shape.Hover = !runEmulate;
-                    if (runEmulate && shape is IAcceptClick accept && 
-                        accept.CanAcceptClick)
-                        Cursor = Cursors.Hand;
-                    break;
-                }
-            }
-            */
+            if (currentPoint is Point point)
+                HighLight(page, point);
             if (leftPressed)
             {
-                currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
                 if (!dragShapes && dragShapesPreview &&
                     (Math.Abs(firstPoint.X - ((Point)currentPoint).X) > 3 || Math.Abs(firstPoint.Y - ((Point)currentPoint).Y) > 3))
                     dragShapes = !runEmulate;
@@ -384,17 +345,17 @@ namespace CodeGenerator
                         link.SetPoints(pts);
                     }
                     modelChanged = !runEmulate;
-                    firstPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    firstPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 }
                 else if (linkBuilding)
                 {
                     // начинаем тянуть ссылку от выхода функции ко входу функции
-                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    currentPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 }
                 else if (frameBuilding)
                 {
                     //ничего не выбрано, рисуем рамку выбора
-                    currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
+                    currentPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                     if (firstPoint is Point first && currentPoint is Point current)
                     {
                         var minX = Math.Min(first.X, current.X);
@@ -415,6 +376,51 @@ namespace CodeGenerator
                 }
             }
             drawPanel.Invalidate();
+        }
+
+        // требуется оптимизация производительности
+        private void HighLight(Page? page, Point point)
+        {
+            ModelAssistant.ShapesFrom(page, shapes).ForEach(shape =>
+            {
+                shape.Hover = false;
+                shape.CanInputLink = false;
+                shape.CanOutputLink = false;
+            });
+            ModelAssistant.LinksFrom(page, links).ForEach(link => link.Hover = false);
+            var list = ModelAssistant.ShapesFrom(page, shapes);
+            foreach (var shape in list)
+            {
+                if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
+                {
+                    if (!runEmulate)
+                        Cursor = Cursors.Cross;
+                    shape.CanOutputLink = !runEmulate;
+                    break;
+                }
+                else 
+                if (shape.IsInputTargetsPoint(point, out int index))
+                {
+                    Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
+                    if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
+                        shape.CanInputLink = !runEmulate &&
+                            firstShape.Page == shape.Page &&
+                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                    else
+                        shape.CanInputLink = false;
+                    shape.Hover = !runEmulate && !linkBuilding;
+                    break;
+                }
+                else
+                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
+                {
+                    shape.Hover = !runEmulate;
+                    if (runEmulate && shape is IAcceptClick accept &&
+                        accept.CanAcceptClick)
+                        Cursor = Cursors.Hand;
+                    break;
+                }
+            }
         }
 
         private static readonly int Step = TraceAssistant.CellSize; // Размер клетки
@@ -1401,9 +1407,15 @@ namespace CodeGenerator
 
             List<GraphicsPath> list = [];
             foreach (var shape in pastedShapes)
+            {
                 list.AddRange(shape.GetGraphicsPaths());
+                list.AddRange(shape.GetTextPaths());
+            }
             foreach (var link in pastedLinks)
+            {
                 list.AddRange(link.GetLinesPaths());
+                list.AddRange(link.GetDotsPaths());
+            }
             return ([.. list], rect);
         }
 

@@ -1,6 +1,8 @@
 ﻿using PluginSupport;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace CodeGenerator
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public static class ModelAssistant
     {

@@ -102,20 +102,7 @@ namespace PluginSupport
         /// <returns></returns>
         public virtual bool ContainsPoint(Point point, float width)
         {
-            using var pen = new Pen(Foreground, width);
-            foreach (var p in GetGraphicsPaths())
-            {
-                using var path = p;
-                if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
-                    return true;
-            }
-            foreach (var p in GetTextPaths())
-            {
-                using var path = p;
-                if (path.IsOutlineVisible(point, pen) || path.IsVisible(point))
-                    return true;
-            }
-            return false;
+            return Bounds.Contains(point);
         }
 
         /// <summary>
