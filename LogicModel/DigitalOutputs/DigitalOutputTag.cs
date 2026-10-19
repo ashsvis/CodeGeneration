@@ -34,6 +34,20 @@ namespace LogicModel
             };
         }
 
+        public override void DrawWhenDebug(Graphics? g, Brush defaultBrush)
+        {
+            if (Inputs.Length > 0)
+            {
+                using var brushOff = new SolidBrush(Color.FromArgb(100, Color.Red));
+                using var brushOn = new SolidBrush(Color.FromArgb(100, Color.Lime));
+                foreach (var p in GetGraphicsPaths())
+                {
+                    using var path = p;
+                    g?.FillPath(Inputs[0].Value > 0 ? brushOn : brushOff, path);
+                }
+            }
+        }
+
         public override void Click(bool runEmulate)
         {
             if (!runEmulate)
