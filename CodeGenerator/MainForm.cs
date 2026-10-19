@@ -152,9 +152,8 @@ namespace CodeGenerator
             dragShapesPreview = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
-            ModelAssistant.UnselectAllOnPage(page, shapes, links);
             if (!ctrl && shapes.Count(x => x.Selected) == 1)
-                ModelAssistant.UnselectAll(shapes, null);   //shapes.ForEach(shape => shape.Selected = false);
+                ModelAssistant.UnselectAll(shapes, null); 
             firstShape = null;
             firstLinkPoint = null;
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -223,7 +222,8 @@ namespace CodeGenerator
                 {
                     var other = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page, shapes).Count(x => x.Selected) > 1 && !ctrl)
-                        ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
+                        ModelAssistant.UnselectAllOnPage(page, shapes, null);
+                        //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
                     shape.Selected = !runEmulate;
                     shape.Hover = !runEmulate;
                     shapeFound = true;
@@ -259,11 +259,7 @@ namespace CodeGenerator
 
         private void SelectLinksForBothSelectedShapes(Page? page)
         {
-            ModelAssistant.LinksFrom(page, links).ForEach(link =>
-            {
-                link.Hover = false;
-                link.Selected = false;
-            });
+            ModelAssistant.UnselectAllOnPage(page, null, links);
             var selected = ModelAssistant.ShapesFrom(page, shapes).Where(x => x.Selected).ToList();
             foreach (var link in ModelAssistant.LinksFrom(page, links))
             {
@@ -341,8 +337,7 @@ namespace CodeGenerator
                         var loc = new Point(
                             shapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
                             shapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-                        shapes.ForEach(x => x.Selected = false);
-                        links.ForEach(x => x.Selected = false);
+                        ModelAssistant.UnselectAll(shapes, links);
                         PasteFromXml(copyed, shapes, links, loc);
                         SortAndAssignToPages();
                         dragCopiedShapes = false;
