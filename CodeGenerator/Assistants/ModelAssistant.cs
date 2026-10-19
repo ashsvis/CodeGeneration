@@ -43,5 +43,23 @@ namespace CodeGenerator
         {
             return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
         }
+
+        public static void SelectAllOnPage(Page? page, List<Shape> shapes, List<Link> links)
+        {
+            ShapesFrom(page, shapes).ForEach(x => x.Selected = true);
+            LinksFrom(page, links).ForEach(x => x.Selected = true);
+        }
+
+        public static void UnselectAll(List<Shape>? shapes, List<Link>? links)
+        {
+            shapes?.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+            links?.ForEach(link => { link.Selected = false; link.Hover = false; });
+        }
+
+        public static void UnselectAllOnPage(Page? page, List<Shape> shapes, List<Link> links)
+        {
+            ShapesFrom(page, shapes).ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+            LinksFrom(page, links).ForEach(link => { link.Selected = false; link.Hover = false; });
+        }
     }
 }

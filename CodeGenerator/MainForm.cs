@@ -1,11 +1,8 @@
 using PluginSupport;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Windows.Forms.VisualStyles;
 using System.Xml.Linq;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CodeGenerator
 {
@@ -116,8 +113,7 @@ namespace CodeGenerator
             if (page != null && page != currentPage || page == null)
             {
                 currentPage = page;
-                shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
-                links.ForEach(link => { link.Selected = false; link.Hover = false; });
+                ModelAssistant.UnselectAll(shapes, links);
             }
             if (e.Button == MouseButtons.Left && e.Clicks > 1 && !runEmulate)
             {
@@ -156,14 +152,9 @@ namespace CodeGenerator
             dragShapesPreview = false;
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
-            ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Hover = false);
-            ModelAssistant.LinksFrom(page, links).ForEach(link =>
-            {
-                link.Hover = false;
-                link.Selected = false;
-            });
+            ModelAssistant.UnselectAllOnPage(page, shapes, links);
             if (!ctrl && shapes.Count(x => x.Selected) == 1)
-                shapes.ForEach(shape => shape.Selected = false);
+                ModelAssistant.UnselectAll(shapes, null);   //shapes.ForEach(shape => shape.Selected = false);
             firstShape = null;
             firstLinkPoint = null;
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -1077,31 +1068,6 @@ namespace CodeGenerator
                 shape.Selected = true;
                 RemoveSelected();
             }
-
-            //if (sender is Shape shapeForDelete)
-            //{
-            //    // сбор связей, которые используются удаляемыми элементами
-            //    var linksForDelete = links.Where(x => shapeForDelete == x.Source || shapeForDelete == x.Target).ToList();
-            //    foreach (var link in linksForDelete)
-            //    {
-            //        // ищем источник и цель
-            //        var source = shapes.FirstOrDefault(x => x == link.Source);
-            //        var target = shapes.FirstOrDefault(x => x == link.Target);
-            //        // если найдены оба, то отписывается
-            //        if (source != null && target != null)
-            //            link.UnlinkToLocation(source, target);
-            //        // удаляем визуальную ссылку
-            //        links.Remove(link);
-            //        UpdateOtherLinks(link);
-            //    }
-            //    shapeForDelete.OnDeleteLink -= Shape_OnDeleteLink;
-            //    shapeForDelete.OnDelete -= Shape_OnDelete;
-            //    shapeForDelete.OnMakeCopy -= Shape_OnMakeCopy;
-            //    shapes.Remove(shapeForDelete);
-            //    SortAndAssignToPages();
-            //    modelChanged = true;
-            //    drawPanel.Invalidate();
-            //}
         }
 
         private void TsmiSave_Click(object sender, EventArgs e)
@@ -1125,8 +1091,7 @@ namespace CodeGenerator
 
         private void UnselectAll()
         {
-            shapes.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
-            links.ForEach(link => { link.Selected = false; link.Hover = false; });
+            ModelAssistant.UnselectAll(shapes, links);
         }
 
         private void TsmiSaveAs_Click(object sender, EventArgs e)
@@ -1589,8 +1554,7 @@ namespace CodeGenerator
         {
             if (runEmulate) return;
             UnselectAll();
-            ModelAssistant.ShapesFrom(currentPage, shapes).ForEach(x => x.Selected = true);
-            ModelAssistant.LinksFrom(currentPage, links).ForEach(x => x.Selected = true);
+            ModelAssistant.SelectAllOnPage(currentPage, shapes, links);
             drawPanel.Invalidate();
         }
 
