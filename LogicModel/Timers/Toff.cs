@@ -1,10 +1,13 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Timers;
+using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
-    public class Toff : Func
+    public class Toff : Func, IAcceptClick
     {
         private readonly System.Timers.Timer timer;
 
@@ -41,6 +44,8 @@ namespace LogicModel
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
+
+        public bool CanAcceptClick => true;
 
         private void OnTimedEvent(object? source, ElapsedEventArgs e)
         {
@@ -98,6 +103,43 @@ namespace LogicModel
             path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Regular, fontNumber.Size, trect, sf);
             paths.Add(path);
             return [.. paths];
+        }
+
+        public override void Click(bool runEmulate)
+        {
+            if (!runEmulate)
+                Click(ChangeValue);
+        }
+
+        private void ChangeValue(MouseButtons mouseButtons, params object[] args)
+        {
+            var dlg = new InputValueForm { DoubleValue = MilliSeconds / 1000.0 };
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                MilliSeconds = (uint)(dlg.DoubleValue * 1000);
+                Changed();
+            }
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (MilliSeconds > 0)
+            {
+                var xvalue = new XElement("Seconds", (MilliSeconds / 1000.0).ToString(System.Globalization.CultureInfo.GetCultureInfo("en-US")));
+                xfunc.Add(xvalue);
+            }
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            var xvalue = xfunc.Element("Seconds")?.Value;
+            if (xvalue != null)
+            {
+                MilliSeconds = (uint)(ParseHelper.ParseDouble(xvalue, System.Globalization.CultureInfo.GetCultureInfo("en-US"), 0) * 1000);
+            }
         }
     }
 }

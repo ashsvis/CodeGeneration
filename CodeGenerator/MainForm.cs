@@ -415,8 +415,7 @@ namespace CodeGenerator
                 if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
                     shape.Hover = !runEmulate;
-                    if (runEmulate && shape is IAcceptClick accept &&
-                        accept.CanAcceptClick)
+                    if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
                         Cursor = Cursors.Hand;
                     break;
                 }

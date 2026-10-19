@@ -2,7 +2,9 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public class DigitalInputTag : Func, IAcceptClick
     {
