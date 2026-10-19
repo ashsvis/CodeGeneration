@@ -1,3 +1,5 @@
+using System.Xml.Linq;
+
 namespace CodeGenerator
 {
     public class Page(int number, int width, int height, int row, int column)
@@ -15,6 +17,18 @@ namespace CodeGenerator
         public void Draw(Graphics? graphics, Color foreground)
         {
             StampAssistant.DrawPageBorder(graphics, new Point(Column * Width, Row * Height), Width, Height, foreground, Number, PagesCount);
+        }
+
+        public XElement WriteContent()
+        {
+            var xpage = new XElement("Page");
+            xpage.Add(new XAttribute("Number", Number));
+            xpage.Add(new XAttribute("Row", Row));
+            xpage.Add(new XAttribute("Column", Column));
+            xpage.Add(new XAttribute("Width", Width));
+            xpage.Add(new XAttribute("Height", Height));
+            xpage.Add(new XAttribute("Bounds", $"{Bounds.X},{Bounds.Y},{Bounds.Width},{Bounds.Height}"));
+            return xpage;
         }
     }
 }

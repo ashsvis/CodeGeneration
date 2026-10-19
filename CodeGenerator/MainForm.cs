@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Windows.Forms.VisualStyles;
 using System.Xml.Linq;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
@@ -684,12 +685,9 @@ namespace CodeGenerator
                 if (source != null && target != null)
                     link.UnlinkToLocation(source, target);
                 if (source is IPageTargetLink plink)
-                {
                     plink.RemoveTargetFromOutput(target, link.TargetPinIndex);
-                }
                 // удаляем визуальную ссылку
                 links.Remove(link);
-                //UpdateOtherLinks(link);
                 pageIndexes.Add(link.Page);
                 modelChanged = true;
             }
@@ -1149,14 +1147,22 @@ namespace CodeGenerator
             {
                 try
                 {
-                    fileName = dlg.FileName;
-                    SaveXml(fileName);
-                    UnselectAll();
-                    Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+                    Cursor = Cursors.WaitCursor;
+                    try
+                    {
+                        fileName = dlg.FileName;
+                        SaveXml(fileName);
+                        UnselectAll();
+                        Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Сохранение модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                catch (Exception ex)
+                finally
                 {
-                    MessageBox.Show(ex.Message, "Сохранение модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Cursor = Cursors.Default;
                 }
             }
         }
@@ -1175,15 +1181,23 @@ namespace CodeGenerator
             {
                 try
                 {
-                    ClearAll();
-                    fileName = dlg.FileName;
-                    LoadXml(fileName);
-                    modelChanged = false;
-                    Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+                    Cursor = Cursors.WaitCursor;
+                    try
+                    {
+                        ClearAll();
+                        fileName = dlg.FileName;
+                        LoadXml(fileName);
+                        modelChanged = false;
+                        Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Загрузка модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
-                catch (Exception ex)
+                finally
                 {
-                    MessageBox.Show(ex.Message, "Загрузка модели", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Cursor = Cursors.Default;
                 }
             }
         }
@@ -1225,7 +1239,54 @@ namespace CodeGenerator
             if (xmodel == null) return;
             shapes.Clear();
             int n = 0;
-            foreach (var xelement in xmodel.Descendants())
+            foreach (var xpage in xmodel.Elements("Page"))
+            {
+                var xnumber = xpage.Attribute("Number")?.Value;
+                if (!string.IsNullOrWhiteSpace(xnumber))
+                {
+                    var number = ParseHelper.ParseInteger(xnumber, 0);
+                    var page = pages.FirstOrDefault(x => x.Number == number);
+                    if (page != null)
+                    {
+                        var xwidth = xpage.Attribute("Width")?.Value;
+                        if (!string.IsNullOrWhiteSpace(xwidth))
+                            page.Width = ParseHelper.ParseInteger(xwidth, 420);
+                        var xheight = xpage.Attribute("Height")?.Value;
+                        if (!string.IsNullOrWhiteSpace(xheight))
+                            page.Height = ParseHelper.ParseInteger(xheight, 297);
+                    }
+                }
+                n = ReadElements(n, xpage);
+            }
+            var xothers = xmodel.Element("OutsidePages");
+            if (xothers != null)
+            {
+                n = ReadElements(n, xothers);
+            }
+
+            SortAndAssignToPages();
+            foreach (var page in pages)
+                UpdateLinksOnPage(page);
+            // подключение внешних ссылок
+            foreach (var shape in shapes)
+            {
+                if (shape is IPageSourceLink plink)
+                {
+                    foreach (var id in plink.GetIdsForConnect())
+                    {
+                        var target = shapes.FirstOrDefault(shape => shape.Id == id);
+                        if (target == null) continue;
+                        plink.AddTarget(target);
+                    }
+                }
+            }
+
+            drawPanel.Invalidate();
+        }
+
+        private int ReadElements(int n, XElement xpage)
+        {
+            foreach (var xelement in xpage.Descendants())
             {
                 if (types.ContainsKey($"{xelement.Name}"))
                 {
@@ -1245,40 +1306,14 @@ namespace CodeGenerator
                         var target = shapes.FirstOrDefault(x => x.Id == link.TargetId);
                         if (source != null && target != null)
                         {
-                            // построение волны и точек визуальной связи
-                            //var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [] /*[.. link.GetPoints()]*/);
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, []);
                             links.Add(link);
                         }
                     }
                 }
             }
-            SortAndAssignToPages();
-            foreach (var page in pages)
-            {
-                foreach (var link in ModelAssistant.LinksFrom(page, links))
-                {
-                    // построение волны и точек визуальной связи
-                    var points = TraceAssistant.BuildWaveInField(page, shapes, links, link);
-                    link.SetPoints([..points]);
-                }
-                UpdateLinksOnPage(page);
-            }
-            // подключение внешних ссылок
-            foreach (var shape in shapes)
-            {
-                if (shape is IPageSourceLink plink)
-                {
-                    foreach (var id in plink.GetIdsForConnect())
-                    {
-                        var target = shapes.FirstOrDefault(shape => shape.Id == id);
-                        if (target == null) continue;
-                        plink.AddTarget(target);
-                    }
-                }
-            }
 
-            drawPanel.Invalidate();
+            return n;
         }
 
         public void SaveXml(string filename)
@@ -1301,16 +1336,34 @@ namespace CodeGenerator
             }
             var xmodel = new XElement("Model");
             root.Add(xmodel);
-            foreach (var shape in shapes)
+            foreach (var page in pages)
+            {
+                var xpage = page.WriteContent();
+                xmodel.Add(xpage);
+                foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
+                {
+                    var xshape = shape.WriteContent();
+                    xpage.Add(xshape);
+                }
+                foreach (var link in ModelAssistant.LinksFrom(page, links))
+                {
+                    var xlink = link.WriteContent();
+                    xpage.Add(xlink);
+                }
+            }
+            var xothers = new XElement("OutsidePages");
+            xmodel.Add(xothers);
+            foreach (var shape in ModelAssistant.ShapesFrom(null, shapes))
             {
                 var xshape = shape.WriteContent();
-                xmodel.Add(xshape);
+                xothers.Add(xshape);
             }
-            foreach (var link in links)
+            foreach (var link in ModelAssistant.LinksFrom(null, links))
             {
                 var xlink = link.WriteContent();
-                xmodel.Add(xlink);
+                xothers.Add(xlink);
             }
+
             doc.Save(filename);
             modelChanged = false;
         }
