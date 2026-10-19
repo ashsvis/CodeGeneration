@@ -290,6 +290,9 @@ namespace CodeGenerator
             });
             ModelAssistant.LinksFrom(page, links).ForEach(link => link.Hover = false);
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
+            /*
+             * требуется оптимизация производительности
+             * 
             foreach (var shape in ModelAssistant.ShapesFrom(page, shapes))
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
@@ -318,7 +321,7 @@ namespace CodeGenerator
                     break;
                 }
             }
-
+            */
             if (leftPressed)
             {
                 currentPoint = Point.Ceiling(drawPanel.GetLocation(drawPanel.PointToScreen(e.Location)));
