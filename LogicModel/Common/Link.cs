@@ -2,7 +2,9 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public class Link : PluginSupport.Link
     {
@@ -160,7 +162,7 @@ namespace LogicModel
                 var pt = linkPoints[0];
                 if (pt != StartPoint)
                 {
-                    var rect = new Rectangle(pt.X - 2, pt.Y - 2, 4, 4);
+                    var rect = new Rectangle(pt.X - 3, pt.Y - 3, 6, 6);
                     path.AddEllipse(rect);
                     paths.Add(path);
                 }

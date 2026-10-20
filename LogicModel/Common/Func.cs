@@ -3,7 +3,9 @@ using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public class Func : Shape
     {
@@ -166,7 +168,7 @@ namespace LogicModel
                 }
             }
             paths.Add(path);
-            var sizeInvertRing = Width / 8;
+            var sizeInvertRing = Width / 6;
             // вывод инверсий входов
             hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
             for (int i = 0; i < Inputs.Length; i++)
