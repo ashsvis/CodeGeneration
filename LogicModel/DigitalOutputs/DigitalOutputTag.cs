@@ -1,15 +1,23 @@
 using PluginSupport;
+using System.Drawing.Drawing2D;
+using System.Xml.Linq;
 
+#pragma warning disable IDE0130 // ѕространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
+#pragma warning restore IDE0130 // ѕространство имен (namespace) не соответствует структуре папок.
 {
-    public class DigitalOutputTag : DigitalInputTag, IAcceptClick
+    public class DigitalOutputTag : Func, IAcceptClick, INamedEmulationSource
     {
+        public string? TagName { get; set; }
+
         public DigitalOutputTag()
         {
             FuncDesc = "“ег дискретного выхода";
             FuncName = "TAG_DO";
             Inputs = [new PinInput { Kind = ValueKind.DO }];
             Outputs = [];
+            Background = SystemColors.Control;
+            Width = 48 * 3;
             CalculateHeight();
         }
 
@@ -17,7 +25,9 @@ namespace LogicModel
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
-        public new bool CanAcceptClick => false;
+        public bool CanAcceptClick => true;
+
+        public double Value => Inputs.Length > 0 ? Inputs[0].Value : 0;
 
         public override DigitalOutputTag DeepClone()
         {
@@ -32,6 +42,35 @@ namespace LogicModel
                 Outputs = [],
                 TagName = TagName,
             };
+        }
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            var path = new GraphicsPath();
+            path.AddArc(new Rectangle(rect.X, rect.Y, rect.Height, rect.Height), 90f, 180f);
+            path.AddArc(new Rectangle(rect.X + rect.Width - rect.Height, rect.Y, rect.Height, rect.Height), 270f, 180f);
+            path.CloseFigure();
+            paths.Add(path);
+            return [.. paths];
+        }
+
+        public override GraphicsPath[] GetTextPaths()
+        {
+            var paths = base.GetTextPaths().ToList();
+            var rect = Bounds;
+            rect.Inflate(rect.Height / 4, 0);
+            var fname = TagName ?? FuncName ?? "";
+            using var fontFunc = new Font("Consolas", 14f);
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
+            var path = new GraphicsPath();
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Bold, fontFunc.Size, rect, sf);
+            paths.Add(path);
+            return [.. paths];
         }
 
         public override void DrawWhenDebug(Graphics? g, Brush defaultBrush)
@@ -60,6 +99,27 @@ namespace LogicModel
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 TagName = dlg.StrValue;
+            }
+        }
+
+        public override XElement WriteContent()
+        {
+            var xfunc = base.WriteContent();
+            if (!string.IsNullOrEmpty(TagName))
+            {
+                var xname = new XElement("Name", TagName);
+                xfunc.Add(xname);
+            }
+            return xfunc;
+        }
+
+        public override void ReadContent(XElement xfunc)
+        {
+            base.ReadContent(xfunc);
+            var xName = xfunc.Element("Name");
+            if (xName != null)
+            {
+                TagName = xName.Value;
             }
         }
     }

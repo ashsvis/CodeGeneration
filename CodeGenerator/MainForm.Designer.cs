@@ -31,9 +31,6 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             menuStrip1 = new MenuStrip();
-            tsmiContext = new ToolStripMenuItem();
-            tsmiModel = new ToolStripMenuItem();
-            tsmiField = new ToolStripMenuItem();
             tsmiFile = new ToolStripMenuItem();
             tsmiCreate = new ToolStripMenuItem();
             tsmiOpenFile = new ToolStripMenuItem();
@@ -45,6 +42,9 @@
             tsmiPreview = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
+            tsmiContext = new ToolStripMenuItem();
+            tsmiModel = new ToolStripMenuItem();
+            tsmiField = new ToolStripMenuItem();
             tsmiChange = new ToolStripMenuItem();
             tsmiUndo = new ToolStripMenuItem();
             tsmiRedo = new ToolStripMenuItem();
@@ -78,8 +78,6 @@
             tcUtilites = new TabControl();
             tpLibrary = new TabPage();
             tvLibrary = new TreeView();
-            tpProperties = new TabPage();
-            pgProperties = new PropertyGrid();
             panRight = new Panel();
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
@@ -97,39 +95,17 @@
             panLeft.SuspendLayout();
             tcUtilites.SuspendLayout();
             tpLibrary.SuspendLayout();
-            tpProperties.SuspendLayout();
             contextMenu.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiContext, tsmiFile, tsmiChange, tsmiTools, tsmiHelp });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, tsmiContext, tsmiChange, tsmiTools, tsmiHelp });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
-            // 
-            // tsmiContext
-            // 
-            tsmiContext.DropDownItems.AddRange(new ToolStripItem[] { tsmiModel, tsmiField });
-            tsmiContext.Name = "tsmiContext";
-            tsmiContext.Size = new Size(68, 20);
-            tsmiContext.Text = "Контекст";
-            // 
-            // tsmiModel
-            // 
-            tsmiModel.Name = "tsmiModel";
-            tsmiModel.Size = new Size(180, 22);
-            tsmiModel.Text = "Модель";
-            tsmiModel.Click += TsmiModel_Click;
-            // 
-            // tsmiField
-            // 
-            tsmiField.Name = "tsmiField";
-            tsmiField.Size = new Size(180, 22);
-            tsmiField.Text = "Поле";
-            tsmiField.Click += TsmiField_Click;
             // 
             // tsmiFile
             // 
@@ -215,6 +191,27 @@
             tsmiExit.Size = new Size(233, 22);
             tsmiExit.Text = "Вы&ход";
             tsmiExit.Click += TsmiExit_Click;
+            // 
+            // tsmiContext
+            // 
+            tsmiContext.DropDownItems.AddRange(new ToolStripItem[] { tsmiModel, tsmiField });
+            tsmiContext.Name = "tsmiContext";
+            tsmiContext.Size = new Size(68, 20);
+            tsmiContext.Text = "Контекст";
+            // 
+            // tsmiModel
+            // 
+            tsmiModel.Name = "tsmiModel";
+            tsmiModel.Size = new Size(117, 22);
+            tsmiModel.Text = "Модель";
+            tsmiModel.Click += TsmiModel_Click;
+            // 
+            // tsmiField
+            // 
+            tsmiField.Name = "tsmiField";
+            tsmiField.Size = new Size(117, 22);
+            tsmiField.Text = "Поле";
+            tsmiField.Click += TsmiField_Click;
             // 
             // tsmiChange
             // 
@@ -463,7 +460,6 @@
             // tcUtilites
             // 
             tcUtilites.Controls.Add(tpLibrary);
-            tcUtilites.Controls.Add(tpProperties);
             tcUtilites.Dock = DockStyle.Fill;
             tcUtilites.Location = new Point(0, 0);
             tcUtilites.Margin = new Padding(0);
@@ -497,27 +493,6 @@
             tvLibrary.Size = new Size(286, 345);
             tvLibrary.TabIndex = 0;
             tvLibrary.MouseDown += TvLibrary_MouseDown;
-            // 
-            // tpProperties
-            // 
-            tpProperties.Controls.Add(pgProperties);
-            tpProperties.Location = new Point(4, 24);
-            tpProperties.Margin = new Padding(0);
-            tpProperties.Name = "tpProperties";
-            tpProperties.Padding = new Padding(3);
-            tpProperties.Size = new Size(292, 351);
-            tpProperties.TabIndex = 1;
-            tpProperties.Text = "Свойства";
-            // 
-            // pgProperties
-            // 
-            pgProperties.BackColor = SystemColors.Control;
-            pgProperties.Dock = DockStyle.Fill;
-            pgProperties.Location = new Point(3, 3);
-            pgProperties.Margin = new Padding(0);
-            pgProperties.Name = "pgProperties";
-            pgProperties.Size = new Size(286, 345);
-            pgProperties.TabIndex = 0;
             // 
             // panRight
             // 
@@ -635,7 +610,6 @@
             panLeft.ResumeLayout(false);
             tcUtilites.ResumeLayout(false);
             tpLibrary.ResumeLayout(false);
-            tpProperties.ResumeLayout(false);
             contextMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -687,9 +661,7 @@
         private Splitter splitterRight;
         private TabControl tcUtilites;
         private TabPage tpLibrary;
-        private TabPage tpProperties;
         private TreeView tvLibrary;
-        private PropertyGrid pgProperties;
         private Panel panCenter;
         private ToolStripStatusLabel tsslStatus;
         private ContextMenuStrip contextMenu;

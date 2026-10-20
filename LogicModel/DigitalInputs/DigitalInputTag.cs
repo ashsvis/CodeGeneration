@@ -6,7 +6,7 @@ using System.Xml.Linq;
 namespace LogicModel
 #pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
-    public class DigitalInputTag : Func, IAcceptClick
+    public class DigitalInputTag : Func, IAcceptClick, INamedEmulationTarget
     {
         public string? TagName { get; set; }
 
@@ -26,6 +26,19 @@ namespace LogicModel
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         public bool CanAcceptClick => true;
+
+        public double Value
+        {
+            set 
+            {
+                var result = Outputs[0].Value;
+                if (result != value)
+                {
+                    Outputs[0].Value = value > 0 ? 1 : 0;
+                    Transfer();
+                }
+            }
+        }
 
         public override DigitalInputTag DeepClone()
         {
@@ -81,19 +94,6 @@ namespace LogicModel
                 {
                     using var path = p;
                     g?.FillPath(Outputs[0].Value > 0 ? brushOn : brushOff, path);
-                }
-            }
-        }
-
-        public override void Calculate()
-        {
-            if (Inputs.Length > 0)
-            {
-                var result = Inputs[0].Value;
-                if (Outputs.Length > 0 && Outputs[0].Value != result)
-                {
-                    Outputs[0].Value = result;
-                    Transfer();
                 }
             }
         }

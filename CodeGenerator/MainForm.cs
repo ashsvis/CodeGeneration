@@ -650,8 +650,8 @@ namespace CodeGenerator
 
         private void Shape_OnShowProperties(object? sender, EventArgs e)
         {
-            pgProperties.SelectedObject = sender;
-            tcUtilites.SelectedTab = tpProperties;
+            //pgProperties.SelectedObject = sender;
+            //tcUtilites.SelectedTab = tpProperties;
         }
 
         private void Shape_OnMakeCopy(object? sender, EventArgs e)
@@ -1183,7 +1183,7 @@ namespace CodeGenerator
             var xdoc = XDocument.Load(filename);
             var root = xdoc.Element("Document");
             if (root == null) return;
-            var name = root.Attribute("Name")?.Value;
+            //var name = root.Attribute("Name")?.Value;
 
             var context = ContextAssistant.Context;
 
@@ -1544,8 +1544,8 @@ namespace CodeGenerator
                     points[i] = MovePointToGrid(points[i]);
                 link.SetPoints(points);
             }
-            if (pastedShapes.Count == 1)
-                pgProperties.SelectedObject = pastedShapes[0];
+            //if (pastedShapes.Count == 1)
+            //    pgProperties.SelectedObject = pastedShapes[0];
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1726,16 +1726,38 @@ namespace CodeGenerator
 
         private void EmulateBackground_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
+            Dictionary<string, double> values = [];
             foreach (var shapes in ContextAssistant.AllShapes.Values)
             {
                 foreach (var shape in shapes)
+                {
                     shape.Calculate();
+                    if (shape is INamedEmulationSource named && !string.IsNullOrEmpty(named.TagName))
+                    {
+                        if (values.ContainsKey(named.TagName))
+                            values[named.TagName] = named.Value;
+                        else
+                            values.Add(named.TagName, named.Value);
+                    }
+                }
                 foreach (var shape in shapes)
                 {
                     if (shape is ICycle cycle)
                         cycle.SwitchOffSubscibers();
                 }
             }
+            foreach (var shapes in ContextAssistant.AllShapes.Values)
+            {
+                foreach (var shape in shapes)
+                {
+                    if (shape is INamedEmulationTarget named && !string.IsNullOrEmpty(named.TagName))
+                    {
+                        if (values.TryGetValue(named.TagName, out double value))
+                            named.Value = value;
+                    }
+                }
+            }
+
             runEmulate = true;
             drawPanel.Invalidate();
         }
