@@ -14,13 +14,10 @@ namespace CodeGenerator
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
 
-        private List<Page> contextPages = [];
-        private List<Shape> contextShapes = [];
-        private List<Link> contextLinks = [];
-        private List<Page> Pages { get => contextPages; set => contextPages = value; }
+        private static List<Page> Pages  => ContextAssistant.ContextPages;
+        private static List<Shape> Shapes => ContextAssistant.ContextShapes;
+        private static List<PluginSupport.Link> Links => ContextAssistant.ContextLinks;
 
-        private List<Shape> Shapes { get => contextShapes; set => contextShapes = value; }
-        private List<PluginSupport.Link> Links { get => contextLinks; set => contextLinks = value; }
         private readonly Dictionary<string, Type> types = [];
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
@@ -695,7 +692,7 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void UpdateLinksOnPage(Page? page)
+        private static void UpdateLinksOnPage(Page? page)
         {
             foreach (var item in ModelAssistant.LinksFrom(page, Links))
                 item.SetPoints([]);
@@ -703,7 +700,7 @@ namespace CodeGenerator
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(page, Shapes, Links, item)]);
         }
 
-        private void SortAndAssignToPages()
+        private static void SortAndAssignToPages()
         {
             ModelAssistant.ClearCache();
 
@@ -1094,7 +1091,7 @@ namespace CodeGenerator
             }
         }
 
-        private void UnselectAll()
+        private static void UnselectAll()
         {
             ModelAssistant.UnselectAll(Shapes, Links);
         }
@@ -1338,7 +1335,7 @@ namespace CodeGenerator
             modelChanged = false;
         }
 
-        public XElement CopySelectedToXml()
+        public static XElement CopySelectedToXml()
         {
             var xmodel = new XElement("Copy");
             foreach (var shape in Shapes.Where(x => x.Selected))
