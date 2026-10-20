@@ -31,6 +31,9 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             menuStrip1 = new MenuStrip();
+            tsmiContext = new ToolStripMenuItem();
+            tsmiModel = new ToolStripMenuItem();
+            tsmiField = new ToolStripMenuItem();
             tsmiFile = new ToolStripMenuItem();
             tsmiCreate = new ToolStripMenuItem();
             tsmiOpenFile = new ToolStripMenuItem();
@@ -100,12 +103,33 @@
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiFile, tsmiChange, tsmiTools, tsmiHelp });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { tsmiContext, tsmiFile, tsmiChange, tsmiTools, tsmiHelp });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(800, 24);
             menuStrip1.TabIndex = 0;
             menuStrip1.Text = "menuStrip1";
+            // 
+            // tsmiContext
+            // 
+            tsmiContext.DropDownItems.AddRange(new ToolStripItem[] { tsmiModel, tsmiField });
+            tsmiContext.Name = "tsmiContext";
+            tsmiContext.Size = new Size(68, 20);
+            tsmiContext.Text = "Контекст";
+            // 
+            // tsmiModel
+            // 
+            tsmiModel.Name = "tsmiModel";
+            tsmiModel.Size = new Size(180, 22);
+            tsmiModel.Text = "Модель";
+            tsmiModel.Click += TsmiModel_Click;
+            // 
+            // tsmiField
+            // 
+            tsmiField.Name = "tsmiField";
+            tsmiField.Size = new Size(180, 22);
+            tsmiField.Text = "Поле";
+            tsmiField.Click += TsmiField_Click;
             // 
             // tsmiFile
             // 
@@ -677,5 +701,8 @@
         private ToolStripSeparator toolStripMenuItem1;
         private ToolStripMenuItem tsmiRun;
         private System.ComponentModel.BackgroundWorker emulateBackground;
+        private ToolStripMenuItem tsmiContext;
+        private ToolStripMenuItem tsmiModel;
+        private ToolStripMenuItem tsmiField;
     }
 }

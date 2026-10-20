@@ -35,4 +35,5 @@ namespace PluginSupport
         [Category("Linked To"), DisplayName("Id")]
         public string LinkInfo => LinkId == Guid.Empty ? "" : LinkId.ToString();
     }
+
 }

@@ -14,7 +14,7 @@ namespace CodeGenerator
         private readonly DrawPanel drawPanel;
         private readonly PluginManager pm = new();
 
-        private static List<Page> Pages  => ContextAssistant.ContextPages;
+        private static List<Page> Pages => ContextAssistant.ContextPages;
         private static List<Shape> Shapes => ContextAssistant.ContextShapes;
         private static List<PluginSupport.Link> Links => ContextAssistant.ContextLinks;
 
@@ -68,12 +68,21 @@ namespace CodeGenerator
             }
             const int totalPages = 5;
             const int totalPagesInRow = 10;
+            ContextAssistant.Context = ContextKind.Model;
             for (var i = 1; i <= totalPages; i++)
             {
                 var row = (i - 1) / totalPagesInRow;
                 var column = (i - 1) - row * totalPagesInRow;
                 Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = totalPages });
             }
+            ContextAssistant.Context = ContextKind.Field;
+            for (var i = 1; i <= 2; i++)
+            {
+                var row = (i - 1) / totalPagesInRow;
+                var column = (i - 1) - row * totalPagesInRow;
+                Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = 2 });
+            }
+            ContextAssistant.Context = ContextKind.Model;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -152,7 +161,7 @@ namespace CodeGenerator
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
             if (!ctrl && Shapes.Count(x => x.Selected) == 1)
-                ModelAssistant.UnselectAll(Shapes, null); 
+                ModelAssistant.UnselectAll(Shapes, null);
             firstShape = null;
             firstLinkPoint = null;
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -222,7 +231,7 @@ namespace CodeGenerator
                     var other = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page, Shapes).Count(x => x.Selected) > 1 && !ctrl)
                         ModelAssistant.UnselectAllOnPage(page, Shapes, null);
-                        //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
+                    //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
                     shape.Selected = !runEmulate;
                     shape.Hover = !runEmulate;
                     shapeFound = true;
@@ -397,7 +406,7 @@ namespace CodeGenerator
                     shape.CanOutputLink = !runEmulate;
                     break;
                 }
-                else 
+                else
                 if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
@@ -1202,11 +1211,27 @@ namespace CodeGenerator
                 }
             }
 
+            var context = ContextAssistant.Context;
+
+            ContextAssistant.Context = ContextKind.Model;
             var xmodel = root.Element("Model");
-            if (xmodel == null) return;
+            ReadContextFromXml(xmodel);
+
+            ContextAssistant.Context = ContextKind.Field;
+            var xfield = root.Element("Field");
+            ReadContextFromXml(xfield);
+
+            ContextAssistant.Context = context;
+
+            drawPanel.Invalidate();
+        }
+
+        private void ReadContextFromXml(XElement? xcontext)
+        {
             Shapes.Clear();
+            if (xcontext == null) return;
             int n = 0;
-            foreach (var xpage in xmodel.Elements("Page"))
+            foreach (var xpage in xcontext.Elements("Page"))
             {
                 var xnumber = xpage.Attribute("Number")?.Value;
                 if (!string.IsNullOrWhiteSpace(xnumber))
@@ -1225,7 +1250,7 @@ namespace CodeGenerator
                 }
                 n = ReadElements(n, xpage);
             }
-            var xothers = xmodel.Element("OutsidePages");
+            var xothers = xcontext.Element("OutsidePages");
             if (xothers != null)
             {
                 n = ReadElements(n, xothers);
@@ -1247,8 +1272,6 @@ namespace CodeGenerator
                     }
                 }
             }
-
-            drawPanel.Invalidate();
         }
 
         private int ReadElements(int n, XElement xpage)
@@ -1301,12 +1324,33 @@ namespace CodeGenerator
                 xenvironment.Add(xorigin);
                 xenvironment.Add(new XElement("Zoom", drawPanel.Zoom.ToString(fp)));
             }
-            var xmodel = new XElement("Model");
-            root.Add(xmodel);
+
+            var currentContext = ContextAssistant.Context;
+            try
+            {
+                ContextAssistant.Context = ContextKind.Model;
+                var xmodel = new XElement("Model");
+                SaveContextToXml(root, xmodel);
+                ContextAssistant.Context = ContextKind.Field;
+                var xfield = new XElement("Field");
+                SaveContextToXml(root, xfield);
+
+                doc.Save(filename);
+                modelChanged = false;
+            }
+            finally
+            {
+                ContextAssistant.Context = currentContext;
+            }
+        }
+
+        private static void SaveContextToXml(XElement root, XElement xcontext)
+        {
+            root.Add(xcontext);
             foreach (var page in Pages)
             {
                 var xpage = page.WriteContent();
-                xmodel.Add(xpage);
+                xcontext.Add(xpage);
                 foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
                 {
                     var xshape = shape.WriteContent();
@@ -1319,7 +1363,7 @@ namespace CodeGenerator
                 }
             }
             var xothers = new XElement("OutsidePages");
-            xmodel.Add(xothers);
+            xcontext.Add(xothers);
             foreach (var shape in ModelAssistant.ShapesFrom(null, Shapes))
             {
                 var xshape = shape.WriteContent();
@@ -1330,9 +1374,6 @@ namespace CodeGenerator
                 var xlink = link.WriteContent();
                 xothers.Add(xlink);
             }
-
-            doc.Save(filename);
-            modelChanged = false;
         }
 
         public static XElement CopySelectedToXml()
@@ -1509,11 +1550,18 @@ namespace CodeGenerator
 
         private void ClearAll()
         {
+            var context = ContextAssistant.Context;
+            ContextAssistant.Context = ContextKind.Model;
             Links.Clear();
             // для всех удаляемых элементов
-            foreach (var shape in Shapes)
-                UnsubscribeShapeEvents(shape);
+            foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
+            ContextAssistant.Context = ContextKind.Field;
+            Links.Clear();
+            // для всех удаляемых элементов
+            foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
+            Shapes.Clear();
+            ContextAssistant.Context = context;
             modelChanged = false;
             fileName = string.Empty;
             Text = string.IsNullOrEmpty(fileName) ? caption : $"{caption} - {fileName}";
@@ -1531,6 +1579,8 @@ namespace CodeGenerator
             tsmiCut.Enabled = tsmiCopy.Enabled = tsbCut.Enabled = tsbCopy.Enabled = Shapes.Any(x => x.Selected);
             tsmiPaste.Enabled = tsbPaste.Enabled = copycuted != null;
             tsbRun.Checked = tsmiRun.Checked = runEmulate;
+            tsmiModel.Checked = ContextAssistant.Context == ContextKind.Model;
+            tsmiField.Checked = ContextAssistant.Context == ContextKind.Field;
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1682,6 +1732,32 @@ namespace CodeGenerator
         {
             runEmulate = false;
             drawPanel.Invalidate();
+        }
+
+        private void TsmiModel_Click(object sender, EventArgs e)
+        {
+            if (drawPanel.Transformation != null)
+            {
+                float[] el = drawPanel.Transformation.Elements;
+                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], drawPanel.Origin, drawPanel.Zoom);
+                ContextAssistant.Context = ContextKind.Model;
+                var env = ContextAssistant.ContextEnvironment;
+                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+                drawPanel.Invalidate();
+            }
+        }
+
+        private void TsmiField_Click(object sender, EventArgs e)
+        {
+            if (drawPanel.Transformation != null)
+            {
+                float[] el = drawPanel.Transformation.Elements;
+                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], drawPanel.Origin, drawPanel.Zoom);
+                ContextAssistant.Context = ContextKind.Field;
+                var env = ContextAssistant.ContextEnvironment;
+                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+                drawPanel.Invalidate();
+            }
         }
     }
 }
