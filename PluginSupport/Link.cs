@@ -63,6 +63,7 @@ namespace PluginSupport
         }
 
         public abstract XElement WriteContent();
+        public abstract XElement WriteContentExtended();
         public abstract void ReadContent(XElement element);
         public abstract bool NoDataToWrite();
     }

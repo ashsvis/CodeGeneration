@@ -434,6 +434,16 @@ namespace LogicModel
             return Guid.Empty;
         }
 
+        public override void SetInputPinLinkId(int index, Guid guid)
+        {
+            if (index >= 0 && index < Inputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => !x.IsOutput && x.PinIndex == index);
+                if (item != null)
+                    item.LinkId = guid;
+            }
+        }
+
         public override Point? GetOutputPinPoint(int index = 0)
         {
             if (index >= 0 && index < Outputs.Length)
@@ -456,6 +466,16 @@ namespace LogicModel
             return Guid.Empty;
         }
 
+        public override void SetOutputPinLinkId(int index = 0, Guid guid = default)
+        {
+            if (index >= 0 && index < Outputs.Length)
+            {
+                var item = GetPinPoints().FirstOrDefault(x => x.IsOutput && x.PinIndex == index);
+                if (item != null)
+                    item.LinkId = guid;
+            }
+        }
+
         public override double GetOutputValue(int index = 0)
         {
             if (index >=0 && index < Outputs.Length)
@@ -463,7 +483,7 @@ namespace LogicModel
             return 0;
         }
 
-        public override ValueKind GetInputValueKnd(int index)
+        public override ValueKind GetInputValueKind(int index)
         {
             if (index >= 0 && index < Inputs.Length)
                 return Inputs[index].Kind;

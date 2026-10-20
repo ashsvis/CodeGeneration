@@ -198,9 +198,9 @@ namespace CodeGenerator
                             {
                                 if (!shape.IsLinked(inputIndex))
                                 {
-                                    if (shape.GetInputValueKnd(inputIndex) == ValueKind.Digital)
+                                    if (shape.GetInputValueKind(inputIndex) == ValueKind.Digital)
                                         shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
-                                    else if (shape.GetInputValueKnd(inputIndex) == ValueKind.Analog)
+                                    else if (shape.GetInputValueKind(inputIndex) == ValueKind.Analog)
                                         shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) + 1);
                                 }
                             }
@@ -211,9 +211,9 @@ namespace CodeGenerator
                             {
                                 if (!shape.IsLinked(inputIndex))
                                 {
-                                    if (shape.GetInputValueKnd(inputIndex) == ValueKind.Digital)
+                                    if (shape.GetInputValueKind(inputIndex) == ValueKind.Digital)
                                         shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) > 0 ? 0 : 1);
-                                    else if (shape.GetInputValueKnd(inputIndex) == ValueKind.Analog)
+                                    else if (shape.GetInputValueKind(inputIndex) == ValueKind.Analog)
                                         shape.SetInputValue(inputIndex, shape.GetInputValue(inputIndex) - 1);
                                 }
                             }
@@ -413,7 +413,7 @@ namespace CodeGenerator
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
                         shape.CanInputLink = !runEmulate &&
                             firstShape.Page == shape.Page &&
-                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index);
+                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index);
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !runEmulate && !linkBuilding;
@@ -480,7 +480,7 @@ namespace CodeGenerator
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
                                 !shape.IsLinked(index) &&
-                                firstShape.GetOutputValueKind(0) == shape.GetInputValueKnd(index))
+                                firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index))
                             {
                                 if (linked.Page == 0 || shape.Page == 0)
                                 {
@@ -1391,7 +1391,7 @@ namespace CodeGenerator
             }
             foreach (var link in Links.Where(x => x.Selected))
             {
-                var xlink = link.WriteContent();
+                var xlink = link.WriteContentExtended();
                 xmodel.Add(xlink);
             }
             return xmodel;
@@ -1466,6 +1466,7 @@ namespace CodeGenerator
         private void PasteFromXml(XElement xmodel, List<Shape> shapes, List<Link> links, Point point)
         {
             if (xmodel == null) return;
+            Dictionary<Guid, Guid> guids = [];
             List<Shape> pastedShapes = [];
             List<Link> pastedLinks = [];
             int n = 0;
@@ -1482,37 +1483,36 @@ namespace CodeGenerator
                         shape.ReadContent(xelement);
                         SubscribeShapeEvents(shape);
                         pastedShapes.Add(shape);
+
+                        if (!guids.ContainsKey(shape.Id))
+                        {
+                            var id = Guid.NewGuid();
+                            guids.Add(shape.Id, id);
+                            shape.NewGuid(id);
+                        }
                     }
                     else if (obj is Link link)
                     {
                         link.ReadContent(xelement);
+                        var oldid = link.SourceId;
+                        if (guids.TryGetValue(oldid, out Guid svalue))
+                        {
+                            link.SourceId = svalue;
+                        }
+                        oldid = link.TargetId;
+                        if (guids.TryGetValue(oldid, out Guid tvalue))
+                        {
+                            link.TargetId = tvalue;
+                        }
                         var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
                         var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
                         if (source != null && target != null)
                         {
                             link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            link.Selected = true;
                             pastedLinks.Add(link);
                         }
                     }
-                }
-            }
-            List<Shape> newIdShapes = [];
-            foreach (var link in pastedLinks)
-            {
-                link.Selected = true;
-                var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
-                if (source != null)
-                {
-                    source.NewGuid();
-                    newIdShapes.Add(source);
-                    link.SourceId = source.Id;
-                }
-                var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
-                if (target != null)
-                {
-                    target.NewGuid();
-                    newIdShapes.Add(target);
-                    link.TargetId = target.Id;
                 }
             }
             shapes.AddRange(pastedShapes);
@@ -1523,8 +1523,6 @@ namespace CodeGenerator
                 pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
             foreach (var shape in pastedShapes)
             {
-                if (!newIdShapes.Contains(shape))
-                    shape.NewGuid();
                 shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
                 shape.Location = MovePointToGrid(shape.Location);
             }
@@ -1544,8 +1542,6 @@ namespace CodeGenerator
                     points[i] = MovePointToGrid(points[i]);
                 link.SetPoints(points);
             }
-            //if (pastedShapes.Count == 1)
-            //    pgProperties.SelectedObject = pastedShapes[0];
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)

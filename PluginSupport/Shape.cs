@@ -21,6 +21,10 @@ namespace PluginSupport
             id = Guid.NewGuid();
         }
 
+        public void NewGuid(Guid guid)
+        {
+            id = guid;
+        }
 
         [Category("Common"), DisplayName("Page"), ReadOnly(true)]
         public int Page { get; set; }
@@ -142,8 +146,10 @@ namespace PluginSupport
 
         public abstract Point? GetInputPinPoint(int index);
         public abstract Guid GetInputPinLinkId(int index);
+        public abstract void SetInputPinLinkId(int index, Guid guid);
         public abstract Point? GetOutputPinPoint(int index = 0);
         public abstract Guid GetOutputPinLinkId(int index = 0);
+        public abstract void SetOutputPinLinkId(int index = 0, Guid guid = default);
 
 
         public bool IsInputTargetsPoint(Point point, out int index)
@@ -256,7 +262,7 @@ namespace PluginSupport
         public abstract XElement WriteContent();
         public abstract void ReadContent(XElement element);
         public abstract bool NoDataToWrite();
-        public abstract ValueKind GetInputValueKnd(int index);
+        public abstract ValueKind GetInputValueKind(int index);
     }
 
     public class DeleteLinkFromTargetEventArgs(Shape? source, Shape? target, int targetPinIndex) : EventArgs
