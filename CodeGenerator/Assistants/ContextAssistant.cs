@@ -61,6 +61,17 @@ namespace CodeGenerator
             }
         }
 
+        public static Dictionary<ContextKind, List<Shape>> AllShapes
+        {
+            get 
+            {
+                Dictionary<ContextKind, List<Shape>> dict = [];
+                dict.Add(ContextKind.Model, shapesModel);
+                dict.Add(ContextKind.Field, shapesField);
+                return dict;
+            }
+        }
+
         public static List<Shape> ContextShapes 
         {
             get

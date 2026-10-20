@@ -1726,12 +1726,15 @@ namespace CodeGenerator
 
         private void EmulateBackground_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
-            foreach (var shape in Shapes)
-                shape.Calculate();
-            foreach (var shape in Shapes)
+            foreach (var shapes in ContextAssistant.AllShapes.Values)
             {
-                if (shape is ICycle cycle)
-                    cycle.SwitchOffSubscibers();
+                foreach (var shape in shapes)
+                    shape.Calculate();
+                foreach (var shape in shapes)
+                {
+                    if (shape is ICycle cycle)
+                        cycle.SwitchOffSubscibers();
+                }
             }
             runEmulate = true;
             drawPanel.Invalidate();
