@@ -1,4 +1,5 @@
 
+
 namespace PluginSupport
 {
     public struct KeepEnvironment
@@ -28,6 +29,15 @@ namespace PluginSupport
         public float[] Matrix { get; set; }
         public Point Origin { get; set; }
         public double Zoom { get; set; }
+
+        public void Reset()
+        {
+            Matrix = new float[6];
+            Matrix[0] = 1f;
+            Matrix[3] = 1f;
+            Origin = Point.Empty;
+            Zoom = 1.0;
+        }
 
         public void SetValues(KeepEnvironment value)
         {

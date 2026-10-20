@@ -1185,7 +1185,31 @@ namespace CodeGenerator
             if (root == null) return;
             var name = root.Attribute("Name")?.Value;
 
-            var xenvironment = root.Element("Environment");
+            var context = ContextAssistant.Context;
+
+            ContextAssistant.Context = ContextKind.Model;
+            var xmodel = root.Element("Model");
+            ReadContextFromXml(xmodel);
+
+            ContextAssistant.Context = ContextKind.Field;
+            var xfield = root.Element("Field");
+            ReadContextFromXml(xfield);
+
+            ContextAssistant.Context = context;
+
+            var env = ContextAssistant.ContextEnvironment;
+            drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+            drawPanel.Invalidate();
+
+            drawPanel.Invalidate();
+        }
+
+        private void ReadContextFromXml(XElement? xcontext)
+        {
+            Shapes.Clear();
+            Links.Clear();
+            if (xcontext == null) return;
+            var xenvironment = xcontext.Element("Environment");
             var fp = CultureInfo.GetCultureInfo("en-US");
             var xmatrix = xenvironment?.Element("Matrix")?.Value;
             var xorigin = xenvironment?.Element("Origin");
@@ -1205,31 +1229,11 @@ namespace CodeGenerator
                     var dy = ParseHelper.ParseSingle(svals[5], fp, 0);
                     var zoom = ParseHelper.ParseDouble(xzoom, fp, 1);
 
-                    drawPanel.RestoreWheelData(m11, m12, m21, m22, dx, dy,
+                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy,
                         new Point(ParseHelper.ParseInteger(xoX, 0), ParseHelper.ParseInteger(xoY, 0)),
                         zoom);
                 }
             }
-
-            var context = ContextAssistant.Context;
-
-            ContextAssistant.Context = ContextKind.Model;
-            var xmodel = root.Element("Model");
-            ReadContextFromXml(xmodel);
-
-            ContextAssistant.Context = ContextKind.Field;
-            var xfield = root.Element("Field");
-            ReadContextFromXml(xfield);
-
-            ContextAssistant.Context = context;
-
-            drawPanel.Invalidate();
-        }
-
-        private void ReadContextFromXml(XElement? xcontext)
-        {
-            Shapes.Clear();
-            if (xcontext == null) return;
             int n = 0;
             foreach (var xpage in xcontext.Elements("Page"))
             {
@@ -1311,29 +1315,17 @@ namespace CodeGenerator
             var root = new XElement("Document");
             root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
             var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
-            if (drawPanel.Transformation != null)
-            {
-                var xenvironment = new XElement("Environment");
-                root.Add(xenvironment);
-                float[] el = drawPanel.Transformation.Elements;
-                var fp = CultureInfo.GetCultureInfo("en-US");
-                xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
-                var xorigin = new XElement("Origin");
-                xorigin.Add(new XAttribute("X", drawPanel.Origin.X));
-                xorigin.Add(new XAttribute("Y", drawPanel.Origin.Y));
-                xenvironment.Add(xorigin);
-                xenvironment.Add(new XElement("Zoom", drawPanel.Zoom.ToString(fp)));
-            }
 
+            UpdateContextEnvironment();
             var currentContext = ContextAssistant.Context;
             try
             {
                 ContextAssistant.Context = ContextKind.Model;
                 var xmodel = new XElement("Model");
-                SaveContextToXml(root, xmodel);
+                SaveContextToXml(root, xmodel, ContextAssistant.ContextEnvironment);
                 ContextAssistant.Context = ContextKind.Field;
                 var xfield = new XElement("Field");
-                SaveContextToXml(root, xfield);
+                SaveContextToXml(root, xfield, ContextAssistant.ContextEnvironment);
 
                 doc.Save(filename);
                 modelChanged = false;
@@ -1344,9 +1336,22 @@ namespace CodeGenerator
             }
         }
 
-        private static void SaveContextToXml(XElement root, XElement xcontext)
+        private static void SaveContextToXml(XElement root, XElement xcontext, KeepEnvironment environment)
         {
             root.Add(xcontext);
+            var xenvironment = new XElement("Environment");
+            xcontext.Add(xenvironment);
+
+            var env = environment;
+            float[] el = env.Matrix;
+            var fp = CultureInfo.GetCultureInfo("en-US");
+            xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
+            var xorigin = new XElement("Origin");
+            xorigin.Add(new XAttribute("X", env.Origin.X));
+            xorigin.Add(new XAttribute("Y", env.Origin.Y));
+            xenvironment.Add(xorigin);
+            xenvironment.Add(new XElement("Zoom", env.Zoom.ToString(fp)));
+
             foreach (var page in Pages)
             {
                 var xpage = page.WriteContent();
@@ -1551,16 +1556,20 @@ namespace CodeGenerator
         private void ClearAll()
         {
             var context = ContextAssistant.Context;
+            
             ContextAssistant.Context = ContextKind.Model;
             Links.Clear();
             // для всех удаляемых элементов
             foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
+            ContextAssistant.ContextEnvironment.Reset();
             ContextAssistant.Context = ContextKind.Field;
             Links.Clear();
             // для всех удаляемых элементов
             foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
+            ContextAssistant.ContextEnvironment.Reset();
+
             ContextAssistant.Context = context;
             modelChanged = false;
             fileName = string.Empty;
@@ -1734,12 +1743,20 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void TsmiModel_Click(object sender, EventArgs e)
+        private void UpdateContextEnvironment()
         {
             if (drawPanel.Transformation != null)
             {
                 float[] el = drawPanel.Transformation.Elements;
                 ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], drawPanel.Origin, drawPanel.Zoom);
+            }
+        }
+
+        private void TsmiModel_Click(object sender, EventArgs e)
+        {
+            if (ContextAssistant.Context != ContextKind.Model)
+            {
+                UpdateContextEnvironment();
                 ContextAssistant.Context = ContextKind.Model;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
@@ -1749,10 +1766,9 @@ namespace CodeGenerator
 
         private void TsmiField_Click(object sender, EventArgs e)
         {
-            if (drawPanel.Transformation != null)
+            if (ContextAssistant.Context != ContextKind.Field)
             {
-                float[] el = drawPanel.Transformation.Elements;
-                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], drawPanel.Origin, drawPanel.Zoom);
+                UpdateContextEnvironment();
                 ContextAssistant.Context = ContextKind.Field;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
