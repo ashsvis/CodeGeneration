@@ -111,10 +111,10 @@ namespace CodeGenerator
         public static List<Point> BuildWaveInField(Page? page, IEnumerable<Shape> shapes, IEnumerable<Link> links, PluginSupport.Link link)
         {
             List<Point> points = [];
-            InitField(ModelAssistant.ShapesFrom(page, shapes), ModelAssistant.LinksFrom(page, links));
+            InitField(ModelAssistant.ShapesFrom(page), ModelAssistant.LinksFrom(page));
             if (field == null) return points;
-            Rectangle rect = Rectangle.Ceiling(ModelAssistant.ShapesFrom(page, shapes).First().Bounds);
-            foreach (var shape in ModelAssistant.ShapesFrom(page, shapes).Skip(1))
+            Rectangle rect = Rectangle.Ceiling(ModelAssistant.ShapesFrom(page).First().Bounds);
+            foreach (var shape in ModelAssistant.ShapesFrom(page).Skip(1))
                 rect = Rectangle.Union(rect, Rectangle.Ceiling(shape.Bounds));
             rect.Inflate(step * margin, step * margin);
             // установка начальной точки волны
@@ -129,7 +129,7 @@ namespace CodeGenerator
                 field[px, py].Empty = ThroughPassage.None;
             }
             // поиск других связей из этого же выхода
-            foreach (var other in ModelAssistant.LinksFrom(page, links).Where(x => x != link && x.StartPoint == link.StartPoint))
+            foreach (var other in ModelAssistant.LinksFrom(page).Where(x => x != link && x.StartPoint == link.StartPoint))
             {
                 foreach (var pt in other.GetPoints())
                 {

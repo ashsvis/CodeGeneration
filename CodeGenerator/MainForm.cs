@@ -19,7 +19,6 @@ namespace CodeGenerator
         private static List<Shape> Shapes => ContextAssistant.ContextShapes;
         private static List<PluginSupport.Link> Links => ContextAssistant.ContextLinks;
 
-        //private readonly Dictionary<string, Type> types = [];
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
         private readonly UndoRedoManager UndoRedoManager = new();
@@ -132,11 +131,11 @@ namespace CodeGenerator
             if (page != null && page != currentPage || page == null)
             {
                 currentPage = page;
-                ModelAssistant.UnselectAll(Shapes, Links);
+                ModelAssistant.UnselectAll();
             }
             if (e.Button == MouseButtons.Left && e.Clicks > 1 && !runEmulate)
             {
-                foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                foreach (var shape in ModelAssistant.ShapesFrom(page))
                 {
                     if (shape.ContainsPoint(firstPoint, 5f / (float)drawPanel.Zoom))
                     {
@@ -157,7 +156,8 @@ namespace CodeGenerator
                 {
                     if (copycuted != null)
                     {
-                        ModelAssistant.PasteFromXml(copycuted, Shapes, Links, firstPoint, SubscribeShapeEvents);
+                        UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage, 
+                            ModelAssistant.CopyPageToXml(page), copycuted, firstPoint, SubscribeShapeEvents, UnsubscribeShapeEvents));
                         modelChanged = true;
                     }
                 }
@@ -171,11 +171,11 @@ namespace CodeGenerator
             var shapeFound = false;
             var ctrl = ModifierKeys.HasFlag(Keys.Control);
             if (!ctrl && Shapes.Count(x => x.Selected) == 1)
-                ModelAssistant.UnselectAll(Shapes, null);
+                ModelAssistant.UnselectAll();
             firstShape = null;
             firstLinkPoint = null;
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-            foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+            foreach (var shape in ModelAssistant.ShapesFrom(page))
             {
                 if (shape.IsPointInTargets(point))
                 {
@@ -196,7 +196,7 @@ namespace CodeGenerator
                     }
                     else if (shape.IsInputTargetsPoint(point, out int inputIndex))
                     {
-                        var other = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Contains(shape);
+                        var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
                         if (!other && Shapes.Count(x => x.Selected) > 1 && !ctrl)
                             Shapes.ForEach(shape => shape.Selected = false);
                         shape.Selected = !runEmulate;
@@ -238,9 +238,9 @@ namespace CodeGenerator
                 }
                 else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
                 {
-                    var other = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Contains(shape);
-                    if (!other && ModelAssistant.ShapesFrom(page, Shapes).Count(x => x.Selected) > 1 && !ctrl)
-                        ModelAssistant.UnselectAllOnPage(page, Shapes, null);
+                    var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
+                    if (!other && ModelAssistant.ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
+                        ModelAssistant.UnselectAllOnPage(page);
                     shape.Selected = !runEmulate;
                     shape.Hover = !runEmulate;
                     shapeFound = true;
@@ -308,8 +308,8 @@ namespace CodeGenerator
                         var loc = new Point(
                             Shapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
                             Shapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-                        ModelAssistant.UnselectAll(Shapes, Links);
-                        ModelAssistant.PasteFromXml(copyed, Shapes, Links, loc, SubscribeShapeEvents);
+                        ModelAssistant.UnselectAll();
+                        ModelAssistant.PasteFromXml(copyed, loc, SubscribeShapeEvents);
                         dragCopiedShapes = false;
                         modelChanged = true;
                     }
@@ -370,7 +370,7 @@ namespace CodeGenerator
                         var maxY = Math.Max(first.Y, current.Y);
                         ribbonRect = new Rectangle(minX, minY, maxX - minX, maxY - minY);
                         var mode = current.X > first.X;
-                        foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -400,30 +400,30 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
 
-                        foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page))
                             shape.Location = ModelAssistant.MovePointToGrid(shape.Location);
-                        foreach (var link in ModelAssistant.LinksFrom(page, Links))
+                        foreach (var link in ModelAssistant.LinksFrom(page))
                         {
-                            var source = ModelAssistant.ShapesFrom(page, Shapes).FirstOrDefault(x => x.Id == link.SourceId);
+                            var source = ModelAssistant.ShapesFrom(page).FirstOrDefault(x => x.Id == link.SourceId);
                             if (source != null && source.GetOutputPinPoint(link.SourcePinIndex) is Point sourcePinPoint)
                                 link.StartPoint = sourcePinPoint;
-                            var target = ModelAssistant.ShapesFrom(page, Shapes).FirstOrDefault(x => x.Id == link.TargetId);
+                            var target = ModelAssistant.ShapesFrom(page).FirstOrDefault(x => x.Id == link.TargetId);
                             if (target != null && target.GetInputPinPoint(link.TargetPinIndex) is Point targetPinPoint)
                                 link.EndPoint = targetPinPoint;
                         }
                         ModelAssistant.UpdateLinksOnPage(page);
                         if (xElementsOnCurrentPageBeforeDrag != null)
                         {
-                            var rect = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).First().Bounds;
-                            var selectedRects = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Select(x => x.Bounds)
-                                .Union(ModelAssistant.LinksFrom(page, Links).Where(x => x.Selected).Select(x => x.Bounds));
+                            var rect = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).First().Bounds;
+                            var selectedRects = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Select(x => x.Bounds)
+                                .Union(ModelAssistant.LinksFrom(page).Where(x => x.Selected).Select(x => x.Bounds));
                             foreach (var r in selectedRects) rect = Rectangle.Union(rect, r);
                             UndoRedoManager.Execute(new DragShapesAndLinksCommand(ContextAssistant.Context, page,
                                 xElementsOnCurrentPageBeforeDrag, ModelAssistant.CopyPageToXml(page), SubscribeShapeEvents, UnsubscribeShapeEvents));
-                            foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                            foreach (var shape in ModelAssistant.ShapesFrom(page))
                                 if (rect.IntersectsWith(shape.Bounds))
                                     shape.Selected = true;
-                            foreach (var link in ModelAssistant.LinksFrom(page, Links))
+                            foreach (var link in ModelAssistant.LinksFrom(page))
                                 if (rect.Contains(link.Bounds))
                                     link.Selected = true;
                         }
@@ -436,7 +436,7 @@ namespace CodeGenerator
                     {
                         // построение связи данных между фигурами
                         linkBuilding = false;
-                        foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page))
                         {
                             if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int index) &&
@@ -501,10 +501,10 @@ namespace CodeGenerator
                     else if (frameBuilding)
                     {
                         frameBuilding = false;
-                        ModelAssistant.ShapesFrom(page, Shapes).ForEach(shape => shape.Selected = false);
+                        ModelAssistant.ShapesFrom(page).ForEach(shape => shape.Selected = false);
 
                         var mode = (currentPoint ?? Point.Empty).X > firstPoint.X;
-                        foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                        foreach (var shape in ModelAssistant.ShapesFrom(page))
                         {
                             if (mode && ribbonRect.Contains(shape.Bounds) ||
                                 !mode && ribbonRect.IntersectsWith(shape.Bounds))
@@ -522,9 +522,9 @@ namespace CodeGenerator
 
         private void SelectLinksForBothSelectedShapes(Page? page)
         {
-            ModelAssistant.UnselectAllOnPage(page, null, Links);
-            var selected = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).ToList();
-            foreach (var link in ModelAssistant.LinksFrom(page, Links))
+            ModelAssistant.UnselectAllOnPage(page);
+            var selected = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).ToList();
+            foreach (var link in ModelAssistant.LinksFrom(page))
             {
                 var sourceShape = selected.FirstOrDefault(x => x == link.Source);
                 var targetShape = selected.FirstOrDefault(x => x == link.Target);
@@ -538,14 +538,14 @@ namespace CodeGenerator
 
         private void HighLight(Page? page, Point point)
         {
-            ModelAssistant.ShapesFrom(page, Shapes).ForEach(shape =>
+            ModelAssistant.ShapesFrom(page).ForEach(shape =>
             {
                 shape.Hover = false;
                 shape.CanInputLink = false;
                 shape.CanOutputLink = false;
             });
-            ModelAssistant.LinksFrom(page, Links).ForEach(link => link.Hover = false);
-            var list = ModelAssistant.ShapesFrom(page, Shapes);
+            ModelAssistant.LinksFrom(page).ForEach(link => link.Hover = false);
+            var list = ModelAssistant.ShapesFrom(page);
             foreach (var shape in list)
             {
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
@@ -1025,7 +1025,7 @@ namespace CodeGenerator
 
         private static void UnselectAll()
         {
-            ModelAssistant.UnselectAll(Shapes, Links);
+            ModelAssistant.UnselectAll();
         }
 
         private void TsmiSaveAs_Click(object sender, EventArgs e)
@@ -1246,12 +1246,12 @@ namespace CodeGenerator
             {
                 var xpage = page.WriteContent();
                 xcontext.Add(xpage);
-                foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                foreach (var shape in ModelAssistant.ShapesFrom(page))
                 {
                     var xshape = shape.WriteContent();
                     xpage.Add(xshape);
                 }
-                foreach (var link in ModelAssistant.LinksFrom(page, Links))
+                foreach (var link in ModelAssistant.LinksFrom(page))
                 {
                     var xlink = link.WriteContentExtended();
                     xpage.Add(xlink);
@@ -1259,12 +1259,12 @@ namespace CodeGenerator
             }
             var xothers = new XElement("OutsidePages");
             xcontext.Add(xothers);
-            foreach (var shape in ModelAssistant.ShapesFrom(null, Shapes))
+            foreach (var shape in ModelAssistant.ShapesFrom(null))
             {
                 var xshape = shape.WriteContent();
                 xothers.Add(xshape);
             }
-            foreach (var link in ModelAssistant.LinksFrom(null, Links))
+            foreach (var link in ModelAssistant.LinksFrom(null))
             {
                 var xlink = link.WriteContentExtended();
                 xothers.Add(xlink);
@@ -1341,6 +1341,7 @@ namespace CodeGenerator
                 Links.ForEach(x => x.Selected = false);
                 pasted = ModelAssistant.PasteFromXml(copycuted, SubscribeShapeEvents);
                 movePasted = true;
+                drawPanel.Invalidate();
             }
         }
 
@@ -1348,7 +1349,7 @@ namespace CodeGenerator
         {
             if (runEmulate) return;
             UnselectAll();
-            ModelAssistant.SelectAllOnPage(currentPage, Shapes, Links);
+            ModelAssistant.SelectAllOnPage(currentPage);
             drawPanel.Invalidate();
         }
 

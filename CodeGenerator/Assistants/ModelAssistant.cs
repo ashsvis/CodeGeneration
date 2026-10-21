@@ -1,5 +1,4 @@
 ﻿using PluginSupport;
-using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
@@ -25,7 +24,7 @@ namespace CodeGenerator
             types.TryAdd(key, type);
         }
 
-        public static List<Shape> ShapesFrom(Page? page, IEnumerable<Shape> shapes)
+        public static List<Shape> ShapesFrom(Page? page)
         {
             if (page == null)
             {
@@ -37,7 +36,7 @@ namespace CodeGenerator
                 if (cacheShapes.TryGetValue(page, out List<Shape>? value) && value.Count > 0)
                     return value;
             }
-            var result = shapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
+            var result = ContextAssistant.ContextShapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
             result.Reverse();
             if (page == null)
                 cacheNoPageShapes.AddRange(result);
@@ -50,31 +49,31 @@ namespace CodeGenerator
             return result;
         }
 
-        public static List<Link> LinksFrom(Page? page, IEnumerable<Link> links)
+        public static List<Link> LinksFrom(Page? page)
         {
-            return [.. links.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+            return [.. ContextAssistant.ContextLinks.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
         }
 
-        public static void SelectAllOnPage(Page? page, List<Shape>? shapes, List<Link>? links)
+        public static void SelectAllOnPage(Page? page)
         {
-            if (shapes != null)
-                ShapesFrom(page, shapes).ForEach(x => x.Selected = true);
-            if (links != null)
-                LinksFrom(page, links).ForEach(x => x.Selected = true);
+            if (ContextAssistant.ContextShapes != null)
+                ShapesFrom(page).ForEach(x => x.Selected = true);
+            if (ContextAssistant.ContextLinks != null)
+                LinksFrom(page).ForEach(x => x.Selected = true);
         }
 
-        public static void UnselectAll(List<Shape>? shapes, List<Link>? links)
+        public static void UnselectAll()
         {
-            shapes?.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
-            links?.ForEach(link => { link.Selected = false; link.Hover = false; });
+            ContextAssistant.ContextShapes?.ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+            ContextAssistant.ContextLinks?.ForEach(link => { link.Selected = false; link.Hover = false; });
         }
 
-        public static void UnselectAllOnPage(Page? page, List<Shape>? shapes, List<Link>? links)
+        public static void UnselectAllOnPage(Page? page)
         {
-            if (shapes != null)
-                ShapesFrom(page, shapes).ForEach(shape => { shape.Selected = false; shape.Hover = false; });
-            if (links != null)
-                LinksFrom(page, links).ForEach(link => { link.Selected = false; link.Hover = false; });
+            if (ContextAssistant.ContextShapes != null)
+                ShapesFrom(page).ForEach(shape => { shape.Selected = false; shape.Hover = false; });
+            if (ContextAssistant.ContextLinks != null)
+                LinksFrom(page).ForEach(link => { link.Selected = false; link.Hover = false; });
         }
 
         private static readonly int Step = TraceAssistant.CellSize; // Размер клетки
@@ -87,12 +86,12 @@ namespace CodeGenerator
         public static XElement CopyPageToXml(Page? page)
         {
             var xmodel = new XElement("Copy");
-            foreach (var shape in ShapesFrom(page, ContextAssistant.ContextShapes))
+            foreach (var shape in ShapesFrom(page))
             {
                 var xshape = shape.WriteContent();
                 xmodel.Add(xshape);
             }
-            foreach (var link in LinksFrom(page, ContextAssistant.ContextLinks))
+            foreach (var link in LinksFrom(page))
             {
                 var xlink = link.WriteContentExtended();
                 xmodel.Add(xlink);
@@ -236,8 +235,7 @@ namespace CodeGenerator
             ContextAssistant.ContextLinks.AddRange(pastedLinks);
         }
 
-        public static void PasteFromXml(XElement xmodel, List<Shape> shapes, List<Link> links, Point point,
-            Action<Shape> subscribeShapeEvents)
+        public static void PasteFromXml(XElement xmodel, Point point, Action<Shape> subscribeShapeEvents)
         {
             if (xmodel == null) return;
             Dictionary<Guid, Guid> guids = [];
@@ -289,8 +287,10 @@ namespace CodeGenerator
                     }
                 }
             }
-            shapes.AddRange(pastedShapes);
-            links.AddRange(pastedLinks);
+
+
+            ContextAssistant.ContextShapes.AddRange(pastedShapes);
+            ContextAssistant.ContextLinks.AddRange(pastedLinks);
 
             var p = new Point(
                 pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
@@ -352,9 +352,9 @@ namespace CodeGenerator
 
         public static void UpdateLinksOnPage(Page? page)
         {
-            foreach (var item in LinksFrom(page, ContextAssistant.ContextLinks))
+            foreach (var item in LinksFrom(page))
                 item.SetPoints([]);
-            foreach (var item in LinksFrom(page, ContextAssistant.ContextLinks).OrderBy(x => x.Length))
+            foreach (var item in LinksFrom(page).OrderBy(x => x.Length))
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, item)]);
         }
 
