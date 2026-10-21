@@ -139,7 +139,7 @@ namespace CodeGenerator
                 {
                     if (shape.ContainsPoint(firstPoint, 5f / (float)drawPanel.Zoom))
                     {
-                        shape.Click(runEmulate);
+                        shape.Click(runEmulate, firstPoint);
                         break;
                     }
                 }
@@ -414,18 +414,18 @@ namespace CodeGenerator
                         ModelAssistant.UpdateLinksOnPage(page);
                         if (xElementsOnCurrentPageBeforeDrag != null)
                         {
-                            var rect = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).First().Bounds;
-                            var selectedRects = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Select(x => x.Bounds)
-                                .Union(ModelAssistant.LinksFrom(page).Where(x => x.Selected).Select(x => x.Bounds));
-                            foreach (var r in selectedRects) rect = Rectangle.Union(rect, r);
+                            //var rect = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).First().Bounds;
+                            //var selectedRects = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Select(x => x.Bounds)
+                            //    .Union(ModelAssistant.LinksFrom(page).Where(x => x.Selected).Select(x => x.Bounds));
+                            //foreach (var r in selectedRects) rect = Rectangle.Union(rect, r);
                             UndoRedoManager.Execute(new DragShapesAndLinksCommand(ContextAssistant.Context, page,
                                 xElementsOnCurrentPageBeforeDrag, ModelAssistant.CopyPageToXml(page), SubscribeShapeEvents, UnsubscribeShapeEvents));
-                            foreach (var shape in ModelAssistant.ShapesFrom(page))
-                                if (rect.IntersectsWith(shape.Bounds))
-                                    shape.Selected = true;
-                            foreach (var link in ModelAssistant.LinksFrom(page))
-                                if (rect.Contains(link.Bounds))
-                                    link.Selected = true;
+                            //foreach (var shape in ModelAssistant.ShapesFrom(page))
+                            //    if (rect.IntersectsWith(shape.Bounds))
+                            //        shape.Selected = true;
+                            //foreach (var link in ModelAssistant.LinksFrom(page))
+                            //    if (rect.Contains(link.Bounds))
+                            //        link.Selected = true;
                         }
                         modelChanged = !runEmulate;
                         drawPanel.Refresh();
