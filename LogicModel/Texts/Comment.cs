@@ -3,17 +3,15 @@ using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
-#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
-    public class Comment : Func, ITraceTransparent
+    public class Comment : Func, ITraceTransparent, IAcceptClick
     {
         public string[] Lines = [""];
 
         public Comment()
         {
-            FuncDesc = "Описание параметра";
+            FuncDesc = "Комментарий";
             FuncName = "COMMENT";
             Width = 48 * 4;
             Height = 48 / 8;
@@ -44,6 +42,7 @@ namespace LogicModel
 
         private bool IsEmpty => Lines.Length == 0 || Lines.Length == 1 && string.IsNullOrWhiteSpace(Lines[0]);
 
+        public bool CanAcceptClick => true;
 
         protected override void CalculateHeight()
         {
@@ -79,15 +78,20 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public override void Click(bool runEmulate)
+        public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
-                Click(ChangeText);
+                Click(ChangeText, point ?? Point.Empty);
         }
 
         private void ChangeText(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { LinesValue = Lines };
+            var dlg = new InputValueForm { Text = FuncDesc, LinesValue = Lines };
+            if (args.Length > 0 && args[0] is Point location)
+            {
+                dlg.StartPosition = FormStartPosition.Manual;
+                dlg.Location = location;
+            }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Lines = dlg.LinesValue;

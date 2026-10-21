@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class DescriptionBox : Func
+    public class DescriptionBox : Func, IAcceptClick
     {
         public string[] Lines = [""];
 
@@ -40,6 +40,8 @@ namespace LogicModel
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
         private bool IsEmpty => Lines.Length == 0 || Lines.Length == 1 && string.IsNullOrWhiteSpace(Lines[0]);
+
+        public bool CanAcceptClick => true;
 
         public override GraphicsPath[] GetTextPaths()
         {
@@ -87,15 +89,20 @@ namespace LogicModel
             return infos;
         }
 
-        public override void Click(bool runEmulate)
+        public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
-                Click(ChangeText);
+                Click(ChangeText, point ?? Point.Empty);
         }
 
         private void ChangeText(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { LinesValue = Lines };
+            var dlg = new InputValueForm { Text = FuncDesc, LinesValue = Lines };
+            if (args.Length > 0 && args[0] is Point location)
+            {
+                dlg.StartPosition = FormStartPosition.Manual;
+                dlg.Location = location;
+            }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Lines = dlg.LinesValue;

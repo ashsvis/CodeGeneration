@@ -2,9 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
-#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public class Numeric : Func, IAcceptClick
     {
@@ -61,15 +59,20 @@ namespace LogicModel
             }
         }
 
-        public override void Click(bool runEmulate)
+        public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
-                Click(ChangeValue);
+                Click(ChangeValue, point ?? Point.Empty);
         }
 
         private void ChangeValue(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { DoubleValue = Value };
+            var dlg = new InputValueForm { Text = "Введите число", DoubleValue = Value };
+            if (args.Length > 0 && args[0] is Point location)
+            {
+                dlg.StartPosition = FormStartPosition.Manual;
+                dlg.Location = location;
+            }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Value = dlg.DoubleValue;

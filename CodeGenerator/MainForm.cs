@@ -611,9 +611,11 @@ namespace CodeGenerator
                     addShapes = false;
                     addShape = null;
 
-                    Shapes.ForEach(shape => shape.Selected = false);
+                    UnselectAll();
                     var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
                     UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                    if (draged.Shape is IAcceptClick clickedShape)
+                        draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }

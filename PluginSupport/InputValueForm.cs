@@ -16,7 +16,6 @@ namespace PluginSupport
             get { return tbValue.Text; }
             set
             {
-                Text = @"Введите строку символов";
                 tbValue.Text = value;
                 tbValue.Multiline = false;
                 tbValue.TextAlign = HorizontalAlignment.Left;
@@ -31,7 +30,6 @@ namespace PluginSupport
             get { return tbValue.Lines; }
             set
             {
-                Text = @"Введите многострочный текст";
                 tbValue.Lines = value;
                 tbValue.Multiline = true;
                 tbValue.TextAlign = HorizontalAlignment.Left;
@@ -44,30 +42,6 @@ namespace PluginSupport
             }
         }
 
-        //private float _fvalue;
-
-        //[DefaultValue(null)]
-        //public float FloatValue
-        //{
-        //    get
-        //    {
-        //        Text = @"Введите натуральное число";
-        //        var fp = CultureInfo.GetCultureInfo("en-US");
-        //        float.TryParse(tbValue.Text.Replace(',', '.'), NumberStyles.Float, fp, out _fvalue);
-        //        return _fvalue;
-        //    }
-        //    set
-        //    {
-        //        _fvalue = value;
-        //        var fp = CultureInfo.GetCultureInfo("en-US");
-        //        tbValue.Text = _fvalue.ToString(fp);
-        //        tbValue.Multiline = false;
-        //        tbValue.TextAlign = HorizontalAlignment.Right;
-        //        AcceptButton = btnOk;
-        //        tbValue.SelectAll();
-        //    }
-        //}
-
         private double _dvalue;
 
         [DefaultValue(null)]
@@ -75,7 +49,6 @@ namespace PluginSupport
         {
             get
             {
-                Text = @"Введите натуральное число";
                 var fp = CultureInfo.GetCultureInfo("en-US");
                 double.TryParse(tbValue.Text.Replace(',', '.'), NumberStyles.Float, fp, out _dvalue);
                 return _dvalue;
@@ -107,7 +80,6 @@ namespace PluginSupport
         {
             get
             {
-                Text = @"Введите целое число";
                 var fp = CultureInfo.GetCultureInfo("en-US");
                 int.TryParse(tbValue.Text, NumberStyles.Float, fp, out _ivalue);
                 return _ivalue;

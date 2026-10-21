@@ -59,7 +59,7 @@ namespace LogicModel
             }
         }
 
-        public override void Click(bool runEmulate)
+        public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
                 Click(ChangeValue);

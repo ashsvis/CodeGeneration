@@ -231,13 +231,7 @@ namespace PluginSupport
             OnChange?.Invoke(this, EventArgs.Empty);
         }
 
-        public virtual void Click(bool runEmulate)
-        {
-            //OnClick?.Invoke(this, new ClickEventArgs((args) => 
-            //{ 
-            
-            //}, []));
-        }
+        public virtual void Click(bool runEmulate, Point? point = null) { }
 
         protected void Click(Action<MouseButtons, object[]> action,  params object[] args)
         {

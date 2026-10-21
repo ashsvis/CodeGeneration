@@ -2,9 +2,7 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
-#pragma warning disable IDE0130 // ѕространство имен (namespace) не соответствует структуре папок.
 namespace LogicModel
-#pragma warning restore IDE0130 // ѕространство имен (namespace) не соответствует структуре папок.
 {
     public class AnalogOutputTag : Func, IAcceptClick, INamedEmulationSource
     {
@@ -85,15 +83,20 @@ namespace LogicModel
             }
         }
 
-        public override void Click(bool runEmulate)
+        public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
-                Click(ChangeText);
+                Click(ChangeText, point ?? Point.Empty);
         }
 
         private void ChangeText(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { StrValue = TagName ?? "" };
+            var dlg = new InputValueForm { Text = "»м€ тега", StrValue = TagName ?? "" };
+            if (args.Length > 0 && args[0] is Point location)
+            {
+                dlg.StartPosition = FormStartPosition.Manual;
+                dlg.Location = location;
+            }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 TagName = dlg.StrValue;
