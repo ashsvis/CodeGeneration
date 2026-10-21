@@ -1,3 +1,4 @@
+using CodeGenerator.Commands;
 using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
@@ -6,7 +7,7 @@ using System.Xml.Linq;
 
 namespace CodeGenerator
 {
-    public partial class MainForm : Form, IHost
+    public partial class MainForm : Form, IHost, IUndoRedoSupport
     {
         private bool modelChanged = false;
 
@@ -21,6 +22,8 @@ namespace CodeGenerator
         private readonly Dictionary<string, Type> types = [];
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
+        private readonly UndoRedoManager UndoRedoManager = new();
+
 
         public MainForm()
         {
@@ -83,6 +86,12 @@ namespace CodeGenerator
                 Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = 2 });
             }
             ContextAssistant.Context = ContextKind.Model;
+            UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChaned;
+        }
+
+        private void UndoRedoManager_OnStateChaned(object? sender, EventArgs e)
+        {
+            drawPanel.Invalidate();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -590,13 +599,11 @@ namespace CodeGenerator
                 {
                     addShapes = false;
                     addShape = null;
+
                     Shapes.ForEach(shape => shape.Selected = false);
-                    var shape = draged.Shape;
-                    currentPoint = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    shape.Location = (Point)currentPoint;
-                    shape.Selected = true;
-                    SubscribeShapeEvents(shape);
-                    Shapes.Add(shape);
+                    var point = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
+                    UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+
                     SortAndAssignToPages();
                     modelChanged = true;
                     drawPanel.Invalidate();
@@ -1261,8 +1268,9 @@ namespace CodeGenerator
             }
 
             SortAndAssignToPages();
-            foreach (var page in Pages)
-                UpdateLinksOnPage(page);
+            //foreach (var page in Pages)
+            //    UpdateLinksOnPage(page);
+
             // подключение внешних ссылок
             foreach (var shape in Shapes)
             {
@@ -1300,7 +1308,7 @@ namespace CodeGenerator
                         var target = Shapes.FirstOrDefault(x => x.Id == link.TargetId);
                         if (source != null && target != null)
                         {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, []);
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                             Links.Add(link);
                         }
                     }
@@ -1363,7 +1371,7 @@ namespace CodeGenerator
                 }
                 foreach (var link in ModelAssistant.LinksFrom(page, Links))
                 {
-                    var xlink = link.WriteContent();
+                    var xlink = link.WriteContentExtended();
                     xpage.Add(xlink);
                 }
             }
@@ -1376,7 +1384,7 @@ namespace CodeGenerator
             }
             foreach (var link in ModelAssistant.LinksFrom(null, Links))
             {
-                var xlink = link.WriteContent();
+                var xlink = link.WriteContentExtended();
                 xothers.Add(xlink);
             }
         }
@@ -1552,13 +1560,14 @@ namespace CodeGenerator
         private void ClearAll()
         {
             var context = ContextAssistant.Context;
-            
+
             ContextAssistant.Context = ContextKind.Model;
             Links.Clear();
             // для всех удаляемых элементов
             foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
             ContextAssistant.ContextEnvironment.Reset();
+
             ContextAssistant.Context = ContextKind.Field;
             Links.Clear();
             // для всех удаляемых элементов
@@ -1575,6 +1584,7 @@ namespace CodeGenerator
             copycuted = null;
             pasted.Item2 = Rectangle.Empty;
             TraceAssistant.InitField(Shapes, Links);
+            UndoRedoManager.Clear();
         }
 
         private void TimerInterface_Tick(object sender, EventArgs e)
@@ -1586,6 +1596,8 @@ namespace CodeGenerator
             tsbRun.Checked = tsmiRun.Checked = runEmulate;
             tsmiModel.Checked = ContextAssistant.Context == ContextKind.Model;
             tsmiField.Checked = ContextAssistant.Context == ContextKind.Field;
+            tsmiUndo.Enabled = tsbUndo.Enabled = CanUndo();
+            tsmiRedo.Enabled = tsbRedo.Enabled = CanRedo();
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1795,6 +1807,38 @@ namespace CodeGenerator
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
                 drawPanel.Invalidate();
             }
+        }
+
+        public void Undo()
+        {
+            UndoRedoManager.Undo();
+        }
+
+        public void Redo()
+        {
+            UndoRedoManager.Redo();
+        }
+
+        public bool CanUndo()
+        {
+            return UndoRedoManager.UndoPossible();
+        }
+
+        public bool CanRedo()
+        {
+            return UndoRedoManager.RedoPossible();
+        }
+
+        private void TsmiUndo_Click(object sender, EventArgs e)
+        {
+            if (UndoRedoManager.UndoPossible())
+                UndoRedoManager.Undo();
+        }
+
+        private void TsmiRedo_Click(object sender, EventArgs e)
+        {
+            if (UndoRedoManager.RedoPossible())
+                UndoRedoManager.Redo();
         }
     }
 }

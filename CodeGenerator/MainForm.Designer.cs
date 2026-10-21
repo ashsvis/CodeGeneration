@@ -67,6 +67,9 @@
             tsbSave = new ToolStripButton();
             tsbPrint = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
+            tsbUndo = new ToolStripButton();
+            tsbRedo = new ToolStripButton();
+            toolStripSeparator5 = new ToolStripSeparator();
             tsbCut = new ToolStripButton();
             tsbCopy = new ToolStripButton();
             tsbPaste = new ToolStripButton();
@@ -222,17 +225,23 @@
             // 
             // tsmiUndo
             // 
+            tsmiUndo.Enabled = false;
+            tsmiUndo.Image = Properties.Resources.undo;
             tsmiUndo.Name = "tsmiUndo";
             tsmiUndo.ShortcutKeys = Keys.Control | Keys.Z;
             tsmiUndo.Size = new Size(184, 22);
             tsmiUndo.Text = "&Отменить";
+            tsmiUndo.Click += TsmiUndo_Click;
             // 
             // tsmiRedo
             // 
+            tsmiRedo.Enabled = false;
+            tsmiRedo.Image = Properties.Resources.redo;
             tsmiRedo.Name = "tsmiRedo";
             tsmiRedo.ShortcutKeys = Keys.Control | Keys.Y;
             tsmiRedo.Size = new Size(184, 22);
             tsmiRedo.Text = "&Повторить";
+            tsmiRedo.Click += TsmiRedo_Click;
             // 
             // toolStripSeparator3
             // 
@@ -331,7 +340,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, tsbRun });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbUndo, tsbRedo, toolStripSeparator5, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, tsbRun });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -382,6 +391,33 @@
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
             toolStripSeparator6.Size = new Size(6, 25);
+            // 
+            // tsbUndo
+            // 
+            tsbUndo.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbUndo.Enabled = false;
+            tsbUndo.Image = Properties.Resources.undo;
+            tsbUndo.ImageTransparentColor = Color.Magenta;
+            tsbUndo.Name = "tsbUndo";
+            tsbUndo.Size = new Size(23, 22);
+            tsbUndo.Text = "Отменить";
+            tsbUndo.Click += TsmiUndo_Click;
+            // 
+            // tsbRedo
+            // 
+            tsbRedo.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRedo.Enabled = false;
+            tsbRedo.Image = Properties.Resources.redo;
+            tsbRedo.ImageTransparentColor = Color.Magenta;
+            tsbRedo.Name = "tsbRedo";
+            tsbRedo.Size = new Size(23, 22);
+            tsbRedo.Text = "Повторить";
+            tsbRedo.Click += TsmiRedo_Click;
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(6, 25);
             // 
             // tsbCut
             // 
@@ -676,5 +712,8 @@
         private ToolStripMenuItem tsmiContext;
         private ToolStripMenuItem tsmiModel;
         private ToolStripMenuItem tsmiField;
+        private ToolStripButton tsbUndo;
+        private ToolStripButton tsbRedo;
+        private ToolStripSeparator toolStripSeparator5;
     }
 }
