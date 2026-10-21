@@ -413,8 +413,20 @@ namespace CodeGenerator
                         }
                         ModelAssistant.UpdateLinksOnPage(page);
                         if (xElementsOnCurrentPageBeforeDrag != null)
-                            UndoRedoManager.Execute(new DragShapesAndLinksCommand(ContextAssistant.Context, page, 
+                        {
+                            var rect = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).First().Bounds;
+                            var selectedRects = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Select(x => x.Bounds)
+                                .Union(ModelAssistant.LinksFrom(page, Links).Where(x => x.Selected).Select(x => x.Bounds));
+                            foreach (var r in selectedRects) rect = Rectangle.Union(rect, r);
+                            UndoRedoManager.Execute(new DragShapesAndLinksCommand(ContextAssistant.Context, page,
                                 xElementsOnCurrentPageBeforeDrag, ModelAssistant.CopyPageToXml(page), SubscribeShapeEvents, UnsubscribeShapeEvents));
+                            foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
+                                if (rect.IntersectsWith(shape.Bounds))
+                                    shape.Selected = true;
+                            foreach (var link in ModelAssistant.LinksFrom(page, Links))
+                                if (rect.Contains(link.Bounds))
+                                    link.Selected = true;
+                        }
                         modelChanged = !runEmulate;
                         drawPanel.Refresh();
                         Cursor = Cursors.Default;

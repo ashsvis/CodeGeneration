@@ -482,10 +482,10 @@ namespace CodeGenerator
                 shape.Delete();
                 ContextAssistant.ContextShapes.Remove(shape);
             }
-            ModelAssistant.SortAndAssignToPages();
+            SortAndAssignToPages();
 
             foreach (var index in pageIndexes.Distinct())
-                ModelAssistant.UpdateLinksOnPage(page);
+                UpdateLinksOnPage(page);
         }
     }
 }
