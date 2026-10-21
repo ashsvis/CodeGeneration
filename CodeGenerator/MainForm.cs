@@ -19,7 +19,7 @@ namespace CodeGenerator
         private static List<Shape> Shapes => ContextAssistant.ContextShapes;
         private static List<PluginSupport.Link> Links => ContextAssistant.ContextLinks;
 
-        private readonly Dictionary<string, Type> types = [];
+        //private readonly Dictionary<string, Type> types = [];
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
         private readonly UndoRedoManager UndoRedoManager = new();
@@ -67,7 +67,7 @@ namespace CodeGenerator
                 rootNode.Nodes.AddRange(plugin.TreeNodeItems());
                 var dict = plugin.GetTypes();
                 foreach (var key in dict.Keys)
-                    types.TryAdd(key, dict[key]);
+                    ModelAssistant.AddType(key, dict[key]);
             }
             const int totalPages = 5;
             const int totalPagesInRow = 10;
@@ -123,6 +123,8 @@ namespace CodeGenerator
 
         private bool runEmulate = false;
 
+        private XElement? xElementsOnCurrentPageBeforeDrag;
+
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
             firstPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
@@ -155,8 +157,7 @@ namespace CodeGenerator
                 {
                     if (copycuted != null)
                     {
-                        PasteFromXml(copycuted, Shapes, Links, firstPoint);
-                        SortAndAssignToPages();
+                        ModelAssistant.PasteFromXml(copycuted, Shapes, Links, firstPoint, SubscribeShapeEvents);
                         modelChanged = true;
                     }
                 }
@@ -240,7 +241,6 @@ namespace CodeGenerator
                     var other = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page, Shapes).Count(x => x.Selected) > 1 && !ctrl)
                         ModelAssistant.UnselectAllOnPage(page, Shapes, null);
-                    //ModelAssistant.ShapesFrom(page, shapes).ForEach(shape => shape.Selected = false);
                     shape.Selected = !runEmulate;
                     shape.Hover = !runEmulate;
                     shapeFound = true;
@@ -274,22 +274,6 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void SelectLinksForBothSelectedShapes(Page? page)
-        {
-            ModelAssistant.UnselectAllOnPage(page, null, Links);
-            var selected = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).ToList();
-            foreach (var link in ModelAssistant.LinksFrom(page, Links))
-            {
-                var sourceShape = selected.FirstOrDefault(x => x == link.Source);
-                var targetShape = selected.FirstOrDefault(x => x == link.Target);
-                if (sourceShape != null && targetShape != null)
-                {
-                    link.Selected = !runEmulate;
-                    link.Hover = !runEmulate;
-                }
-            }
-        }
-
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
@@ -305,7 +289,13 @@ namespace CodeGenerator
             {
                 if (!dragShapes && dragShapesPreview &&
                     (Math.Abs(firstPoint.X - ((Point)currentPoint).X) > 3 || Math.Abs(firstPoint.Y - ((Point)currentPoint).Y) > 3))
+                {
                     dragShapes = !runEmulate;
+                    if (dragShapes)
+                    {
+                        xElementsOnCurrentPageBeforeDrag = ModelAssistant.CopyPageToXml(page);
+                    }
+                }
                 if (dragShapes)
                 {
                     // начинаем перемещение фигур
@@ -314,13 +304,12 @@ namespace CodeGenerator
                     var dy = ePoint.Y - firstPoint.Y;
                     if (dragCopiedShapes)
                     {
-                        var copyed = CopySelectedToXml();
+                        var copyed = ModelAssistant.CopySelectedToXml();
                         var loc = new Point(
                             Shapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
                             Shapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
                         ModelAssistant.UnselectAll(Shapes, Links);
-                        PasteFromXml(copyed, Shapes, Links, loc);
-                        SortAndAssignToPages();
+                        ModelAssistant.PasteFromXml(copyed, Shapes, Links, loc, SubscribeShapeEvents);
                         dragCopiedShapes = false;
                         modelChanged = true;
                     }
@@ -395,57 +384,6 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        // требуется оптимизация производительности
-        private void HighLight(Page? page, Point point)
-        {
-            ModelAssistant.ShapesFrom(page, Shapes).ForEach(shape =>
-            {
-                shape.Hover = false;
-                shape.CanInputLink = false;
-                shape.CanOutputLink = false;
-            });
-            ModelAssistant.LinksFrom(page, Links).ForEach(link => link.Hover = false);
-            var list = ModelAssistant.ShapesFrom(page, Shapes);
-            foreach (var shape in list)
-            {
-                if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
-                {
-                    if (!runEmulate)
-                        Cursor = Cursors.Cross;
-                    shape.CanOutputLink = !runEmulate;
-                    break;
-                }
-                else
-                if (shape.IsInputTargetsPoint(point, out int index))
-                {
-                    Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
-                    if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
-                        shape.CanInputLink = !runEmulate &&
-                            firstShape.Page == shape.Page &&
-                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index);
-                    else
-                        shape.CanInputLink = false;
-                    shape.Hover = !runEmulate && !linkBuilding;
-                    break;
-                }
-                else
-                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
-                {
-                    shape.Hover = !runEmulate;
-                    if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
-                        Cursor = Cursors.Hand;
-                    break;
-                }
-            }
-        }
-
-        private static readonly int Step = TraceAssistant.CellSize; // Размер клетки
-
-        private static Point MovePointToGrid(Point point)
-        {
-            return new Point(point.X / Step * Step, point.Y / Step * Step);
-        }
-
         private void DrawPanel_MouseUp(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -461,8 +399,9 @@ namespace CodeGenerator
                         Cursor.Show();
                         dragShapesPreview = false;
                         dragShapes = false;
+
                         foreach (var shape in ModelAssistant.ShapesFrom(page, Shapes))
-                            shape.Location = MovePointToGrid(shape.Location);
+                            shape.Location = ModelAssistant.MovePointToGrid(shape.Location);
                         foreach (var link in ModelAssistant.LinksFrom(page, Links))
                         {
                             var source = ModelAssistant.ShapesFrom(page, Shapes).FirstOrDefault(x => x.Id == link.SourceId);
@@ -472,9 +411,10 @@ namespace CodeGenerator
                             if (target != null && target.GetInputPinPoint(link.TargetPinIndex) is Point targetPinPoint)
                                 link.EndPoint = targetPinPoint;
                         }
-                        UpdateLinksOnPage(page);
-
-                        SortAndAssignToPages();
+                        ModelAssistant.UpdateLinksOnPage(page);
+                        if (xElementsOnCurrentPageBeforeDrag != null)
+                            UndoRedoManager.Execute(new DragShapesAndLinksCommand(ContextAssistant.Context, page, 
+                                xElementsOnCurrentPageBeforeDrag, ModelAssistant.CopyPageToXml(page), SubscribeShapeEvents, UnsubscribeShapeEvents));
                         modelChanged = !runEmulate;
                         drawPanel.Refresh();
                         Cursor = Cursors.Default;
@@ -528,7 +468,7 @@ namespace CodeGenerator
                                             firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
                                             // сохранение настроек связи для цели
                                             shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
-                                            SortAndAssignToPages();
+                                            ModelAssistant.SortAndAssignToPages();
                                             modelChanged = !runEmulate;
                                         }
                                     }
@@ -568,6 +508,65 @@ namespace CodeGenerator
             }
         }
 
+        private void SelectLinksForBothSelectedShapes(Page? page)
+        {
+            ModelAssistant.UnselectAllOnPage(page, null, Links);
+            var selected = ModelAssistant.ShapesFrom(page, Shapes).Where(x => x.Selected).ToList();
+            foreach (var link in ModelAssistant.LinksFrom(page, Links))
+            {
+                var sourceShape = selected.FirstOrDefault(x => x == link.Source);
+                var targetShape = selected.FirstOrDefault(x => x == link.Target);
+                if (sourceShape != null && targetShape != null)
+                {
+                    link.Selected = !runEmulate;
+                    link.Hover = !runEmulate;
+                }
+            }
+        }
+
+        private void HighLight(Page? page, Point point)
+        {
+            ModelAssistant.ShapesFrom(page, Shapes).ForEach(shape =>
+            {
+                shape.Hover = false;
+                shape.CanInputLink = false;
+                shape.CanOutputLink = false;
+            });
+            ModelAssistant.LinksFrom(page, Links).ForEach(link => link.Hover = false);
+            var list = ModelAssistant.ShapesFrom(page, Shapes);
+            foreach (var shape in list)
+            {
+                if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
+                {
+                    if (!runEmulate)
+                        Cursor = Cursors.Cross;
+                    shape.CanOutputLink = !runEmulate;
+                    break;
+                }
+                else
+                if (shape.IsInputTargetsPoint(point, out int index))
+                {
+                    Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
+                    if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
+                        shape.CanInputLink = !runEmulate &&
+                            firstShape.Page == shape.Page &&
+                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index);
+                    else
+                        shape.CanInputLink = false;
+                    shape.Hover = !runEmulate && !linkBuilding;
+                    break;
+                }
+                else
+                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
+                {
+                    shape.Hover = !runEmulate;
+                    if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
+                        Cursor = Cursors.Hand;
+                    break;
+                }
+            }
+        }
+
         private void DrawPanel_QueryContinueDrag(object? sender, QueryContinueDragEventArgs e)
         {
             e.Action = e.EscapePressed ? DragAction.Cancel : DragAction.Continue;
@@ -580,7 +579,7 @@ namespace CodeGenerator
             {
                 if (e.AllowedEffect == DragDropEffects.Copy)
                 {
-                    currentPoint = MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
+                    currentPoint = ModelAssistant.MovePointToGrid(Point.Ceiling(drawPanel.GetLocation(new Point(e.X, e.Y))));
                     drawPanel.Invalidate();
                     e.Effect = DragDropEffects.Copy;
                 }
@@ -601,10 +600,8 @@ namespace CodeGenerator
                     addShape = null;
 
                     Shapes.ForEach(shape => shape.Selected = false);
-                    var point = MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
+                    var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
                     UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
-
-                    SortAndAssignToPages();
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }
@@ -669,10 +666,11 @@ namespace CodeGenerator
                 Shapes.ForEach(shape => shape.Selected = false);
                 var shape = source.DeepClone();
                 shape.NewGuid();
-                shape.Location = Point.Add(shape.Location, new Size(12, 12));
-                SubscribeShapeEvents(shape);
-                Shapes.Add(shape);
-                SortAndAssignToPages();
+
+                var point = Point.Add(shape.Location, new Size(12, 12));
+                UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+
+                ModelAssistant.SortAndAssignToPages();
                 shape.Selected = true;
                 modelChanged = true;
                 drawPanel.Invalidate();
@@ -703,69 +701,11 @@ namespace CodeGenerator
             foreach (var index in pageIndexes.Distinct())
             {
                 var page = Pages.FirstOrDefault(x => x.Number == index);
-                UpdateLinksOnPage(page);
+                ModelAssistant.UpdateLinksOnPage(page);
             }
             drawPanel.Invalidate();
         }
 
-        private static void UpdateLinksOnPage(Page? page)
-        {
-            foreach (var item in ModelAssistant.LinksFrom(page, Links))
-                item.SetPoints([]);
-            foreach (var item in ModelAssistant.LinksFrom(page, Links).OrderBy(x => x.Length))
-                item.SetPoints([.. TraceAssistant.BuildWaveInField(page, Shapes, Links, item)]);
-        }
-
-        private static void SortAndAssignToPages()
-        {
-            ModelAssistant.ClearCache();
-
-            // сброс номеров страниц
-            Shapes.ForEach(shape => shape.Page = 0);
-            Links.ForEach(link => link.Page = 0);
-
-            // назначение номеров страниц на основании попадания в область листа
-            foreach (var page in Pages)
-            {
-                foreach (var shape in Shapes.Where(x => x.Page == 0))
-                {
-                    var p = Pages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
-                    if (p != null) shape.Page = p.Number;
-                }
-                foreach (var link in Links.Where(x => x.Page == 0))
-                {
-                    var p = Pages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
-                    if (p != null) link.Page = p.Number;
-                }
-            }
-
-            // назначение порядкового индекса для фигур
-            var n = 0;
-            foreach (var shape in Shapes.OrderBy(x => x.Page).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
-            {
-                shape.Index = n;    // назначение порядкового индекса
-                n++;
-            }
-            Shapes.Sort(new ShapesComparer());
-
-            // назначение порядкового индекса для исходящих внеших ссылок
-            n = 1;
-            foreach (var shape in Shapes.OrderBy(x => x.Index))
-            {
-                if (shape is IPageSourceLink link)
-                {
-                    link.SetLinkNumber(n++);
-                }
-            }
-        }
-
-        class ShapesComparer : IComparer<Shape>
-        {
-            public int Compare(Shape? x, Shape? y)
-            {
-                return x == null || y == null ? 0 : x.Index > y.Index ? 1 : x.Index < y.Index ? -1 : 0;
-            }
-        }
 
         public void AddControlToMainForm(Control control)
         {
@@ -1033,44 +973,8 @@ namespace CodeGenerator
         {
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-            // сбор элементов для удаления на основании их выбранности
-            var shapesForDelete = Shapes.Where(x => x.Selected).ToList();
-            // сбор связей, которые используются удаляемыми элементами
-            var linksForDelete = Links.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
-            List<int> pageIndexes = [];
-            foreach (var link in linksForDelete)
-            {
-                // ищем источник и цель
-                var source = Shapes.FirstOrDefault(x => x == link.Source);
-                var target = Shapes.FirstOrDefault(x => x == link.Target);
 
-                // если найдены оба, то отписывается
-                if (source != null && target != null)
-                    link.UnlinkToLocation(source, target);
-
-                pageIndexes.Add(link.Page);
-
-                // удаляем визуальную ссылку
-                Links.Remove(link);
-                //UpdateOtherLinks(link);
-            }
-            // для всех удаляемых элементов
-            foreach (var shape in shapesForDelete)
-                UnsubscribeShapeEvents(shape);
-            foreach (var shape in shapesForDelete)
-            {
-                pageIndexes.Add(shape.Page);
-
-                shape.Delete();
-                Shapes.Remove(shape);
-            }
-            SortAndAssignToPages();
-
-            foreach (var index in pageIndexes.Distinct())
-            {
-                var page = Pages.FirstOrDefault(x => x.Number == index);
-                UpdateLinksOnPage(page);
-            }
+            ModelAssistant.RemoveSelected(UnsubscribeShapeEvents);
 
             modelChanged = true;
             drawPanel.Invalidate();
@@ -1207,8 +1111,6 @@ namespace CodeGenerator
             var env = ContextAssistant.ContextEnvironment;
             drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
             drawPanel.Invalidate();
-
-            drawPanel.Invalidate();
         }
 
         private void ReadContextFromXml(XElement? xcontext)
@@ -1259,15 +1161,15 @@ namespace CodeGenerator
                             page.Height = ParseHelper.ParseInteger(xheight, 297);
                     }
                 }
-                n = ReadElements(n, xpage);
+                n = ModelAssistant.ReadElements(n, xpage, SubscribeShapeEvents);
             }
             var xothers = xcontext.Element("OutsidePages");
             if (xothers != null)
             {
-                n = ReadElements(n, xothers);
+                n = ModelAssistant.ReadElements(n, xothers, SubscribeShapeEvents);
             }
 
-            SortAndAssignToPages();
+            ModelAssistant.SortAndAssignToPages();
             //foreach (var page in Pages)
             //    UpdateLinksOnPage(page);
 
@@ -1284,38 +1186,6 @@ namespace CodeGenerator
                     }
                 }
             }
-        }
-
-        private int ReadElements(int n, XElement xpage)
-        {
-            foreach (var xelement in xpage.Descendants())
-            {
-                if (types.ContainsKey($"{xelement.Name}"))
-                {
-                    var type = types[$"{xelement.Name}"];
-                    var obj = Activator.CreateInstance(type);
-                    if (obj is Shape shape)
-                    {
-                        shape.Index = n++;
-                        shape.ReadContent(xelement);
-                        SubscribeShapeEvents(shape);
-                        Shapes.Add(shape);
-                    }
-                    else if (obj is Link link)
-                    {
-                        link.ReadContent(xelement);
-                        var source = Shapes.FirstOrDefault(x => x.Id == link.SourceId);
-                        var target = Shapes.FirstOrDefault(x => x.Id == link.TargetId);
-                        if (source != null && target != null)
-                        {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
-                            Links.Add(link);
-                        }
-                    }
-                }
-            }
-
-            return n;
         }
 
         public void SaveXml(string filename)
@@ -1389,169 +1259,6 @@ namespace CodeGenerator
             }
         }
 
-        public static XElement CopySelectedToXml()
-        {
-            var xmodel = new XElement("Copy");
-            foreach (var shape in Shapes.Where(x => x.Selected))
-            {
-                var xshape = shape.WriteContent();
-                xmodel.Add(xshape);
-            }
-            foreach (var link in Links.Where(x => x.Selected))
-            {
-                var xlink = link.WriteContentExtended();
-                xmodel.Add(xlink);
-            }
-            return xmodel;
-        }
-
-        private (GraphicsPath[], Rectangle) PasteFromXml(XElement xmodel)
-        {
-            if (xmodel == null) return ([], Rectangle.Empty);
-            List<Shape> pastedShapes = [];
-            List<Link> pastedLinks = [];
-            var rect = Rectangle.Empty;
-            int n = 0;
-            foreach (var xelement in xmodel.Descendants())
-            {
-                if (types.ContainsKey($"{xelement.Name}"))
-                {
-                    var type = types[$"{xelement.Name}"];
-                    var obj = Activator.CreateInstance(type);
-                    if (obj is Shape shape)
-                    {
-                        shape.Selected = true;
-                        shape.Index = n++;
-                        shape.ReadContent(xelement);
-                        SubscribeShapeEvents(shape);
-                        pastedShapes.Add(shape);
-                        rect = rect.IsEmpty ? shape.Bounds : Rectangle.Union(rect, shape.Bounds);
-                    }
-                    else if (obj is Link link)
-                    {
-                        link.ReadContent(xelement);
-                        var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
-                        var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
-                        if (source != null && target != null)
-                        {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
-                            pastedLinks.Add(link);
-                        }
-                    }
-                }
-            }
-            foreach (var link in pastedLinks)
-            {
-                link.Selected = true;
-                var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
-                if (source != null)
-                {
-                    source.NewGuid();
-                    link.SourceId = source.Id;
-                }
-                var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
-                if (target != null)
-                {
-                    target.NewGuid();
-                    link.TargetId = target.Id;
-                }
-            }
-
-            List<GraphicsPath> list = [];
-            foreach (var shape in pastedShapes)
-            {
-                list.AddRange(shape.GetGraphicsPaths());
-                list.AddRange(shape.GetTextPaths());
-            }
-            foreach (var link in pastedLinks)
-            {
-                list.AddRange(link.GetLinesPaths());
-                list.AddRange(link.GetDotsPaths());
-            }
-            return ([.. list], rect);
-        }
-
-        private void PasteFromXml(XElement xmodel, List<Shape> shapes, List<Link> links, Point point)
-        {
-            if (xmodel == null) return;
-            Dictionary<Guid, Guid> guids = [];
-            List<Shape> pastedShapes = [];
-            List<Link> pastedLinks = [];
-            int n = 0;
-            foreach (var xelement in xmodel.Descendants())
-            {
-                if (types.ContainsKey($"{xelement.Name}"))
-                {
-                    var type = types[$"{xelement.Name}"];
-                    var obj = Activator.CreateInstance(type);
-                    if (obj is Shape shape)
-                    {
-                        shape.Selected = true;
-                        shape.Index = n++;
-                        shape.ReadContent(xelement);
-                        SubscribeShapeEvents(shape);
-                        pastedShapes.Add(shape);
-
-                        if (!guids.ContainsKey(shape.Id))
-                        {
-                            var id = Guid.NewGuid();
-                            guids.Add(shape.Id, id);
-                            shape.NewGuid(id);
-                        }
-                    }
-                    else if (obj is Link link)
-                    {
-                        link.ReadContent(xelement);
-                        var oldid = link.SourceId;
-                        if (guids.TryGetValue(oldid, out Guid svalue))
-                        {
-                            link.SourceId = svalue;
-                        }
-                        oldid = link.TargetId;
-                        if (guids.TryGetValue(oldid, out Guid tvalue))
-                        {
-                            link.TargetId = tvalue;
-                        }
-                        var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
-                        var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
-                        if (source != null && target != null)
-                        {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
-                            link.Selected = true;
-                            pastedLinks.Add(link);
-                        }
-                    }
-                }
-            }
-            shapes.AddRange(pastedShapes);
-            links.AddRange(pastedLinks);
-
-            var p = new Point(
-                pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
-                pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-            foreach (var shape in pastedShapes)
-            {
-                shape.Location = Point.Add(shape.Location, new Size(point.X - p.X, point.Y - p.Y));
-                shape.Location = MovePointToGrid(shape.Location);
-            }
-            foreach (var link in pastedLinks)
-            {
-                link.StartPoint = Point.Add(link.StartPoint, new Size(point.X - p.X, point.Y - p.Y));
-                link.EndPoint = Point.Add(link.EndPoint, new Size(point.X - p.X, point.Y - p.Y));
-                var points = link.GetPoints();
-                for (var i = 0; i < points.Length; i++)
-                    points[i] = Point.Add(points[i], new Size(point.X - p.X, point.Y - p.Y));
-                link.SetPoints(points);
-
-                link.StartPoint = MovePointToGrid(link.StartPoint);
-                link.EndPoint = MovePointToGrid(link.EndPoint);
-                points = link.GetPoints();
-                for (var i = 0; i < points.Length; i++)
-                    points[i] = MovePointToGrid(points[i]);
-                link.SetPoints(points);
-            }
-        }
-
         private void TsmiCreate_Click(object sender, EventArgs e)
         {
             ClearAll();
@@ -1603,13 +1310,13 @@ namespace CodeGenerator
         private void TsmiCopy_Click(object sender, EventArgs e)
         {
             if (runEmulate) return;
-            copycuted = CopySelectedToXml();
+            copycuted = ModelAssistant.CopySelectedToXml();
         }
 
         private void TsmiCut_Click(object sender, EventArgs e)
         {
             if (runEmulate) return;
-            copycuted = CopySelectedToXml();
+            copycuted = ModelAssistant.CopySelectedToXml();
             RemoveSelected();
         }
 
@@ -1620,7 +1327,7 @@ namespace CodeGenerator
             {
                 Shapes.ForEach(x => x.Selected = false);
                 Links.ForEach(x => x.Selected = false);
-                pasted = PasteFromXml(copycuted);
+                pasted = ModelAssistant.PasteFromXml(copycuted, SubscribeShapeEvents);
                 movePasted = true;
             }
         }
@@ -1821,23 +1528,23 @@ namespace CodeGenerator
 
         public bool CanUndo()
         {
-            return UndoRedoManager.UndoPossible();
+            return !runEmulate && UndoRedoManager.UndoPossible();
         }
 
         public bool CanRedo()
         {
-            return UndoRedoManager.RedoPossible();
+            return !runEmulate && UndoRedoManager.RedoPossible();
         }
 
         private void TsmiUndo_Click(object sender, EventArgs e)
         {
-            if (UndoRedoManager.UndoPossible())
+            if (CanUndo())
                 UndoRedoManager.Undo();
         }
 
         private void TsmiRedo_Click(object sender, EventArgs e)
         {
-            if (UndoRedoManager.RedoPossible())
+            if (CanRedo())
                 UndoRedoManager.Redo();
         }
     }

@@ -20,6 +20,7 @@ namespace CodeGenerator.Commands
             shape.Selected = true;
             subscribeShapeEvents(shape);
             ContextAssistant.ContextShapes.Add(shape);
+            ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
         }
 
@@ -30,6 +31,7 @@ namespace CodeGenerator.Commands
             unsubscribeShapeEvents(shape);
             shape.Delete();
             ContextAssistant.ContextShapes.Remove(shape);
+            ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
         }
     }
