@@ -455,38 +455,41 @@ namespace CodeGenerator
                                 }
                                 else if (linked.Page == shape.Page)
                                 {
-                                    // создание представления связи
-                                    var type = shape.GetLinkTypeToCreate();
-                                    var link = (PluginSupport.Link?)Activator.CreateInstance(type);
-                                    if (link != null)
-                                    {
-                                        var startPoint = firstShape.GetOutputPinPoint(0);
-                                        var endPoint = shape.GetInputPinPoint(index);
-                                        if (startPoint != null && endPoint != null)
-                                        {
-                                            link.StartPoint = (Point)startPoint;
-                                            link.EndPoint = (Point)endPoint;
-                                            // построение волны и точек визуальной связи
-                                            var points = TraceAssistant.BuildWaveInField(page, Shapes, Links, link);
+                                    //// создание представления связи
+                                    //var type = shape.GetLinkTypeToCreate();
+                                    //var link = (PluginSupport.Link?)Activator.CreateInstance(type);
+                                    //if (link != null)
+                                    //{
+                                    //    var startPoint = firstShape.GetOutputPinPoint(0);
+                                    //    var endPoint = shape.GetInputPinPoint(index);
+                                    //    if (startPoint != null && endPoint != null)
+                                    //    {
+                                    //        link.StartPoint = (Point)startPoint;
+                                    //        link.EndPoint = (Point)endPoint;
+                                    //        // построение волны и точек визуальной связи
+                                    //        var points = TraceAssistant.BuildWaveInField(page, Shapes, Links, link);
 
-                                            link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
-                                            Links.Add(link);
-                                            // настройка фигуры для установления связи
-                                            shape.SetInputValue(index, firstShape.GetOutputValue(0));
+                                    //        link.LinkToLocation(firstShape, 0, link.StartPoint, shape, index, link.EndPoint, points);
+                                    //        Links.Add(link);
+                                    //        // настройка фигуры для установления связи
+                                    //        shape.SetInputValue(index, firstShape.GetOutputValue(0));
 
-                                            // сохранение настроек для визуальной связи
-                                            link.Source = firstShape;
-                                            link.SourcePinIndex = 0;
-                                            link.Target = shape;
-                                            link.TargetPinIndex = index;
-                                            // сохранение настроек связи для источника
-                                            firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
-                                            // сохранение настроек связи для цели
-                                            shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
-                                            ModelAssistant.SortAndAssignToPages();
-                                            modelChanged = !runEmulate;
-                                        }
-                                    }
+                                    //        // сохранение настроек для визуальной связи
+                                    //        link.Source = firstShape;
+                                    //        link.SourcePinIndex = 0;
+                                    //        link.Target = shape;
+                                    //        link.TargetPinIndex = index;
+                                    //        // сохранение настроек связи для источника
+                                    //        firstShape.SetOutputTarget(link.SourcePinIndex, link.Target, link.TargetPinIndex, link.Id);
+                                    //        // сохранение настроек связи для цели
+                                    //        shape.SetInputSource(link.TargetPinIndex, link.Source, link.SourcePinIndex, link.Id);
+                                    //        ModelAssistant.SortAndAssignToPages();
+
+                                    //        modelChanged = !runEmulate;
+                                    //    }
+                                    //}
+                                    UndoRedoManager.Execute(new BuildLinkCommand(ContextAssistant.Context, page, firstShape, 0, shape, index));
+                                    modelChanged = !runEmulate;
                                 }
                                 else
                                 {
@@ -1555,14 +1558,12 @@ namespace CodeGenerator
 
         private void TsmiUndo_Click(object sender, EventArgs e)
         {
-            if (CanUndo())
-                UndoRedoManager.Undo();
+            if (CanUndo()) UndoRedoManager.Undo();
         }
 
         private void TsmiRedo_Click(object sender, EventArgs e)
         {
-            if (CanRedo())
-                UndoRedoManager.Redo();
+            if (CanRedo()) UndoRedoManager.Redo();
         }
     }
 }

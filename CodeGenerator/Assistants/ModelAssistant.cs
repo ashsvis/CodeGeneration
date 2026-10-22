@@ -358,6 +358,12 @@ namespace CodeGenerator
                 item.SetPoints([.. TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, item)]);
         }
 
+        public static void UpdateLinkOnPage(Page? page, Link? link)
+        {
+            link?.SetPoints([]);
+            link?.SetPoints([.. TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, link)]);
+        }
+
         public static void SortAndAssignToPages()
         {
             ClearCache();
