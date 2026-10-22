@@ -115,9 +115,9 @@ namespace CodeGenerator
             return xmodel;
         }
 
-        public static (GraphicsPath[], Rectangle) PasteFromXml(XElement xmodel, Point? offset = null)
+        public static (GraphicsPath[], Rectangle, Point) PasteFromXml(XElement xmodel, Point? point = null)
         {
-            if (xmodel == null) return ([], Rectangle.Empty);
+            if (xmodel == null) return ([], Rectangle.Empty, Point.Empty);
             List<Shape> pastedShapes = [];
             List<Link> pastedLinks = [];
             var rect = Rectangle.Empty;
@@ -150,7 +150,7 @@ namespace CodeGenerator
                     }
                 }
             }
-
+            var zero = new Point(pastedShapes.Min(p => p.Location.X), pastedShapes.Min(p => p.Location.Y));
             foreach (var link in pastedLinks)
             {
                 link.Selected = true;
@@ -170,26 +170,27 @@ namespace CodeGenerator
                 }
             }
 
-            if (offset is Point point)
-            {
-                var p = new Point(
-                    pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
-                    pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-                var size = new Size(p.X - point.X, p.Y - point.Y);
-                foreach (var shape in pastedShapes)
-                {
-                    shape.Location = Point.Add(shape.Location, size);
-                }
-                foreach (var link in pastedLinks)
-                {
-                    link.StartPoint = Point.Add(link.StartPoint, size);
-                    link.EndPoint = Point.Add(link.EndPoint, size);
-                    var points = link.GetPoints();
-                    for (var i = 0; i < points.Length; i++)
-                        points[i] = Point.Add(points[i], size);
-                    link.SetPoints(points);
-                }
-            }
+            //if (offset is Point point)
+            //{
+            //    //var p = new Point(
+            //    //    pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
+            //    //    pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
+            //    var p = Point.Empty;
+            //    var size = new Size(point.X, point.Y);
+            //    foreach (var shape in pastedShapes)
+            //    {
+            //        shape.Location = Point.Add(shape.Location, size);
+            //    }
+            //    foreach (var link in pastedLinks)
+            //    {
+            //        link.StartPoint = Point.Add(link.StartPoint, size);
+            //        link.EndPoint = Point.Add(link.EndPoint, size);
+            //        var points = link.GetPoints();
+            //        for (var i = 0; i < points.Length; i++)
+            //            points[i] = Point.Add(points[i], size);
+            //        link.SetPoints(points);
+            //    }
+            //}
 
             List<GraphicsPath> list = [];
             foreach (var shape in pastedShapes)
@@ -202,7 +203,7 @@ namespace CodeGenerator
                 list.AddRange(link.GetLinesPaths());
                 list.AddRange(link.GetDotsPaths());
             }
-            return ([.. list], rect);
+            return ([.. list], rect, Point.Subtract(point ?? Point.Empty, new Size(zero.X, zero.Y)));
         }
 
         /// <summary>

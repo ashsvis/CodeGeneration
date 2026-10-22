@@ -119,11 +119,9 @@ namespace CodeGenerator
 
         private bool movePasted = false;
         private XElement? copycuted;
-        private (GraphicsPath[], Rectangle) pasted;
+        private (GraphicsPath[], Rectangle, Point) pasted;
 
         private bool runEmulate = false;
-
-        private XElement? xElementsOnCurrentPageBeforeDrag;
 
         private void DrawPanel_MouseDown(object? sender, MouseEventArgs e)
         {
@@ -291,76 +289,10 @@ namespace CodeGenerator
                 if (!dragShapes && dragShapesPreview)
                 {
                     dragShapesPreview = false;
-
                     pasted = ModelAssistant.PasteFromXml(ModelAssistant.CopySelectedToXml(), currentPoint);
                     movePasted = true;
-                    drawPanel.Invalidate();
                     dragCopiedShapes = false;
-
                     dragShapes = !runEmulate;
-                    if (dragShapes)
-                    {
-                        //firstPoint = ModelAssistant.MovePointToGrid(Shapes.Where(x => x.Selected).First().Location);
-                        //xElementsOnCurrentPageBeforeDrag = ModelAssistant.CopyPageToXml(page);
-                    }
-                }
-                if (dragShapes)
-                {
-                    // начинаем перемещение фигур
-                    var ePoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
-                    var dx = ePoint.X - startPoint.X;
-                    var dy = ePoint.Y - startPoint.Y;
-                    if (dragCopiedShapes)
-                    {
-
-                        //var copyed = ModelAssistant.CopySelectedToXml();
-                        //var loc = new Point(
-                        //    Shapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
-                        //    Shapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-                        //ModelAssistant.UnselectAll();
-                        //ModelAssistant.PasteFromXml(copyed, loc, SubscribeShapeEvents);
-                        //dragCopiedShapes = false;
-                        //modelChanged = true;
-                    }
-                    // перемещаем только выбранные фигуры
-                    //List<Link> list = [];
-                    //for (var n = 0; n < Shapes.Count; n++)
-                    //{
-                    //    var shape = Shapes[n];
-                    //    if (shape.Selected)
-                    //    {
-                    //        shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                    //        var linksFromSource = Links.Where(x => x.Source == shape);
-                    //        if (shape.GetOutputPinPoint(0) is Point spoint)
-                    //        {
-                    //            foreach (var link in linksFromSource)
-                    //            {
-                    //                if (!list.Contains(link))
-                    //                {
-                    //                    link.StartPoint = spoint;
-                    //                    list.Add(link);
-                    //                }
-                    //            }
-                    //        }
-                    //        for (var i = 0; i < shape.CountInputs(); i++)
-                    //        {
-                    //            var link = Links.FirstOrDefault(x => x.Target == shape && x.TargetPinIndex == i);
-                    //            if (link != null && shape.GetInputPinPoint(i) is Point tpoint)
-                    //                link.EndPoint = tpoint;
-                    //        }
-                    //    }
-                    //}
-                    //foreach (var link in Links.Where(x => x.Selected))
-                    //{
-                    //    var pts = link.GetPoints();
-                    //    for (var i = 0; i < pts.Length; i++)
-                    //    {
-                    //        pts[i] = Point.Add(pts[i], new Size(dx, dy));
-                    //    }
-                    //    link.SetPoints(pts);
-                    //}
-                    modelChanged = !runEmulate;
-                    startPoint = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
                 }
                 else if (linkBuilding)
                 {
@@ -409,14 +341,14 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
 
-                        (GraphicsPath[] paths, Rectangle r) = pasted;
+                        (GraphicsPath[] paths, Rectangle r, Point p) = pasted;
                         var loc = drawPanel.GetLocation(MousePosition);
-                        loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-r.Left, -r.Top)));
+                        loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-r.Left - p.X, -r.Top - p.Y)));
                         var dx = loc.X;
                         var dy = loc.Y;
 
                         UndoRedoManager.Execute(new MoveShapesAndLinksCommand(ContextAssistant.Context, page, dx, dy,
-                            ModelAssistant.ShapesFrom(page).Where(x => x.Selected)));
+                            [.. ModelAssistant.ShapesFrom(page).Where(x => x.Selected)]));
 
                         movePasted = false;
                         modelChanged = !runEmulate;
@@ -709,7 +641,7 @@ namespace CodeGenerator
             // рисуем перетягиваемую из библиотеки фигуру
             if (addShapes && addShape is Shape added && currentPoint is Point _)
             {
-                added.Location = drawPanel.GetLocation(MousePosition);
+                added.Location = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(MousePosition));
                 using var defaultpen = new Pen(added.Foreground);
                 using var brush = new SolidBrush(added.Background);
                 addShape.Draw(e.Graphics, defaultpen, brush);
@@ -718,11 +650,11 @@ namespace CodeGenerator
             // рисуем перетягиваемые после Paste фигуры
             if (pasted.Item2 != Rectangle.Empty && movePasted)
             {
-                (GraphicsPath[] paths, Rectangle r) = pasted;
+                (GraphicsPath[] paths, Rectangle r, Point p) = pasted;
                 foreach (GraphicsPath path in paths)
                 {
-                    var loc =  drawPanel.GetLocation(MousePosition);
-                    loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-(int)r.Left, -(int)r.Top)));
+                    var loc = drawPanel.GetLocation(MousePosition);
+                    loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-r.Left - p.X, -r.Top - p.Y)));
                     e.Graphics?.TranslateTransform(loc.X, loc.Y);
                     e.Graphics?.DrawPath(Pens.Teal, path);
                     e.Graphics?.TranslateTransform(-loc.X, -loc.Y);
