@@ -85,10 +85,10 @@ namespace CodeGenerator
                 Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = 2 });
             }
             ContextAssistant.Context = ContextKind.Model;
-            UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChaned;
+            UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChanged;
         }
 
-        private void UndoRedoManager_OnStateChaned(object? sender, EventArgs e)
+        private void UndoRedoManager_OnStateChanged(object? sender, EventArgs e)
         {
             drawPanel.Invalidate();
         }
@@ -1187,24 +1187,7 @@ namespace CodeGenerator
             {
                 n = ModelAssistant.ReadElements(n, xothers, SubscribeShapeEvents);
             }
-
             ModelAssistant.SortAndAssignToPages();
-            //foreach (var page in Pages)
-            //    UpdateLinksOnPage(page);
-
-            // подключение внешних ссылок
-            foreach (var shape in Shapes)
-            {
-                if (shape is IPageSourceLink plink)
-                {
-                    foreach (var id in plink.GetIdsForConnect())
-                    {
-                        var target = Shapes.FirstOrDefault(shape => shape.Id == id);
-                        if (target == null) continue;
-                        plink.AddTarget(target);
-                    }
-                }
-            }
         }
 
         public void SaveXml(string filename)

@@ -85,10 +85,18 @@ namespace LogicModel
 
         public void AddTarget(Shape shape)
         {
-            if (shape is AnalogInputPageLink plink)
+            if (shape is AnalogInputPageLink plink && !Targets.Contains(plink))
             {
                 plink.SourcePageLink = this;
                 Targets.Add(plink);
+            }
+        }
+
+        public void ReplaceTargetId(Guid oldId, Guid newId)
+        {
+            for (var i = 0; i < targets.Count; i++)
+            {
+                if (targets[i] == oldId) targets[i] = newId;
             }
         }
 

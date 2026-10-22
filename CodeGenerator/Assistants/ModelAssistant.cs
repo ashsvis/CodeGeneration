@@ -150,18 +150,21 @@ namespace CodeGenerator
                     }
                 }
             }
+
             foreach (var link in pastedLinks)
             {
                 link.Selected = true;
                 var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
                 if (source != null)
                 {
+                    var oldId = source.Id;
                     source.NewGuid();
                     link.SourceId = source.Id;
                 }
                 var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
                 if (target != null)
                 {
+                    var oldId = target.Id;
                     target.NewGuid();
                     link.TargetId = target.Id;
                 }
@@ -181,6 +184,11 @@ namespace CodeGenerator
             return ([.. list], rect);
         }
 
+        /// <summary>
+        /// Вставка фигур и связей по конфигурации из xmodel
+        /// </summary>
+        /// <param name="xmodel"></param>
+        /// <param name="subscribeShapeEvents"></param>
         public static void PastePageFromXml(XElement xmodel, Action<Shape> subscribeShapeEvents)
         {
             if (xmodel == null) return;
@@ -231,8 +239,10 @@ namespace CodeGenerator
                     }
                 }
             }
+
             ContextAssistant.ContextShapes.AddRange(pastedShapes);
             ContextAssistant.ContextLinks.AddRange(pastedLinks);
+            SortAndAssignToPages();
         }
 
         public static void PasteFromXml(XElement xmodel, Point point, Action<Shape> subscribeShapeEvents)
@@ -240,6 +250,7 @@ namespace CodeGenerator
             if (xmodel == null) return;
             Dictionary<Guid, Guid> guids = [];
             List<Shape> pastedShapes = [];
+            List<IPageSourceLink> pastedPageLinks = [];
             List<Link> pastedLinks = [];
             int n = 0;
             foreach (var xelement in xmodel.Descendants())
@@ -255,6 +266,9 @@ namespace CodeGenerator
                         shape.ReadContent(xelement);
                         subscribeShapeEvents(shape);
                         pastedShapes.Add(shape);
+
+                        if (shape is IPageSourceLink psl)
+                            pastedPageLinks.Add(psl);
 
                         if (!guids.ContainsKey(shape.Id))
                         {
@@ -288,6 +302,14 @@ namespace CodeGenerator
                 }
             }
 
+            foreach (var psl in pastedPageLinks)
+            {
+                foreach (var id in psl.GetIdsForConnect())
+                {
+                    if (guids.TryGetValue(id, out Guid value))
+                        psl.ReplaceTargetId(id, value);
+                }
+            }
 
             ContextAssistant.ContextShapes.AddRange(pastedShapes);
             ContextAssistant.ContextLinks.AddRange(pastedLinks);
@@ -405,6 +427,8 @@ namespace CodeGenerator
                     link.SetLinkNumber(n++);
                 }
             }
+
+            ConnectExternalLinks();
         }
 
         class ShapesComparer : IComparer<Shape>
@@ -412,6 +436,23 @@ namespace CodeGenerator
             public int Compare(Shape? x, Shape? y)
             {
                 return x == null || y == null ? 0 : x.Index > y.Index ? 1 : x.Index < y.Index ? -1 : 0;
+            }
+        }
+
+        public static void ConnectExternalLinks()
+        {
+            // подключение внешних ссылок
+            foreach (var shape in ContextAssistant.ContextShapes)
+            {
+                if (shape is IPageSourceLink plink)
+                {
+                    foreach (var id in plink.GetIdsForConnect())
+                    {
+                        var target = ContextAssistant.ContextShapes.FirstOrDefault(shape => shape.Id == id);
+                        if (target == null) continue;
+                        plink.AddTarget(target);
+                    }
+                }
             }
         }
 

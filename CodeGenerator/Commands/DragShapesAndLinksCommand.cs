@@ -26,7 +26,6 @@ namespace CodeGenerator.Commands
             ContextAssistant.Context = commandContext;
             ModelAssistant.RemoveInPage(page, unsubscribeShapeEvents);
             ModelAssistant.PastePageFromXml(xElementsOnCurrentPageAfterDrag, subscribeShapeEvents);
-            ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
         }
 
@@ -36,7 +35,6 @@ namespace CodeGenerator.Commands
             ContextAssistant.Context = commandContext;
             ModelAssistant.RemoveInPage(page, unsubscribeShapeEvents);
             ModelAssistant.PastePageFromXml(xElementsOnCurrentPageBeforeDrag, subscribeShapeEvents);
-            ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
         }
     }

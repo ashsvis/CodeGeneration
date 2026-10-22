@@ -8,5 +8,6 @@ namespace PluginSupport
         int GetLinkNumber();
         Guid[] GetIdsForConnect();
         void AddTarget(Shape shape);
+        void ReplaceTargetId(Guid oldId, Guid newId);
     }
 }
