@@ -414,7 +414,8 @@ namespace CodeGenerator
                         ModelAssistant.UpdateLinksOnPage(page);
                         if (xElementsOnCurrentPageBeforeDrag != null)
                         {
-                            var rect = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).First().Bounds;
+                            var firstShape = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).FirstOrDefault();
+                            var rect = firstShape != null ? firstShape.Bounds : Rectangle.Empty;
                             var selectedRects = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Select(x => x.Bounds)
                                 .Union(ModelAssistant.LinksFrom(page).Where(x => x.Selected).Select(x => x.Bounds));
                             foreach (var r in selectedRects) rect = Rectangle.Union(rect, r);
