@@ -21,7 +21,7 @@ namespace PluginSupport
 
         public Matrix? Transformation => transformation;
         public Point Origin => Point.Ceiling(origin);
-        public Double Zoom => zoomScale;
+        public double Zoom => zoomScale;
 
         public DrawPanel()
         {
@@ -223,7 +223,7 @@ namespace PluginSupport
         /// <returns></returns>
         public Point GetLocation(Point point)
         {
-            return PrepareMousePosition(PointToClient(Point.Ceiling(point)));
+            return PrepareMousePosition(PointToClient(point));
         }
 
         private Point PrepareMousePosition(Point point)

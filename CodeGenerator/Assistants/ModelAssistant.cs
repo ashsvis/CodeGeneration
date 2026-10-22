@@ -115,7 +115,7 @@ namespace CodeGenerator
             return xmodel;
         }
 
-        public static (GraphicsPath[], Rectangle) PasteFromXml(XElement xmodel, Action<Shape> subscribeShapeEvents)
+        public static (GraphicsPath[], Rectangle) PasteFromXml(XElement xmodel, Point? offset = null)
         {
             if (xmodel == null) return ([], Rectangle.Empty);
             List<Shape> pastedShapes = [];
@@ -133,7 +133,6 @@ namespace CodeGenerator
                         shape.Selected = true;
                         shape.Index = n++;
                         shape.ReadContent(xelement);
-                        subscribeShapeEvents(shape);
                         pastedShapes.Add(shape);
                         rect = rect.IsEmpty ? shape.Bounds : Rectangle.Union(rect, shape.Bounds);
                     }
@@ -144,7 +143,8 @@ namespace CodeGenerator
                         var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
                         if (source != null && target != null)
                         {
-                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
+                            link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, 
+                                target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
                             pastedLinks.Add(link);
                         }
                     }
@@ -167,6 +167,27 @@ namespace CodeGenerator
                     var oldId = target.Id;
                     target.NewGuid();
                     link.TargetId = target.Id;
+                }
+            }
+
+            if (offset is Point point)
+            {
+                var p = new Point(
+                    pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
+                    pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
+                var size = new Size(p.X - point.X, p.Y - point.Y);
+                foreach (var shape in pastedShapes)
+                {
+                    shape.Location = Point.Add(shape.Location, size);
+                }
+                foreach (var link in pastedLinks)
+                {
+                    link.StartPoint = Point.Add(link.StartPoint, size);
+                    link.EndPoint = Point.Add(link.EndPoint, size);
+                    var points = link.GetPoints();
+                    for (var i = 0; i < points.Length; i++)
+                        points[i] = Point.Add(points[i], size);
+                    link.SetPoints(points);
                 }
             }
 
