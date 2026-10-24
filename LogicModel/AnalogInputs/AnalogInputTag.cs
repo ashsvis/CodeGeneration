@@ -111,7 +111,7 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                TagName = dlg.StrValue;
+                TagName = !string.IsNullOrWhiteSpace(dlg.StrValue) ? dlg.StrValue : TagName ?? FuncName ?? "";
             }
         }
 

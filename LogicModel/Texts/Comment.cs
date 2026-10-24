@@ -95,6 +95,8 @@ namespace LogicModel
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Lines = dlg.LinesValue;
+                if (IsEmpty)
+                    Lines = [FuncName ?? ""];
                 Changed();
             }
         }
