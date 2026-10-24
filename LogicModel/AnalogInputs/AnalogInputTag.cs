@@ -103,7 +103,7 @@ namespace LogicModel
 
         private void ChangeText(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { Text = "Имя тега", StrValue = TagName ?? "" };
+            var dlg = new InputValueForm { Text = "Имя тега", StrValue = TagName ?? FuncName ?? "" };
             if (args.Length > 0 && args[0] is Point location)
             {
                 dlg.StartPosition = FormStartPosition.Manual;
