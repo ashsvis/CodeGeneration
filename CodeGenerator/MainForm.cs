@@ -891,11 +891,24 @@ namespace CodeGenerator
 
         private void Shape_OnDelete(object? sender, EventArgs e)
         {
+            //if (sender is Shape shape)
+            //{
+            //    UnselectAll();
+            //    shape.Selected = true;
+            //    RemoveSelected();
+            //}
             if (sender is Shape shape)
             {
-                UnselectAll();
-                shape.Selected = true;
-                RemoveSelected();
+                Cursor = Cursors.WaitCursor;
+                Cursor.Show();
+
+                //ModelAssistant.RemoveShape(shape, UnsubscribeShapeEvents);
+                UndoRedoManager.Execute(new RemoveShapeCommand(ContextAssistant.Context, shape, SubscribeShapeEvents, UnsubscribeShapeEvents));
+
+                modelChanged = true;
+                drawPanel.Invalidate();
+                Cursor = Cursors.Default;
+                Cursor.Hide();
             }
         }
 
@@ -1080,73 +1093,8 @@ namespace CodeGenerator
 
         public void SaveXml(string filename)
         {
-            var root = new XElement("Document");
-            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
-            var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
-
-            UpdateContextEnvironment();
-            var currentContext = ContextAssistant.Context;
-            try
-            {
-                ContextAssistant.Context = ContextKind.Model;
-                var xmodel = new XElement("Model");
-                SaveContextToXml(root, xmodel, ContextAssistant.ContextEnvironment);
-                ContextAssistant.Context = ContextKind.Field;
-                var xfield = new XElement("Field");
-                SaveContextToXml(root, xfield, ContextAssistant.ContextEnvironment);
-
-                doc.Save(filename);
-                modelChanged = false;
-            }
-            finally
-            {
-                ContextAssistant.Context = currentContext;
-            }
-        }
-
-        private static void SaveContextToXml(XElement root, XElement xcontext, KeepEnvironment environment)
-        {
-            root.Add(xcontext);
-            var xenvironment = new XElement("Environment");
-            xcontext.Add(xenvironment);
-
-            var env = environment;
-            float[] el = env.Matrix;
-            var fp = CultureInfo.GetCultureInfo("en-US");
-            xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
-            var xorigin = new XElement("Origin");
-            xorigin.Add(new XAttribute("X", env.Origin.X));
-            xorigin.Add(new XAttribute("Y", env.Origin.Y));
-            xenvironment.Add(xorigin);
-            xenvironment.Add(new XElement("Zoom", env.Zoom.ToString(fp)));
-
-            foreach (var page in Pages)
-            {
-                var xpage = page.WriteContent();
-                xcontext.Add(xpage);
-                foreach (var shape in ModelAssistant.ShapesFrom(page))
-                {
-                    var xshape = shape.WriteContent();
-                    xpage.Add(xshape);
-                }
-                foreach (var link in ModelAssistant.LinksFrom(page))
-                {
-                    var xlink = link.WriteContentExtended();
-                    xpage.Add(xlink);
-                }
-            }
-            var xothers = new XElement("OutsidePages");
-            xcontext.Add(xothers);
-            foreach (var shape in ModelAssistant.ShapesFrom(null))
-            {
-                var xshape = shape.WriteContent();
-                xothers.Add(xshape);
-            }
-            foreach (var link in ModelAssistant.LinksFrom(null))
-            {
-                var xlink = link.WriteContentExtended();
-                xothers.Add(xlink);
-            }
+            ModelAssistant.SaveXml(filename, drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
+            modelChanged = false;
         }
 
         private void TsmiCreate_Click(object sender, EventArgs e)
@@ -1373,20 +1321,11 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void UpdateContextEnvironment()
-        {
-            if (drawPanel.Transformation != null)
-            {
-                float[] el = drawPanel.Transformation.Elements;
-                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], drawPanel.Origin, drawPanel.Zoom);
-            }
-        }
-
         private void TsmiModel_Click(object sender, EventArgs e)
         {
             if (ContextAssistant.Context != ContextKind.Model)
             {
-                UpdateContextEnvironment();
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
                 ContextAssistant.Context = ContextKind.Model;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
@@ -1398,7 +1337,7 @@ namespace CodeGenerator
         {
             if (ContextAssistant.Context != ContextKind.Field)
             {
-                UpdateContextEnvironment();
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
                 ContextAssistant.Context = ContextKind.Field;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);

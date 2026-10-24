@@ -1,5 +1,6 @@
 ﻿using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Xml.Linq;
 
 #pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
@@ -478,6 +479,82 @@ namespace CodeGenerator
             }
         }
 
+        public static void RemoveShape(Shape shape, Action<Shape> unsubscribeAction)
+        {
+            // сбор связей, которые используются удаляемыми элементами
+            var linksForDelete = ContextAssistant.ContextLinks.Where(x => shape == x.Source || shape == x.Target).ToList();
+            List<int> pageIndexes = [];
+            foreach (var link in linksForDelete)
+            {
+                // ищем источник и цель
+                var source = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Source);
+                var target = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Target);
+
+                // если найдены оба, то отписывается
+                if (source != null && target != null)
+                    link.UnlinkToLocation(source, target);
+
+                pageIndexes.Add(link.Page);
+
+                // удаляем визуальную ссылку
+                ContextAssistant.ContextLinks.Remove(link);
+            }
+            // для всех удаляемых элементов
+            unsubscribeAction(shape);
+            pageIndexes.Add(shape.Page);
+
+            shape.Delete();
+            ContextAssistant.ContextShapes.Remove(shape);
+
+            SortAndAssignToPages();
+
+            foreach (var index in pageIndexes.Distinct())
+            {
+                var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == index);
+                UpdateLinksOnPage(page);
+            }
+        }
+
+        public static void RemoveShapes(IEnumerable<Shape> shapes, Action<Shape> unsubscribeAction)
+        {
+            // сбор элементов для удаления на основании их выбранности
+            // сбор связей, которые используются удаляемыми элементами
+            var linksForDelete = ContextAssistant.ContextLinks.Where(x => shapes.Any(y => y == x.Source || y == x.Target)).ToList();
+            List<int> pageIndexes = [];
+            foreach (var link in linksForDelete)
+            {
+                // ищем источник и цель
+                var source = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Source);
+                var target = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Target);
+
+                // если найдены оба, то отписывается
+                if (source != null && target != null)
+                    link.UnlinkToLocation(source, target);
+
+                pageIndexes.Add(link.Page);
+
+                // удаляем визуальную ссылку
+                ContextAssistant.ContextLinks.Remove(link);
+            }
+            // для всех удаляемых элементов
+            foreach (var shape in shapes)
+                unsubscribeAction(shape);
+            foreach (var shape in shapes)
+            {
+                pageIndexes.Add(shape.Page);
+
+                shape.Delete();
+                ContextAssistant.ContextShapes.Remove(shape);
+            }
+            SortAndAssignToPages();
+
+            foreach (var index in pageIndexes.Distinct())
+            {
+                var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == index);
+                UpdateLinksOnPage(page);
+            }
+        }
+
         public static void RemoveSelected(Action<Shape> unsubscribeAction)
         {
             // сбор элементов для удаления на основании их выбранности
@@ -510,12 +587,12 @@ namespace CodeGenerator
                 shape.Delete();
                 ContextAssistant.ContextShapes.Remove(shape);
             }
-            ModelAssistant.SortAndAssignToPages();
+            SortAndAssignToPages();
 
             foreach (var index in pageIndexes.Distinct())
             {
                 var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == index);
-                ModelAssistant.UpdateLinksOnPage(page);
+                UpdateLinksOnPage(page);
             }
         }
 
@@ -555,6 +632,179 @@ namespace CodeGenerator
 
             foreach (var index in pageIndexes.Distinct())
                 UpdateLinksOnPage(page);
+        }
+
+        public static void UpdateContextEnvironment(Matrix? matrix, Point origin, double zoom)
+        {
+            if (matrix != null)
+            {
+                float[] el = matrix.Elements;
+                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], origin, zoom);
+            }
+        }
+
+        public static void SaveXml(string filename, Matrix? matrix, Point origin, double zoom)
+        {
+            var root = new XElement("Document");
+            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
+            var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
+
+            ModelAssistant.UpdateContextEnvironment(matrix, origin, zoom);
+            var currentContext = ContextAssistant.Context;
+            try
+            {
+                ContextAssistant.Context = ContextKind.Model;
+                var xmodel = new XElement("Model");
+                SaveContextToXml(root, xmodel, ContextAssistant.ContextEnvironment);
+                ContextAssistant.Context = ContextKind.Field;
+                var xfield = new XElement("Field");
+                SaveContextToXml(root, xfield, ContextAssistant.ContextEnvironment);
+
+                doc.Save(filename);
+            }
+            finally
+            {
+                ContextAssistant.Context = currentContext;
+            }
+        }
+
+        public static XElement SaveUndoXml()
+        {
+            var root = new XElement("UndoDocument");
+            var currentContext = ContextAssistant.Context;
+            try
+            {
+                ContextAssistant.Context = ContextKind.Model;
+                var xmodel = new XElement("Model");
+                SaveContextToXml(root, xmodel, ContextAssistant.ContextEnvironment);
+                ContextAssistant.Context = ContextKind.Field;
+                var xfield = new XElement("Field");
+                SaveContextToXml(root, xfield, ContextAssistant.ContextEnvironment);
+            }
+            finally
+            {
+                ContextAssistant.Context = currentContext;
+            }
+            return root;
+        }
+
+        private static void SaveContextToXml(XElement root, XElement xcontext, KeepEnvironment environment)
+        {
+            root.Add(xcontext);
+            var xenvironment = new XElement("Environment");
+            xcontext.Add(xenvironment);
+
+            var env = environment;
+            float[] el = env.Matrix;
+            var fp = CultureInfo.GetCultureInfo("en-US");
+            xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
+            var xorigin = new XElement("Origin");
+            xorigin.Add(new XAttribute("X", env.Origin.X));
+            xorigin.Add(new XAttribute("Y", env.Origin.Y));
+            xenvironment.Add(xorigin);
+            xenvironment.Add(new XElement("Zoom", env.Zoom.ToString(fp)));
+
+            foreach (var page in ContextAssistant.ContextPages)
+            {
+                var xpage = page.WriteContent();
+                xcontext.Add(xpage);
+                foreach (var shape in ShapesFrom(page))
+                {
+                    var xshape = shape.WriteContent();
+                    xpage.Add(xshape);
+                }
+                foreach (var link in LinksFrom(page))
+                {
+                    var xlink = link.WriteContentExtended();
+                    xpage.Add(xlink);
+                }
+            }
+            var xothers = new XElement("OutsidePages");
+            xcontext.Add(xothers);
+            foreach (var shape in ShapesFrom(null))
+            {
+                var xshape = shape.WriteContent();
+                xothers.Add(xshape);
+            }
+            foreach (var link in ModelAssistant.LinksFrom(null))
+            {
+                var xlink = link.WriteContentExtended();
+                xothers.Add(xlink);
+            }
+        }
+
+        public static void LoadUndoXml(XElement? xundo, Action<Shape> subscribeAction)
+        {
+            if (xundo == null) return;
+            var context = ContextAssistant.Context;
+
+            ContextAssistant.Context = ContextKind.Model;
+            var xmodel = xundo.Element("Model");
+            ReadContextFromXml(xmodel, subscribeAction);
+
+            ContextAssistant.Context = ContextKind.Field;
+            var xfield = xundo.Element("Field");
+            ReadContextFromXml(xfield, subscribeAction);
+
+            ContextAssistant.Context = context;
+        }
+
+        private static void ReadContextFromXml(XElement? xcontext, Action<Shape> subscribeAction)
+        {
+            ContextAssistant.ContextShapes.Clear();
+            ContextAssistant.ContextLinks.Clear();
+            if (xcontext == null) return;
+            var xenvironment = xcontext.Element("Environment");
+            var fp = CultureInfo.GetCultureInfo("en-US");
+            var xmatrix = xenvironment?.Element("Matrix")?.Value;
+            var xorigin = xenvironment?.Element("Origin");
+            var xzoom = xenvironment?.Element("Zoom")?.Value;
+            if (xmatrix != null && xorigin != null && xzoom != null)
+            {
+                var xoX = xorigin.Attribute("X")?.Value;
+                var xoY = xorigin.Attribute("Y")?.Value;
+                var svals = xmatrix.Split(", ");
+                if (xoX != null && xoY != null && svals.Length == 6)
+                {
+                    var m11 = ParseHelper.ParseSingle(svals[0], fp, 1);
+                    var m12 = ParseHelper.ParseSingle(svals[1], fp, 0);
+                    var m21 = ParseHelper.ParseSingle(svals[2], fp, 0);
+                    var m22 = ParseHelper.ParseSingle(svals[3], fp, 1);
+                    var dx = ParseHelper.ParseSingle(svals[4], fp, 0);
+                    var dy = ParseHelper.ParseSingle(svals[5], fp, 0);
+                    var zoom = ParseHelper.ParseDouble(xzoom, fp, 1);
+
+                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy,
+                        new Point(ParseHelper.ParseInteger(xoX, 0), ParseHelper.ParseInteger(xoY, 0)),
+                        zoom);
+                }
+            }
+            int n = 0;
+            foreach (var xpage in xcontext.Elements("Page"))
+            {
+                var xnumber = xpage.Attribute("Number")?.Value;
+                if (!string.IsNullOrWhiteSpace(xnumber))
+                {
+                    var number = ParseHelper.ParseInteger(xnumber, 0);
+                    var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == number);
+                    if (page != null)
+                    {
+                        var xwidth = xpage.Attribute("Width")?.Value;
+                        if (!string.IsNullOrWhiteSpace(xwidth))
+                            page.Width = ParseHelper.ParseInteger(xwidth, 420);
+                        var xheight = xpage.Attribute("Height")?.Value;
+                        if (!string.IsNullOrWhiteSpace(xheight))
+                            page.Height = ParseHelper.ParseInteger(xheight, 297);
+                    }
+                }
+                n = ModelAssistant.ReadElements(n, xpage, subscribeAction);
+            }
+            var xothers = xcontext.Element("OutsidePages");
+            if (xothers != null)
+            {
+                n = ModelAssistant.ReadElements(n, xothers, subscribeAction);
+            }
+            ModelAssistant.SortAndAssignToPages();
         }
     }
 }
