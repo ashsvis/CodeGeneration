@@ -76,8 +76,8 @@ namespace LogicModel
             List<GraphicsPath> paths = [.. base.GetTextPaths()];
             // вывод времени задержки
             var path = new GraphicsPath();
-            var fnumber = Value.ToString();
-            using var fontNumber = new Font("Arial Narrow", 14f);
+            var fnumber = Value ? "\"1\"" : "\"0\"";
+            using var fontNumber = new Font("Consolas", 14f, FontStyle.Bold);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
             using var sf = new StringFormat();

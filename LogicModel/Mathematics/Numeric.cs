@@ -90,7 +90,7 @@ namespace LogicModel
             // вывод времени задержки
             var path = new GraphicsPath();
             var fnumber = Value.ToString();
-            using var fontNumber = new Font("Arial Narrow", 14f);
+            using var fontNumber = new Font("Consolas", 14f, FontStyle.Bold);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
             using var sf = new StringFormat();
