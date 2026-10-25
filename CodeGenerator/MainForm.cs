@@ -880,9 +880,7 @@ namespace CodeGenerator
         {
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-
-            ModelAssistant.RemoveSelected(UnsubscribeShapeEvents);
-
+            UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
             modelChanged = true;
             drawPanel.Invalidate();
             Cursor = Cursors.Default;
@@ -891,20 +889,11 @@ namespace CodeGenerator
 
         private void Shape_OnDelete(object? sender, EventArgs e)
         {
-            //if (sender is Shape shape)
-            //{
-            //    UnselectAll();
-            //    shape.Selected = true;
-            //    RemoveSelected();
-            //}
             if (sender is Shape shape)
             {
                 Cursor = Cursors.WaitCursor;
                 Cursor.Show();
-
-                //ModelAssistant.RemoveShape(shape, UnsubscribeShapeEvents);
                 UndoRedoManager.Execute(new RemoveShapeCommand(ContextAssistant.Context, shape, SubscribeShapeEvents, UnsubscribeShapeEvents));
-
                 modelChanged = true;
                 drawPanel.Invalidate();
                 Cursor = Cursors.Default;
