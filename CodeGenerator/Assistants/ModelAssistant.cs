@@ -3,9 +3,7 @@ using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
 
-#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 namespace CodeGenerator
-#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
 {
     public static class ModelAssistant
     {
@@ -170,28 +168,6 @@ namespace CodeGenerator
                     link.TargetId = target.Id;
                 }
             }
-
-            //if (offset is Point point)
-            //{
-            //    //var p = new Point(
-            //    //    pastedShapes.Where(x => x.Selected).Select(x => x.Location.X).Min(),
-            //    //    pastedShapes.Where(x => x.Selected).Select(x => x.Location.Y).Min());
-            //    var p = Point.Empty;
-            //    var size = new Size(point.X, point.Y);
-            //    foreach (var shape in pastedShapes)
-            //    {
-            //        shape.Location = Point.Add(shape.Location, size);
-            //    }
-            //    foreach (var link in pastedLinks)
-            //    {
-            //        link.StartPoint = Point.Add(link.StartPoint, size);
-            //        link.EndPoint = Point.Add(link.EndPoint, size);
-            //        var points = link.GetPoints();
-            //        for (var i = 0; i < points.Length; i++)
-            //            points[i] = Point.Add(points[i], size);
-            //        link.SetPoints(points);
-            //    }
-            //}
 
             List<GraphicsPath> list = [];
             foreach (var shape in pastedShapes)
