@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
 
-namespace CodeGenerator
+namespace CodeGenerator.Assistants
 {
     public static class ModelAssistant
     {
@@ -114,9 +114,9 @@ namespace CodeGenerator
             return xmodel;
         }
 
-        public static (GraphicsPath[], Rectangle, Point) PasteFromXml(XElement xmodel, Point? point = null)
+        public static (GraphicsPath[], Point, Point) PasteFromXml(XElement xmodel, Point? point = null)
         {
-            if (xmodel == null) return ([], Rectangle.Empty, Point.Empty);
+            if (xmodel == null) return ([], Point.Empty, Point.Empty);
             List<Shape> pastedShapes = [];
             List<Link> pastedLinks = [];
             var rect = Rectangle.Empty;
@@ -180,7 +180,7 @@ namespace CodeGenerator
                 list.AddRange(link.GetLinesPaths());
                 list.AddRange(link.GetDotsPaths());
             }
-            return ([.. list], rect, Point.Subtract(point ?? Point.Empty, new Size(zero.X, zero.Y)));
+            return ([.. list], rect.Location, Point.Subtract(point ?? Point.Empty, new Size(zero.X, zero.Y)));
         }
 
         /// <summary>
@@ -622,10 +622,10 @@ namespace CodeGenerator
         public static void SaveXml(string filename, Matrix? matrix, Point origin, double zoom)
         {
             var root = new XElement("Document");
-            root.Add(new XAttribute("Name", System.IO.Path.GetFileNameWithoutExtension(filename)));
+            root.Add(new XAttribute("Name", Path.GetFileNameWithoutExtension(filename)));
             var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
 
-            ModelAssistant.UpdateContextEnvironment(matrix, origin, zoom);
+            UpdateContextEnvironment(matrix, origin, zoom);
             var currentContext = ContextAssistant.Context;
             try
             {
@@ -702,7 +702,7 @@ namespace CodeGenerator
                 var xshape = shape.WriteContent();
                 xothers.Add(xshape);
             }
-            foreach (var link in ModelAssistant.LinksFrom(null))
+            foreach (var link in LinksFrom(null))
             {
                 var xlink = link.WriteContentExtended();
                 xothers.Add(xlink);
@@ -773,14 +773,14 @@ namespace CodeGenerator
                             page.Height = ParseHelper.ParseInteger(xheight, 297);
                     }
                 }
-                n = ModelAssistant.ReadElements(n, xpage, subscribeAction);
+                n = ReadElements(n, xpage, subscribeAction);
             }
             var xothers = xcontext.Element("OutsidePages");
             if (xothers != null)
             {
-                n = ModelAssistant.ReadElements(n, xothers, subscribeAction);
+                n = ReadElements(n, xothers, subscribeAction);
             }
-            ModelAssistant.SortAndAssignToPages();
+            SortAndAssignToPages();
         }
     }
 }

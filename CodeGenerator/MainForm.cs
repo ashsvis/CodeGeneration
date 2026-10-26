@@ -1,3 +1,4 @@
+using CodeGenerator.Assistants;
 using CodeGenerator.Commands;
 using PluginSupport;
 using System.ComponentModel;
@@ -119,7 +120,7 @@ namespace CodeGenerator
 
         private bool movePasted = false;
         private XElement? copycuted;
-        private (GraphicsPath[], Rectangle, Point) pasted;
+        private (GraphicsPath[], Point, Point) pasted;
 
         private bool runEmulate = false;
 
@@ -341,9 +342,9 @@ namespace CodeGenerator
                         dragShapesPreview = false;
                         dragShapes = false;
 
-                        (GraphicsPath[] paths, Rectangle r, Point p) = pasted;
+                        (GraphicsPath[] paths, Point origin, Point offset) = pasted;
                         var loc = drawPanel.GetLocation(MousePosition);
-                        loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-r.Left - p.X, -r.Top - p.Y)));
+                        loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-origin.X - offset.X, -origin.Y - offset.Y)));
                         var dx = loc.X;
                         var dy = loc.Y;
 
@@ -648,13 +649,13 @@ namespace CodeGenerator
             }
 
             // рисуем перетягиваемые после Paste фигуры
-            if (pasted.Item2 != Rectangle.Empty && movePasted)
+            if (pasted.Item2 != Point.Empty && movePasted)
             {
-                (GraphicsPath[] paths, Rectangle r, Point p) = pasted;
+                (GraphicsPath[] paths, Point origin, Point offset) = pasted;
                 foreach (GraphicsPath path in paths)
                 {
                     var loc = drawPanel.GetLocation(MousePosition);
-                    loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-r.Left - p.X, -r.Top - p.Y)));
+                    loc = ModelAssistant.MovePointToGrid(Point.Add(loc, new Size(-origin.X - offset.X, -origin.Y - offset.Y)));
                     e.Graphics?.TranslateTransform(loc.X, loc.Y);
                     e.Graphics?.DrawPath(Pens.Teal, path);
                     e.Graphics?.TranslateTransform(-loc.X, -loc.Y);
@@ -1116,7 +1117,7 @@ namespace CodeGenerator
             drawPanel.Reset();
             drawPanel.Invalidate();
             copycuted = null;
-            pasted.Item2 = Rectangle.Empty;
+            pasted.Item2 = Point.Empty;
             TraceAssistant.InitField(Shapes, Links);
             UndoRedoManager.Clear();
         }
@@ -1154,8 +1155,8 @@ namespace CodeGenerator
             {
                 ModelAssistant.UnselectAll();
                 pasted = ModelAssistant.PasteFromXml(copycuted);
-                pasted.Item3 = pasted.Item2.Location;
-                pasted.Item2.Location = Point.Empty;
+                pasted.Item3 = pasted.Item2;
+                pasted.Item2 = Point.Empty;
                 movePasted = true;
                 drawPanel.Invalidate();
             }
