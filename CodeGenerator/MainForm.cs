@@ -151,6 +151,7 @@ namespace CodeGenerator
 
             if (movePasted)
             {
+                // вставка по месту вставленного по команде Вставить (Paste, ^V)
                 movePasted = false;
                 if (e.Button == MouseButtons.Left)
                 {
@@ -161,6 +162,7 @@ namespace CodeGenerator
                         modelChanged = true;
                     }
                 }
+                drawPanel.Invalidate();
                 return;
             }
 
@@ -866,6 +868,11 @@ namespace CodeGenerator
             switch (e.KeyCode)
             {
                 case Keys.Escape:
+                    if (movePasted)
+                    {
+                        movePasted = false;
+                        drawPanel.Invalidate();
+                    }
                     break;
                 case Keys.Delete:
                     if (Shapes.Any(x => x.Selected) &&
@@ -1150,6 +1157,14 @@ namespace CodeGenerator
             RemoveSelected();
         }
 
+        /// <summary>
+        /// Вставка по команде Вставить.
+        /// возле курсора появляется скопированная часть схемы и следует за курсором
+        /// При нажатии левой кнопки по месту вставки - фрагмент вставляется
+        /// При нажатии правой кнопки - не вставляется (отмена)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void TsmiPaste_Click(object sender, EventArgs e)
         {
             if (runEmulate) return;
