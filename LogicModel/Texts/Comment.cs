@@ -1,6 +1,7 @@
 using PluginSupport;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
+using System.Globalization;
 using System.Xml.Linq;
 
 namespace LogicModel
@@ -8,6 +9,8 @@ namespace LogicModel
     public class Comment : Func, ITraceTransparent, IAcceptClick
     {
         public string[] Lines = [""];
+
+        public float FontHeight { get; set; } = 14f;
 
         public Comment()
         {
@@ -33,6 +36,7 @@ namespace LogicModel
                 Inputs = [],
                 Outputs = [],
                 Lines = Lines,
+                FontHeight = FontHeight,
             };
         }
 
@@ -47,10 +51,10 @@ namespace LogicModel
         protected override void CalculateHeight()
         {
             var fname = IsEmpty ? FuncName ?? "" : string.Join("\n", Lines);
-            using var fontFunc = new Font("Arial Narrow", 14f);
+            using var fontFunc = new Font("Arial Narrow", FontHeight);
             var sz = TextRenderer.MeasureText(fname, fontFunc);
             Width = (int)(sz.Width / 1.3);
-            Height = 6;
+            Height = (int)(sz.Height / 2.3);
         }
 
         [Browsable(false)]
@@ -68,7 +72,7 @@ namespace LogicModel
             var paths = base.GetTextPaths().ToList();
             var rect = Bounds;
             var fname = IsEmpty ? FuncName ?? "" : string.Join("\n", Lines);
-            using var fontFunc = new Font("Arial Narrow", 14f);
+            using var fontFunc = new Font("Arial Narrow", FontHeight);
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Near;
             sf.LineAlignment = StringAlignment.Center;
@@ -106,6 +110,7 @@ namespace LogicModel
             var xfunc = base.WriteContent();
             if (!IsEmpty)
             {
+                xfunc.Add(new XAttribute("FontHeight", FontHeight));
                 var xlines = new XElement("Lines");
                 xfunc.Add(xlines);
                 foreach (var line in Lines)
@@ -117,6 +122,9 @@ namespace LogicModel
         public override void ReadContent(XElement xfunc)
         {
             base.ReadContent(xfunc);
+            var xfontheight = xfunc.Attribute("FontHeight")?.Value;
+            if (xfontheight != null)
+                FontHeight = ParseHelper.ParseSingle(xfontheight, CultureInfo.GetCultureInfo("en-US"), 14f);
             var xlines = xfunc.Element("Lines");
             if (xlines != null)
             {

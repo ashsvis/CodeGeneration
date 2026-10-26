@@ -156,7 +156,7 @@ namespace CodeGenerator
                 {
                     if (copycuted != null)
                     {
-                        UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage, 
+                        UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage,
                             ModelAssistant.CopyPageToXml(page), copycuted, startPoint, SubscribeShapeEvents, UnsubscribeShapeEvents));
                         modelChanged = true;
                     }
@@ -562,8 +562,9 @@ namespace CodeGenerator
 
         private void Shape_OnShowProperties(object? sender, EventArgs e)
         {
-            //pgProperties.SelectedObject = sender;
-            //tcUtilites.SelectedTab = tpProperties;
+            var dlg = new EditPropertyForm(sender);
+            dlg.PropertyChanged += (o, arg) => drawPanel.Invalidate();
+            dlg.Show();
         }
 
         private void Shape_OnMakeCopy(object? sender, EventArgs e)
@@ -1133,6 +1134,7 @@ namespace CodeGenerator
             tsmiField.Checked = ContextAssistant.Context == ContextKind.Field;
             tsmiUndo.Enabled = tsbUndo.Enabled = CanUndo();
             tsmiRedo.Enabled = tsbRedo.Enabled = CanRedo();
+            tsbEditProperties.Enabled = !runEmulate && Shapes.Where(x => x.Selected).Count() == 1;
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1366,6 +1368,17 @@ namespace CodeGenerator
         private void TsmiRedo_Click(object sender, EventArgs e)
         {
             if (CanRedo()) UndoRedoManager.Redo();
+        }
+
+        private void TsbEditProperties_Click(object sender, EventArgs e)
+        {
+            if (Shapes.Where(x => x.Selected).Count() == 1)
+            {
+                if (Shapes.FirstOrDefault(x => x.Selected) is Shape shape)
+                {
+                    shape.ShowProperties();
+                }
+            }
         }
     }
 }
