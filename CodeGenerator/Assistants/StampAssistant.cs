@@ -1,8 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 
-#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
-namespace CodeGenerator
-#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
+namespace CodeGenerator.Assistants
 {
     public static class StampAssistant
     {
@@ -19,10 +17,10 @@ namespace CodeGenerator
                             borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
             graphics?.DrawRectangle(borderPen, outRect);
             if (pageNumber == 1)
-                StampAssistant.DrawBigStamp(graphics, borderPen, outRect, kf, foreground, pageNumber, pagesCount);
+                DrawBigStamp(graphics, borderPen, outRect, kf, foreground, pageNumber, pagesCount);
             else
-                StampAssistant.DrawSmallStamp(graphics, borderPen, outRect, kf, foreground, pageNumber);
-            StampAssistant.DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
+                DrawSmallStamp(graphics, borderPen, outRect, kf, foreground, pageNumber);
+            DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
         public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber, int pagesCount)
@@ -45,7 +43,7 @@ namespace CodeGenerator
                 x += steps[i];
                 graphics?.DrawLine(borderPen, new Point(stamptRect.Left + x, stamptRect.Top), new Point(stamptRect.Left + x, stamptRect.Top + 25 * kf));
                 graphics?.DrawString(names[i], stampfont, brush,
-                    new Point(stamptRect.Left + x - (steps[i] / 2), stamptRect.Top + 23 * kf), sf);
+                    new Point(stamptRect.Left + x - steps[i] / 2, stamptRect.Top + 23 * kf), sf);
             }
             var y = 0 * kf;
             for (var i = 0; i < 10; i++)
@@ -85,7 +83,7 @@ namespace CodeGenerator
             {
                 x += steps[i];
                 graphics?.DrawString(names[i], stampfont, brush,
-                    new Point(x - (steps[i] / 2), stamptRect.Top + 28 * kf), sf);
+                    new Point(x - steps[i] / 2, stamptRect.Top + 28 * kf), sf);
                 if (i == steps.Length - 1) continue;
                 graphics?.DrawLine(borderPen, new Point(x, stamptRect.Top + 25 * kf), new Point(x, stamptRect.Top + 40 * kf));
             }
@@ -120,7 +118,7 @@ namespace CodeGenerator
                 x += steps[i];
                 graphics?.DrawLine(borderPen, new Point(stamptRect.Left + x, stamptRect.Top), new Point(stamptRect.Left + x, stamptRect.Bottom));
                 graphics?.DrawString(names[i], stampfont, brush,
-                    new Point(stamptRect.Left + x - (steps[i] / 2), stamptRect.Bottom - 2 * kf), sf);
+                    new Point(stamptRect.Left + x - steps[i] / 2, stamptRect.Bottom - 2 * kf), sf);
             }
             var y = 0 * kf;
             for (var i = 0; i < 3; i++)

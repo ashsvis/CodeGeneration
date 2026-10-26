@@ -38,7 +38,7 @@ namespace CodeGenerator.Commands
                     link.StartPoint = (Point)startPoint;
                     link.EndPoint = (Point)endPoint;
                     // построение волны и точек визуальной связи
-                    var points = TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, link);
+                    var points = TraceAssistant.BuildWaveInField(page, link);
 
                     link.LinkToLocation(sourceShape, sourceIndex, link.StartPoint, targetShape, targetIndex, link.EndPoint, points);
                     ContextAssistant.ContextLinks.Add(link);

@@ -1,9 +1,6 @@
-﻿using CodeGenerator.Assistants;
-using PluginSupport;
+﻿using PluginSupport;
 
-#pragma warning disable IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
-namespace CodeGenerator
-#pragma warning restore IDE0130 // Пространство имен (namespace) не соответствует структуре папок.
+namespace CodeGenerator.Assistants
 {
     public static class TraceAssistant
     {
@@ -109,7 +106,7 @@ namespace CodeGenerator
                 field = null;
         }
 
-        public static List<Point> BuildWaveInField(Page? page, IEnumerable<Shape> shapes, IEnumerable<Link> links, PluginSupport.Link link)
+        public static List<Point> BuildWaveInField(Page? page, Link link)
         {
             List<Point> points = [];
             InitField(ModelAssistant.ShapesFrom(page), ModelAssistant.LinksFrom(page));

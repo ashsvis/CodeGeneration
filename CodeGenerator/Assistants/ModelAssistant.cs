@@ -376,13 +376,13 @@ namespace CodeGenerator.Assistants
             foreach (var item in LinksFrom(page))
                 item.SetPoints([]);
             foreach (var item in LinksFrom(page).OrderBy(x => x.Length))
-                item.SetPoints([.. TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, item)]);
+                item.SetPoints([.. TraceAssistant.BuildWaveInField(page, item)]);
         }
 
         public static void UpdateLinkOnPage(Page? page, Link? link)
         {
             link?.SetPoints([]);
-            link?.SetPoints([.. TraceAssistant.BuildWaveInField(page, ContextAssistant.ContextShapes, ContextAssistant.ContextLinks, link)]);
+            link?.SetPoints([.. TraceAssistant.BuildWaveInField(page, link)]);
         }
 
         public static void SortAndAssignToPages()
