@@ -149,6 +149,9 @@ namespace CodeGenerator.Assistants
                     }
                 }
             }
+
+            if (pastedShapes.Count == 0) return ([], Point.Empty, Point.Empty);
+
             var zero = new Point(pastedShapes.Min(p => p.Location.X), pastedShapes.Min(p => p.Location.Y));
             foreach (var link in pastedLinks)
             {

@@ -247,17 +247,20 @@ namespace CodeGenerator
                     shape.Hover = !runEmulate;
                     shapeFound = true;
                     dragShapesPreview = !runEmulate;
-                    dragCopiedShapes = ModifierKeys.HasFlag(Keys.Control);
-                    if (e.Button == MouseButtons.Right && !runEmulate)
-                    {
-                        contextMenu.Items.AddRange(shape.GetContextMenuItems(point, Shapes.Count(x => x.Selected) > 1));
-                        contextMenu.Show(drawPanel, e.Location);
-                    }
-                    else if (runEmulate)
+                    dragCopiedShapes = ctrl;
+                    if (runEmulate)
                     {
                         shape.Click(runEmulate);
                         dragShapesPreview = false;
                         dragCopiedShapes = false;
+                    }
+                    else
+                    {
+                        if (e.Button == MouseButtons.Right)
+                        {
+                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, Shapes.Count(x => x.Selected) > 1));
+                            contextMenu.Show(drawPanel, e.Location);
+                        }
                     }
                     break;
                 }
@@ -578,7 +581,7 @@ namespace CodeGenerator
                 var shape = source.DeepClone();
                 shape.NewGuid();
 
-                var point = Point.Add(shape.Location, new Size(12, 12));
+                var point = Point.Add(shape.Location, new Size(0, shape.Bounds.Height));
                 UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
 
                 ModelAssistant.SortAndAssignToPages();
