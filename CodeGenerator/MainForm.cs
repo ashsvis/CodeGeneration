@@ -594,30 +594,13 @@ namespace CodeGenerator
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
             if (runEmulate) return;
-            var linksForDelete = Links.Where(x => x.Source == e.Source &&
-                x.Target == e.Target && x.TargetPinIndex == e.TargetPinIndex).ToList();
-            List<int> pageIndexes = [];
-            foreach (var link in linksForDelete)
-            {
-                // ищем источник и цель
-                var source = Shapes.FirstOrDefault(x => x == link.Source && link.SourcePinIndex == 0);
-                var target = Shapes.FirstOrDefault(x => x == link.Target && link.TargetPinIndex == e.TargetPinIndex);
-                // если найдены оба, то отписывается
-                if (source != null && target != null)
-                    link.UnlinkToLocation(source, target);
-                if (source is IPageTargetLink plink)
-                    plink.RemoveTargetFromOutput(target, link.TargetPinIndex);
-                // удаляем визуальную ссылку
-                Links.Remove(link);
-                pageIndexes.Add(link.Page);
-                modelChanged = true;
-            }
-            foreach (var index in pageIndexes.Distinct())
-            {
-                var page = Pages.FirstOrDefault(x => x.Number == index);
-                ModelAssistant.UpdateLinksOnPage(page);
-            }
+            Cursor = Cursors.WaitCursor;
+            Cursor.Show();
+            UndoRedoManager.Execute(new RemoveLinkCommand(ContextAssistant.Context, e, SubscribeShapeEvents));
+            modelChanged = true;
             drawPanel.Invalidate();
+            Cursor = Cursors.Default;
+            Cursor.Hide();
         }
 
 
