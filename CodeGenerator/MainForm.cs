@@ -158,7 +158,7 @@ namespace CodeGenerator
                     if (copycuted != null)
                     {
                         UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage,
-                            ModelAssistant.CopyPageToXml(page), copycuted, startPoint, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                            copycuted, startPoint, SubscribeShapeEvents));
                         modelChanged = true;
                     }
                 }
@@ -1376,12 +1376,24 @@ namespace CodeGenerator
 
         private void TsmiUndo_Click(object sender, EventArgs e)
         {
-            if (CanUndo()) UndoRedoManager.Undo();
+            if (CanUndo())
+            {
+                Cursor = Cursors.WaitCursor;
+                UnselectAll();
+                UndoRedoManager.Undo();
+                Cursor = Cursors.Default;
+            }
         }
 
         private void TsmiRedo_Click(object sender, EventArgs e)
         {
-            if (CanRedo()) UndoRedoManager.Redo();
+            if (CanRedo())
+            {
+                Cursor = Cursors.WaitCursor;
+                UnselectAll();
+                UndoRedoManager.Redo();
+                Cursor = Cursors.Default;
+            }
         }
 
         private void TsbEditProperties_Click(object sender, EventArgs e)

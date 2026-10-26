@@ -7,27 +7,25 @@ namespace CodeGenerator.Commands
     public class PasteShapesAndLinksCommand(
         ContextKind context,
         Page? page,
-        XElement xElementsBeforeCopyCuted,
         XElement xElementsCopyCuted,
         Point point,
-        Action<Shape> subscribeAction,
-        Action<Shape> unsubscribeAction) : ICommand
+        Action<Shape> subscribeAction) : ICommand
     {
         private readonly ContextKind commandContext = context;
         private readonly Page? page = page;
-        private readonly XElement xElementsBeforeCopyCuted = xElementsBeforeCopyCuted;
         private readonly XElement xElementsCopyCuted = xElementsCopyCuted;
         private readonly Point point = point;
-        private readonly Action<Shape> subscribeShapeEvents = subscribeAction;
-        private readonly Action<Shape> unsubscribeShapeEvents = unsubscribeAction;
+        private readonly Action<Shape> subscribeAction = subscribeAction;
+        private XElement? xundo;
 
         public string Name => "Вставить группу фигур, ранее скопированных или вырезанных, и связи между ними";
 
         public void Execute()
         {
+            xundo = ModelAssistant.SaveUndoXml();
             var oldcontext = ContextAssistant.Context;
             ContextAssistant.Context = commandContext;
-            ModelAssistant.PasteFromXml(xElementsCopyCuted, point, subscribeShapeEvents);
+            ModelAssistant.PasteFromXml(xElementsCopyCuted, point, subscribeAction);
             ContextAssistant.Context = oldcontext;
         }
 
@@ -35,8 +33,7 @@ namespace CodeGenerator.Commands
         {
             var oldcontext = ContextAssistant.Context;
             ContextAssistant.Context = commandContext;
-            ModelAssistant.RemoveInPage(page, unsubscribeShapeEvents);
-            ModelAssistant.PastePageFromXml(xElementsBeforeCopyCuted, subscribeShapeEvents);
+            ModelAssistant.LoadUndoXml(xundo, subscribeAction);
             ContextAssistant.Context = oldcontext;
         }
     }
