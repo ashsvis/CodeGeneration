@@ -4,7 +4,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class AnalogInputTag : Func, IAcceptClick, INamedEmulationTarget
+    public class AnalogInputTag : Func, IAcceptClick, INamedEmulationTarget, IResetable
     {
         public string? TagName { get; set; }
 
@@ -134,6 +134,11 @@ namespace LogicModel
             {
                 TagName = xName.Value;
             }
+        }
+
+        public void Reset()
+        {
+            Value = 0;
         }
     }
 }

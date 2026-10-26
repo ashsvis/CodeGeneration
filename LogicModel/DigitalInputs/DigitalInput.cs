@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class DigitalInput : Func
+    public class DigitalInput : Func, IResetable
     {
         public DigitalInput()
         {
@@ -76,6 +76,13 @@ namespace LogicModel
                     Transfer();
                 }
             }
+        }
+
+        public void Reset()
+        {
+            Inputs[0].Value = 0;
+            Outputs[0].Value = 0;
+            Transfer();
         }
     }
 }

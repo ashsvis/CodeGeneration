@@ -1241,6 +1241,7 @@ namespace CodeGenerator
             {
                 if (!emulateBackground.IsBusy)
                 {
+                    ModelAssistant.Reset();
                     emulateBackground.RunWorkerAsync();
                     Cursor.Show();
                 }

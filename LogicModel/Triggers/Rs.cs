@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class Rs : Func
+    public class Rs : Func, IResetable
     {
         public Rs()
         {
@@ -80,6 +80,12 @@ namespace LogicModel
                     }
                 }
             }
+        }
+
+        public void Reset()
+        {
+            Outputs[0].Value = 0;
+            Transfer();
         }
     }
 }

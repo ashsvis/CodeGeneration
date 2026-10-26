@@ -782,5 +782,34 @@ namespace CodeGenerator.Assistants
             }
             SortAndAssignToPages();
         }
+
+        public static void Reset()
+        {
+            var oldcontext = ContextAssistant.Context;
+
+            foreach (var mode in Enum.GetValues<ContextKind>())
+            {
+                ContextAssistant.Context = mode;
+                foreach (var page in ContextAssistant.ContextPages)
+                {
+                    foreach (var shape in ShapesFrom(page))
+                    {
+                        if (shape is IResetable resetable)
+                        {
+                            resetable.Reset();
+                        }
+                    }
+                    foreach (var shape in ShapesFrom(null))
+                    {
+                        if (shape is IResetable resetable)
+                        {
+                            resetable.Reset();
+                        }
+                    }
+                }
+            }
+
+            ContextAssistant.Context = oldcontext;
+        }
     }
 }

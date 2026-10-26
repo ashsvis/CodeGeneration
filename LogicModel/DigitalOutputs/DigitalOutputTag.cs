@@ -23,7 +23,7 @@ namespace LogicModel
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowBorder |
                 AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 
-        public bool CanAcceptClick => true;
+        public bool CanAcceptClick => false;
 
         public double Value => Inputs.Length > 0 ? Inputs[0].Value : 0;
 

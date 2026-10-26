@@ -42,7 +42,7 @@ namespace LogicModel
 
         private bool IsEmpty => Lines.Length == 0 || Lines.Length == 1 && string.IsNullOrWhiteSpace(Lines[0]);
 
-        public bool CanAcceptClick => true;
+        public bool CanAcceptClick => false;
 
         protected override void CalculateHeight()
         {
