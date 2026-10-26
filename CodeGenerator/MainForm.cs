@@ -1157,8 +1157,7 @@ namespace CodeGenerator
             {
                 ModelAssistant.UnselectAll();
                 pasted = ModelAssistant.PasteFromXml(copycuted);
-                pasted.Item3 = pasted.Item2;
-                pasted.Item2 = Point.Empty;
+                pasted = ModelAssistant.PasteFromXml(copycuted, pasted.Item2);
                 movePasted = true;
                 drawPanel.Invalidate();
             }
