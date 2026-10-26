@@ -217,10 +217,8 @@ namespace LogicModel
                         var item = new ToolStripMenuItem("Инвертировать");
                         item.Click += (s, e) =>
                         {
-                            if (target.IsOutput)
-                                Outputs[target.PinIndex].IsInverted = !Outputs[target.PinIndex].IsInverted;
-                            else
-                                Inputs[target.PinIndex].IsInverted = !Inputs[target.PinIndex].IsInverted;
+                            var state = target.IsOutput ? Outputs[target.PinIndex].IsInverted : Inputs[target.PinIndex].IsInverted;
+                            InvertPinByIndex(target.IsOutput, target.PinIndex, state);
                         };
                         items.Add(item);
                     }
@@ -239,6 +237,14 @@ namespace LogicModel
             }
             items.AddRange(base.GetContextMenuItems(point, several));
             return [.. items];
+        }
+
+        public override void SetInvertStatePinByIndex(bool isOutput, int pinIndex, bool state) 
+        {
+            if (isOutput)
+                Outputs[pinIndex].IsInverted = state;
+            else
+                Inputs[pinIndex].IsInverted = state;
         }
 
         public override GraphicsPath[] GetTextPaths()

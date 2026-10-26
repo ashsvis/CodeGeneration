@@ -526,6 +526,7 @@ namespace CodeGenerator
             shape.OnShowProperties += Shape_OnShowProperties;
             shape.OnDelete += Shape_OnDelete;
             shape.OnDeleteLink += Shape_OnDeleteLink;
+            shape.OnInvertPinByIndex += Shape_OnInvertPinByIndex;
             shape.OnMakeCopy += Shape_OnMakeCopy;
             shape.OnQuery += Shape_OnQuery;
             shape.OnChange += Shape_OnChange;
@@ -537,10 +538,21 @@ namespace CodeGenerator
             shape.OnShowProperties -= Shape_OnShowProperties;
             shape.OnDelete -= Shape_OnDelete;
             shape.OnDeleteLink -= Shape_OnDeleteLink;
+            shape.OnInvertPinByIndex -= Shape_OnInvertPinByIndex;
             shape.OnMakeCopy -= Shape_OnMakeCopy;
             shape.OnQuery -= Shape_OnQuery;
             shape.OnChange -= Shape_OnChange;
             shape.OnClick -= Shape_OnClick;
+        }
+
+        private void Shape_OnInvertPinByIndex(object sender, InvertPinByIndexEventArgs e)
+        {
+            if (sender is Shape shape)
+            {
+                UndoRedoManager.Execute(new InversePinCommand(ContextAssistant.Context, shape, e.IsOutput, e.PinIndex, e.State));
+                modelChanged = true;
+                drawPanel.Invalidate();
+            }
         }
 
         private void Shape_OnClick(object sender, ClickEventArgs e)

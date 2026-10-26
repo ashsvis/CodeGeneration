@@ -57,6 +57,7 @@ namespace PluginSupport
         public int Index { get; set; }
 
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
+        public event InvertPinByIndexEventHandler? OnInvertPinByIndex;
         public event EventHandler? OnShowProperties;
         public event EventHandler? OnDelete;
         public event EventHandler? OnMakeCopy;
@@ -251,13 +252,29 @@ namespace PluginSupport
             OnDeleteLink?.Invoke(this, new DeleteLinkFromTargetEventArgs(source, target, pinIndex));
         }
 
+        public void InvertPinByIndex(bool isOutput, int pinIndex, bool state)
+        {
+            OnInvertPinByIndex?.Invoke(this, new InvertPinByIndexEventArgs(isOutput, pinIndex, state));
+        }
+
         public abstract Shape DeepClone();
 
         public abstract XElement WriteContent();
         public abstract void ReadContent(XElement element);
         public abstract bool NoDataToWrite();
         public abstract ValueKind GetInputValueKind(int index);
+        public virtual void SetInvertStatePinByIndex(bool isOutput, int pinIndex, bool state) { }
     }
+
+    public class InvertPinByIndexEventArgs(bool isOutput, int pinIndex, bool state) : EventArgs
+    {
+        public readonly int PinIndex = pinIndex;
+        public bool State = state;
+        public readonly bool IsOutput = isOutput;
+        
+    }
+
+    public delegate void InvertPinByIndexEventHandler(object sender, InvertPinByIndexEventArgs e);
 
     public class DeleteLinkFromTargetEventArgs(Shape? source, Shape? target, int targetPinIndex) : EventArgs
     {
