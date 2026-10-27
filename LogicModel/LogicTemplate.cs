@@ -7,7 +7,7 @@ namespace LogicModel
         static partial void AddTreeNodeLogicItems(List<TreeNode> items)
         {
             TreeNode nodesGroup;
-            nodesGroup = new TreeNode("Дизъюнкция") { Tag = typeof(Or2) };
+            nodesGroup = new TreeNode("Элемент \"ИЛИ\"") { Tag = typeof(Or2) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("OR2") { Tag = typeof(Or2) });
             nodesGroup.Nodes.Add(new TreeNode("OR3") { Tag = typeof(Or3) });
@@ -16,7 +16,7 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("OR6") { Tag = typeof(Or6) });
             nodesGroup.Nodes.Add(new TreeNode("OR7") { Tag = typeof(Or7) });
             nodesGroup.Nodes.Add(new TreeNode("OR8") { Tag = typeof(Or8) });
-            nodesGroup = new TreeNode("Конъюнкция") { Tag = typeof(And2) };
+            nodesGroup = new TreeNode("Элемент \"И\"") { Tag = typeof(And2) };
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("AND2") { Tag = typeof(And2) });
             nodesGroup.Nodes.Add(new TreeNode("AND3") { Tag = typeof(And3) });
@@ -28,16 +28,18 @@ namespace LogicModel
         }
     }
 
-    public class Or2 : Func
+    public class Or2 : Func, IFuncPresenter
     {
         public Or2()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Or2 DeepClone()
         {
@@ -71,16 +73,18 @@ namespace LogicModel
 
    }
 
-    public class Or3 : Func
+    public class Or3 : Func, IFuncPresenter
     {
         public Or3()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or3 DeepClone()
         {
@@ -114,16 +118,18 @@ namespace LogicModel
 
    }
 
-    public class Or4 : Func
+    public class Or4 : Func, IFuncPresenter
     {
         public Or4()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or4 DeepClone()
         {
@@ -157,16 +163,18 @@ namespace LogicModel
 
    }
 
-    public class Or5 : Func
+    public class Or5 : Func, IFuncPresenter
     {
         public Or5()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or5 DeepClone()
         {
@@ -200,16 +208,18 @@ namespace LogicModel
 
    }
 
-    public class Or6 : Func
+    public class Or6 : Func, IFuncPresenter
     {
         public Or6()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or6 DeepClone()
         {
@@ -243,16 +253,18 @@ namespace LogicModel
 
    }
 
-    public class Or7 : Func
+    public class Or7 : Func, IFuncPresenter
     {
         public Or7()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or7 DeepClone()
         {
@@ -286,16 +298,18 @@ namespace LogicModel
 
    }
 
-    public class Or8 : Func
+    public class Or8 : Func, IFuncPresenter
     {
         public Or8()
         {
             FuncName = "1";
-            FuncDesc = "Дизъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Or8 DeepClone()
         {
@@ -329,16 +343,18 @@ namespace LogicModel
 
    }
 
-    public class And2 : Func
+    public class And2 : Func, IFuncPresenter
     {
         public And2()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override And2 DeepClone()
         {
@@ -372,16 +388,18 @@ namespace LogicModel
 
    }
 
-    public class And3 : Func
+    public class And3 : Func, IFuncPresenter
     {
         public And3()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And3 DeepClone()
         {
@@ -415,16 +433,18 @@ namespace LogicModel
 
    }
 
-    public class And4 : Func
+    public class And4 : Func, IFuncPresenter
     {
         public And4()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And4 DeepClone()
         {
@@ -458,16 +478,18 @@ namespace LogicModel
 
    }
 
-    public class And5 : Func
+    public class And5 : Func, IFuncPresenter
     {
         public And5()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And5 DeepClone()
         {
@@ -501,16 +523,18 @@ namespace LogicModel
 
    }
 
-    public class And6 : Func
+    public class And6 : Func, IFuncPresenter
     {
         public And6()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And6 DeepClone()
         {
@@ -544,16 +568,18 @@ namespace LogicModel
 
    }
 
-    public class And7 : Func
+    public class And7 : Func, IFuncPresenter
     {
         public And7()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And7 DeepClone()
         {
@@ -587,16 +613,18 @@ namespace LogicModel
 
    }
 
-    public class And8 : Func
+    public class And8 : Func, IFuncPresenter
     {
         public And8()
         {
             FuncName = "&";
-            FuncDesc = "Конъюнкция";
-            Inputs = [new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"И\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override And8 DeepClone()
         {

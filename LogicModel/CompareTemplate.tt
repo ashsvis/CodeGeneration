@@ -16,12 +16,12 @@ namespace LogicModel
 <#
     var compareTypes = new Tuple<string, string, string, string>[] 
     { 
-        new("Eq", "EQ", "Равно", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon"),
-        new("Ne", "NE", "Не равно", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)"),
-        new("Gt", "GT", "Больше", "Inputs[0].Value > Inputs[1].Value"),
-        new("Ge", "GE", "Больше или равно", "Inputs[0].Value >= Inputs[1].Value"),
-        new("Lt", "LT", "Меньше", "Inputs[0].Value < Inputs[1].Value"),
-        new("Le", "LE", "Меньше или равно", "Inputs[0].Value <= Inputs[1].Value"),
+        new("Eq", "==", "Элемент \\\"Сравнение\\\"", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon"),
+        new("Ne", "!=", "Элемент \\\"Не равно\\\"", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)"),
+        new("Gt", ">", "Элемент \\\"Больше\\\"", "Inputs[0].Value > Inputs[1].Value"),
+        new("Ge", ">=", "Элемент \\\"Больше или равно\\\"", "Inputs[0].Value >= Inputs[1].Value"),
+        new("Lt", "<", "Элемент \\\"Меньше\\\"", "Inputs[0].Value < Inputs[1].Value"),
+        new("Le", "<=", "Элемент \\\"Меньше или равно\\\"", "Inputs[0].Value <= Inputs[1].Value"),
     };
     foreach (var type in compareTypes)
     {
@@ -37,7 +37,7 @@ namespace LogicModel
     foreach (var type in compareTypes)
     {
 #>
-    public class <#= type.Item1 #> : Func
+    public class <#= type.Item1 #> : Func, IFuncPresenter
     {
         public <#= type.Item1 #>()
         {
@@ -47,6 +47,8 @@ namespace LogicModel
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => <#= (type.Item2 == "==").ToString().ToLower()  #>;
 
         public override <#= type.Item1 #> DeepClone()
         {

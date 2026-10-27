@@ -7,9 +7,9 @@ namespace LogicModel
         public Xor()
         {
             FuncName = "=1";
-            FuncDesc = "Исключающее ИЛИ";
-            Inputs = [new PinInput { }, new PinInput { }];
-            Outputs = [new PinOutput { }];
+            FuncDesc = "Элемент \"Исключающее ИЛИ\"";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }, new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
 

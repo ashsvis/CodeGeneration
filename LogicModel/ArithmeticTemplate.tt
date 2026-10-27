@@ -16,10 +16,10 @@ namespace LogicModel
 <#
     var arithmeticTypes = new Tuple<string, string, string, string>[] 
     { 
-        new("Add", "ADD", "Сложение", "+"),
-        new("Sub", "SUB", "Вычитание", "-"),
-        new("Mul", "MUL", "Умножение", "*"),
-        new("Div", "DIV", "Деление", "/"),
+        new("Add", "ADD", "Блок сложения", "+"),
+        new("Sub", "SUB", "Блок вычитания", "-"),
+        new("Mul", "MUL", "Блок умножения", "*"),
+        new("Div", "DIV", "Блок деления", "/"),
     };
     foreach (var type in arithmeticTypes)
     {
@@ -35,7 +35,7 @@ namespace LogicModel
     foreach (var type in arithmeticTypes)
     {
 #>
-    public class <#= type.Item1 #> : Func
+    public class <#= type.Item1 #> : Func, IFuncPresenter
     {
         public <#= type.Item1 #>()
         {
@@ -45,6 +45,8 @@ namespace LogicModel
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override <#= type.Item1 #> DeepClone()
         {

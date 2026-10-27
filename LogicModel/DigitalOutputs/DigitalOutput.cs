@@ -7,7 +7,7 @@ namespace LogicModel
         public DigitalOutput()
         {
             FuncName = "#/D";
-            FuncDesc = "Дискретный вывод сигнала";
+            FuncDesc = "Вывод дискретного сигнала";
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.DO }];
             CalculateHeight();

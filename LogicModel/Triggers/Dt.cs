@@ -1,3 +1,5 @@
+using PluginSupport;
+
 namespace LogicModel
 {
     public class Dt : Rs, IFuncPresenter
@@ -6,8 +8,8 @@ namespace LogicModel
         {
             FuncName = "T";
             FuncDesc = "D-ענטדדונ";
-            Inputs = [new PinInput { Name = "D" }, new PinInput { Name = "C" }];
-            Outputs = [new PinOutput { Name = "Q" }];
+            Inputs = [new PinInput { Name = "D", Kind = ValueKind.Digital }, new PinInput { Name = "C", Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Name = "Q", Kind = ValueKind.Digital }];
             CalculateHeight();
         }
 

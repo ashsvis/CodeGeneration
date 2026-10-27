@@ -18,8 +18,8 @@ namespace LogicModel
         {
             FuncName = "TOF";
             FuncDesc = "Задержка выключения";
-            Inputs = [new PinInput { }];
-            Outputs = [new PinOutput { }];
+            Inputs = [new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
             timer = new System.Timers.Timer(MilliSeconds);
             timer.Elapsed += OnTimedEvent;

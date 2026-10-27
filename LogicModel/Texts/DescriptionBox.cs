@@ -14,8 +14,8 @@ namespace LogicModel
             FuncName = "TAG_DESCRIPTION";
             Width = 48 * 5;
             Height = 48 * 2;
-            Inputs = [new PinInput { }];
-            Outputs = [new PinOutput { }];
+            Inputs = [new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             Background = SystemColors.Control;
             CalculateHeight();
         }

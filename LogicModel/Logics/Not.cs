@@ -7,9 +7,9 @@ namespace LogicModel
         public Not() 
         {
             FuncName = "1";
-            FuncDesc = "Инверсия";
-            Inputs = [new PinInput { }];
-            Outputs = [new PinOutput { IsInverted = true }];
+            FuncDesc = "Логическая инверсия";
+            Inputs = [new PinInput { Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital, IsInverted = true }];
             CalculateHeight();
         }
 

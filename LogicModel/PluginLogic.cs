@@ -21,24 +21,24 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Тег входной дискретный") { Tag = typeof(DigitalInputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Тег входной аналоговый") { Tag = typeof(AnalogInputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Дискретная входящая ссылка") { Tag = typeof(DigitalInputPageLink) });
-            nodesGroup.Nodes.Add(new TreeNode("Дискретный ввод") { Tag = typeof(DigitalInput) });
+            nodesGroup.Nodes.Add(new TreeNode("Ввод дискретного сигнала") { Tag = typeof(DigitalInput) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговая входящая ссылка") { Tag = typeof(AnalogInputPageLink) });
-            nodesGroup.Nodes.Add(new TreeNode("Аналоговый ввод") { Tag = typeof(AnalogInput) });
+            nodesGroup.Nodes.Add(new TreeNode("Ввод аналогового сигнала") { Tag = typeof(AnalogInput) });
             nodesGroup.Nodes.Add(new TreeNode("Флаг") { Tag = typeof(Flag) });
             nodesGroup.Nodes.Add(new TreeNode("Число") { Tag = typeof(Numeric) });
             //
             nodesGroup = new TreeNode("Вывод сигнала");
             items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("Дискретный вывод") { Tag = typeof(DigitalOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Вывод дискретного сигнала") { Tag = typeof(DigitalOutput) });
             nodesGroup.Nodes.Add(new TreeNode("Дискретная исходящая ссылка") { Tag = typeof(DigitalOutputPageLink) });
-            nodesGroup.Nodes.Add(new TreeNode("Аналоговый вывод") { Tag = typeof(AnalogOutput) });
+            nodesGroup.Nodes.Add(new TreeNode("Вывод аналогового сигнала") { Tag = typeof(AnalogOutput) });
             nodesGroup.Nodes.Add(new TreeNode("Аналоговая исходящая ссылка") { Tag = typeof(AnalogOutputPageLink) });
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной дискретный") { Tag = typeof(DigitalOutputTag) });
             nodesGroup.Nodes.Add(new TreeNode("Тег выходной аналоговый") { Tag = typeof(AnalogOutputTag) });
             //
-            items.Add(new TreeNode("Инверсия") { Tag = typeof(Not) });
+            items.Add(new TreeNode("Логическая инверсия") { Tag = typeof(Not) });
             AddTreeNodeLogicItems(items);
-            items.Add(new TreeNode("Исключающее ИЛИ") { Tag = typeof(Xor) });
+            items.Add(new TreeNode("Элемент \"Исключающее ИЛИ\"") { Tag = typeof(Xor) });
             //
             nodesGroup = new TreeNode("Триггеры");
             items.Add(nodesGroup);
@@ -57,10 +57,10 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Задержка включения") { Tag = typeof(Ton) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка выключения") { Tag = typeof(Toff) });
             //
-            nodesGroup = new TreeNode("Селекторы");
+            nodesGroup = new TreeNode("Выбор сигнала");
             items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("Выбор дискретного сигнала") { Tag = typeof(Seld) });
-            nodesGroup.Nodes.Add(new TreeNode("Выбор аналогового сигнала") { Tag = typeof(Sela) });
+            nodesGroup.Nodes.Add(new TreeNode("Дискретный мультиплексор") { Tag = typeof(Seld) });
+            nodesGroup.Nodes.Add(new TreeNode("Аналоговый мультиплексор") { Tag = typeof(Sela) });
             //
             nodesGroup = new TreeNode("Арифметика");
             items.Add(nodesGroup);

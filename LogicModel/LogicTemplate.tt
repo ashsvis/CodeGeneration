@@ -16,7 +16,7 @@ namespace LogicModel
             TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    var logicTypes = new Tuple<string, string, string, string>[] { new("Or", "1", "Дизъюнкция", "||"), new("And", "&", "Конъюнкция", "&&") };
+    var logicTypes = new Tuple<string, string, string, string>[] { new("Or", "1", "Элемент \\\"ИЛИ\\\"", "||"), new("And", "&", "Элемент \\\"И\\\"", "&&") };
     foreach (var type in logicTypes)
     {
 #>
@@ -45,20 +45,22 @@ namespace LogicModel
         for (var j = 1; j <= i; j++)
         {
             holderValues.Add("false");
-            holderInits.Add("new PinInput { }");
+            holderInits.Add("new PinInput { Kind = ValueKind.Digital }");
             holderInputNames.Add("\"\"");
         }
 #>
-    public class <#= type.Item1 #><#= i #> : Func
+    public class <#= type.Item1 #><#= i #> : Func, IFuncPresenter
     {
         public <#= type.Item1 #><#= i #>()
         {
             FuncName = "<#= type.Item2 #>";
             FuncDesc = "<#= type.Item3 #>";
             Inputs = [<#= string.Join(", ", holderInits) #>];
-            Outputs = [new PinOutput { }];
+            Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => <#= (i == 2).ToString().ToLower() #>;
 
         public override <#= type.Item1 #><#= i #> DeepClone()
         {

@@ -42,6 +42,7 @@
             lbFuncSelector.Name = "lbFuncSelector";
             lbFuncSelector.Size = new Size(265, 227);
             lbFuncSelector.TabIndex = 0;
+            lbFuncSelector.SelectedIndexChanged += LbFuncSelector_SelectedIndexChanged;
             // 
             // btnCancel
             // 
@@ -60,6 +61,7 @@
             // 
             btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnOk.DialogResult = DialogResult.OK;
+            btnOk.Enabled = false;
             btnOk.FlatStyle = FlatStyle.Flat;
             btnOk.Font = new Font("Segoe UI", 9.75F);
             btnOk.Location = new Point(121, 245);

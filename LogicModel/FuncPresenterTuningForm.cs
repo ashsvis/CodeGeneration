@@ -20,5 +20,10 @@
                     lbFuncSelector.Items.Add(presenter.FuncDesc ?? entry.Key);
             }
         }
+
+        private void LbFuncSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnOk.Enabled = true;
+        }
     }
 }

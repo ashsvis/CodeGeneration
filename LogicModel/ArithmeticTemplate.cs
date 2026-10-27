@@ -6,23 +6,25 @@ namespace LogicModel
     {
         static partial void AddTreeNodeArithmeticItems(TreeNodeCollection items)
         {
-            items.Add(new TreeNode("Сложение") { Tag = typeof(Add) });
-            items.Add(new TreeNode("Вычитание") { Tag = typeof(Sub) });
-            items.Add(new TreeNode("Умножение") { Tag = typeof(Mul) });
-            items.Add(new TreeNode("Деление") { Tag = typeof(Div) });
+            items.Add(new TreeNode("Блок сложения") { Tag = typeof(Add) });
+            items.Add(new TreeNode("Блок вычитания") { Tag = typeof(Sub) });
+            items.Add(new TreeNode("Блок умножения") { Tag = typeof(Mul) });
+            items.Add(new TreeNode("Блок деления") { Tag = typeof(Div) });
         }
     }
 
-    public class Add : Func
+    public class Add : Func, IFuncPresenter
     {
         public Add()
         {
             FuncName = "ADD";
-            FuncDesc = "Сложение";
+            FuncDesc = "Блок сложения";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Add DeepClone()
         {
@@ -55,16 +57,18 @@ namespace LogicModel
         }
     }
 
-    public class Sub : Func
+    public class Sub : Func, IFuncPresenter
     {
         public Sub()
         {
             FuncName = "SUB";
-            FuncDesc = "Вычитание";
+            FuncDesc = "Блок вычитания";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Sub DeepClone()
         {
@@ -97,16 +101,18 @@ namespace LogicModel
         }
     }
 
-    public class Mul : Func
+    public class Mul : Func, IFuncPresenter
     {
         public Mul()
         {
             FuncName = "MUL";
-            FuncDesc = "Умножение";
+            FuncDesc = "Блок умножения";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Mul DeepClone()
         {
@@ -139,16 +145,18 @@ namespace LogicModel
         }
     }
 
-    public class Div : Func
+    public class Div : Func, IFuncPresenter
     {
         public Div()
         {
             FuncName = "DIV";
-            FuncDesc = "Деление";
+            FuncDesc = "Блок деления";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Div DeepClone()
         {

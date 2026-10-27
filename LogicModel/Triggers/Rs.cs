@@ -9,8 +9,8 @@ namespace LogicModel
         {
             FuncName = "RS";
             FuncDesc = "RS-ענטדדונ";
-            Inputs = [new PinInput { Name = "S" }, new PinInput { Name = "R" }];
-            Outputs = [new PinOutput { Name = "Q" }];
+            Inputs = [new PinInput { Name = "S", Kind = ValueKind.Digital }, new PinInput { Name = "R", Kind = ValueKind.Digital }];
+            Outputs = [new PinOutput { Name = "Q", Kind = ValueKind.Digital }];
             CalculateHeight();
         }
 

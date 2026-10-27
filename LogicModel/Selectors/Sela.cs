@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
@@ -7,10 +8,10 @@ namespace LogicModel
         public Sela()
         {
             FuncName = "SEL";
-            FuncDesc = "Выбор сигнала";
-            Inputs = [new PinInput { Name = "0/1" }, 
-                new PinInput { Name = "0", Kind = ValueKind.Analog }, 
-                new PinInput { Name = "1", Kind = ValueKind.Analog }];
+            FuncDesc = "Аналоговый мультиплексор";
+            Inputs = [new PinInput { Name = "A/B", Kind = ValueKind.Digital }, 
+                new PinInput { Name = "A", Kind = ValueKind.Analog }, 
+                new PinInput { Name = "B", Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Analog }];
             CalculateHeight();
         }
@@ -48,6 +49,27 @@ namespace LogicModel
                     Transfer();
                 }
             }
+        }
+
+        public override GraphicsPath[] GetTextPaths()
+        {
+            List<GraphicsPath> paths = [.. base.GetTextPaths()];
+            using var fontFunc = new Font("Segoe UI", 12f);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Near;
+            sf.LineAlignment = StringAlignment.Center;
+            // значения входов или выходов
+            var targets = GetTargets();
+            foreach (var info in targets)
+            {
+                var p = new GraphicsPath();
+                var t = info.Target;
+                if (info.IsOutput) t.Offset(-t.Width * 1.2f, 0f); else t.Offset(t.Width * 1.2f, 0f);
+                p.AddString(info.IsOutput ? Outputs[info.PinIndex].Name ?? "" : Inputs[info.PinIndex].Name ?? "",
+                    fontFunc.FontFamily, (int)FontStyle.Bold, 10f, new PointF(t.Left, t.Top + t.Height / 2), sf);
+                paths.Add(p);
+            }
+            return [.. paths];
         }
     }
 }

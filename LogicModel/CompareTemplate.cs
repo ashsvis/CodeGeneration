@@ -6,25 +6,27 @@ namespace LogicModel
     {
         static partial void AddTreeNodeCompareItems(TreeNodeCollection items)
         {
-            items.Add(new TreeNode("Равно") { Tag = typeof(Eq) });
-            items.Add(new TreeNode("Не равно") { Tag = typeof(Ne) });
-            items.Add(new TreeNode("Больше") { Tag = typeof(Gt) });
-            items.Add(new TreeNode("Больше или равно") { Tag = typeof(Ge) });
-            items.Add(new TreeNode("Меньше") { Tag = typeof(Lt) });
-            items.Add(new TreeNode("Меньше или равно") { Tag = typeof(Le) });
+            items.Add(new TreeNode("Элемент \"Сравнение\"") { Tag = typeof(Eq) });
+            items.Add(new TreeNode("Элемент \"Не равно\"") { Tag = typeof(Ne) });
+            items.Add(new TreeNode("Элемент \"Больше\"") { Tag = typeof(Gt) });
+            items.Add(new TreeNode("Элемент \"Больше или равно\"") { Tag = typeof(Ge) });
+            items.Add(new TreeNode("Элемент \"Меньше\"") { Tag = typeof(Lt) });
+            items.Add(new TreeNode("Элемент \"Меньше или равно\"") { Tag = typeof(Le) });
         }
     }
 
-    public class Eq : Func
+    public class Eq : Func, IFuncPresenter
     {
         public Eq()
         {
-            FuncName = "EQ";
-            FuncDesc = "Равно";
+            FuncName = "==";
+            FuncDesc = "Элемент \"Сравнение\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Eq DeepClone()
         {
@@ -57,16 +59,18 @@ namespace LogicModel
         }
     }
 
-    public class Ne : Func
+    public class Ne : Func, IFuncPresenter
     {
         public Ne()
         {
-            FuncName = "NE";
-            FuncDesc = "Не равно";
+            FuncName = "!=";
+            FuncDesc = "Элемент \"Не равно\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Ne DeepClone()
         {
@@ -99,16 +103,18 @@ namespace LogicModel
         }
     }
 
-    public class Gt : Func
+    public class Gt : Func, IFuncPresenter
     {
         public Gt()
         {
-            FuncName = "GT";
-            FuncDesc = "Больше";
+            FuncName = ">";
+            FuncDesc = "Элемент \"Больше\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Gt DeepClone()
         {
@@ -141,16 +147,18 @@ namespace LogicModel
         }
     }
 
-    public class Ge : Func
+    public class Ge : Func, IFuncPresenter
     {
         public Ge()
         {
-            FuncName = "GE";
-            FuncDesc = "Больше или равно";
+            FuncName = ">=";
+            FuncDesc = "Элемент \"Больше или равно\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Ge DeepClone()
         {
@@ -183,16 +191,18 @@ namespace LogicModel
         }
     }
 
-    public class Lt : Func
+    public class Lt : Func, IFuncPresenter
     {
         public Lt()
         {
-            FuncName = "LT";
-            FuncDesc = "Меньше";
+            FuncName = "<";
+            FuncDesc = "Элемент \"Меньше\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Lt DeepClone()
         {
@@ -225,16 +235,18 @@ namespace LogicModel
         }
     }
 
-    public class Le : Func
+    public class Le : Func, IFuncPresenter
     {
         public Le()
         {
-            FuncName = "LE";
-            FuncDesc = "Меньше или равно";
+            FuncName = "<=";
+            FuncDesc = "Элемент \"Меньше или равно\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => false;
 
         public override Le DeepClone()
         {

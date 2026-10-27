@@ -7,7 +7,7 @@ namespace LogicModel
         public AnalogOutput()
         {
             FuncName = "#/A";
-            FuncDesc = "Аналоговый вывод сигнала";
+            FuncDesc = "Вывод аналогового сигнала";
             Inputs = [new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.AO }];
             CalculateHeight();

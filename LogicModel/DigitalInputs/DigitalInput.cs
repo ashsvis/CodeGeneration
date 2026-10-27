@@ -1,6 +1,5 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.Drawing.Printing;
 
 namespace LogicModel
 {
@@ -9,7 +8,7 @@ namespace LogicModel
         public DigitalInput()
         {
             FuncName = "D/#";
-            FuncDesc = "ƒискретный ввод сигнала";
+            FuncDesc = "¬вод дискретного сигнала";
             Inputs = [new PinInput { Kind = ValueKind.DI }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
