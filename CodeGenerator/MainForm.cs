@@ -518,9 +518,16 @@ namespace CodeGenerator
 
                     UnselectAll();
                     var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
+                        draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                    propGrid.SelectedObjects = null;
+                    propGrid.SelectedObject = null;
+                    draged.Shape.Selected = true;
+                    propGrid.SelectedObject = draged.Shape;
                     if (draged.Shape is IAcceptClick clickedShape)
                         draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
+                    propGrid.SelectedObject = null;
+                    propGrid.SelectedObject = draged.Shape;
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }
@@ -544,6 +551,10 @@ namespace CodeGenerator
         private void Shape_OnClick(object sender, ClickEventArgs e)
         {
             e.Action?.Invoke(MouseButtons, e.Args);
+            propGrid.SelectedObjects = null;
+            propGrid.SelectedObject = null;
+            propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
+            propGrid.SelectedObject = Shapes.FirstOrDefault(x => x.Selected);
         }
 
         private void Shape_OnChange(object? sender, EventArgs e)
@@ -551,25 +562,6 @@ namespace CodeGenerator
             modelChanged = true;
             drawPanel.Invalidate();
         }
-
-        //private void Shape_OnMakeCopy(object? sender, EventArgs e)
-        //{
-        //    if (runEmulate) return;
-        //    if (sender is Shape source)
-        //    {
-        //        Shapes.ForEach(shape => shape.Selected = false);
-        //        var shape = source.DeepClone();
-        //        shape.NewGuid();
-
-        //        var point = Point.Add(shape.Location, new Size(0, shape.Bounds.Height));
-        //        UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
-
-        //        ModelAssistant.SortAndAssignToPages();
-        //        shape.Selected = true;
-        //        modelChanged = true;
-        //        drawPanel.Invalidate();
-        //    }
-        //}
 
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
@@ -882,8 +874,10 @@ namespace CodeGenerator
             }
         }
 
-        private static void UnselectAll()
+        private void UnselectAll()
         {
+            propGrid.SelectedObjects = null;
+            propGrid.SelectedObject = null;
             ModelAssistant.UnselectAll();
         }
 

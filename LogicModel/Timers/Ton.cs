@@ -43,7 +43,7 @@ namespace LogicModel
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);
 
-        public bool CanAcceptClick => true;
+        public bool CanAcceptClick => false;
 
         private void OnTimedEvent(object? source, ElapsedEventArgs e)
         {

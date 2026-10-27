@@ -19,7 +19,7 @@ namespace CodeGenerator.Commands
             var oldcontext = ContextAssistant.Context;
             ContextAssistant.Context = commandContext;
             shape.Location = point;
-            shape.Selected = true;
+            //shape.Selected = true;
             subscribeShapeEvents(shape);
             ContextAssistant.ContextShapes.Add(shape);
             ModelAssistant.SortAndAssignToPages();
