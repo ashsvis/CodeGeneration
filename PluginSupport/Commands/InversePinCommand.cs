@@ -1,7 +1,6 @@
-﻿using PluginSupport;
-using PluginSupport.Assistants;
+﻿using PluginSupport.Assistants;
 
-namespace CodeGenerator.Commands
+namespace PluginSupport.Commands
 {
     public class InversePinCommand(ContextKind context, Shape shape, bool isOutput, int pinIndex, bool state) : ICommand
     {

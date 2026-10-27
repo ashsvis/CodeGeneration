@@ -1,4 +1,6 @@
 using PluginSupport;
+using PluginSupport.Assistants;
+using PluginSupport.Commands;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
@@ -218,7 +220,7 @@ namespace LogicModel
                         item.Click += (s, e) =>
                         {
                             var state = target.IsOutput ? Outputs[target.PinIndex].IsInverted : Inputs[target.PinIndex].IsInverted;
-                            InvertPinByIndex(target.IsOutput, target.PinIndex, state);
+                            UndoRedoAssistant.UndoRedoManager.Execute(new InversePinCommand(ContextAssistant.Context, this, target.IsOutput, target.PinIndex, state));
                         };
                         items.Add(item);
                     }
