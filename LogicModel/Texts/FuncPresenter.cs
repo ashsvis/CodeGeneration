@@ -7,6 +7,7 @@ namespace LogicModel
 {
     public class FuncPresenter : Shape, ITraceTransparent, IAcceptClick
     {
+        private Func? func = null;
 
         [Browsable(false)]
         public override int Width { get; set; } = 24;
@@ -30,14 +31,19 @@ namespace LogicModel
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
-            List<GraphicsPath> paths = [];
-            GraphicsPath path = new();
-            path.AddLine(new Point(Location.X, Location.Y), new Point(Location.X + Width, Location.Y));
-            path.CloseFigure();
-            path.AddLine(new Point(Location.X, Location.Y), new Point(Location.X, Location.Y + Height));
-            path.CloseFigure();
-            paths.Add(path);
-            return [..paths];
+            if (func == null)
+            {
+                List<GraphicsPath> paths = [];
+                GraphicsPath path = new();
+                path.AddLine(new Point(Location.X, Location.Y), new Point(Location.X + Width, Location.Y));
+                path.CloseFigure();
+                path.AddLine(new Point(Location.X, Location.Y), new Point(Location.X, Location.Y + Height));
+                path.CloseFigure();
+                paths.Add(path);
+                return [.. paths];
+            }
+            func.Location = Location;
+            return func.GetGraphicsPaths();
         }
 
         public override void ReadContent(XElement xfunc)
@@ -50,6 +56,12 @@ namespace LogicModel
             var sTop = xfunc.Attribute("Y")?.Value;
             if (!string.IsNullOrWhiteSpace(sLeft) && !string.IsNullOrWhiteSpace(sTop))
                 Location = new Point(ParseHelper.ParseInteger(sLeft, 0), ParseHelper.ParseInteger(sTop, 0));
+            var sWidth = xfunc.Attribute("Width")?.Value;
+            if (!string.IsNullOrWhiteSpace(sWidth))
+                Width = ParseHelper.ParseInteger(sWidth, 24);
+            var sHeight = xfunc.Attribute("Height")?.Value;
+            if (!string.IsNullOrWhiteSpace(sHeight))
+                Height = ParseHelper.ParseInteger(sHeight, 24);
         }
 
         public override XElement WriteContent()
@@ -58,6 +70,8 @@ namespace LogicModel
             xfunc.Add(new XAttribute("Id", Id));
             xfunc.Add(new XAttribute("X", Location.X));
             xfunc.Add(new XAttribute("Y", Location.Y));
+            xfunc.Add(new XAttribute("Width", Width));
+            xfunc.Add(new XAttribute("Height", Height));
             return xfunc;
         }
 
@@ -77,7 +91,12 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-
+                func = dlg.Selected;
+                if (func != null)
+                {
+                    Width = func.Width;
+                    Height = func.Height;
+                }
                 Changed();
             }
         }

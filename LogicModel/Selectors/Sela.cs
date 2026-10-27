@@ -16,7 +16,7 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public new bool IsPresent => false;
+        public new bool IsPresent => true;
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);

@@ -8,6 +8,8 @@
             BuildContent();
         }
 
+        public Func? Selected => lbFuncSelector.SelectedItem as Func;
+
         private void BuildContent()
         {
             var pl = new PluginLogic();
@@ -17,7 +19,7 @@
                 var type = entry.Value;
                 var obj = Activator.CreateInstance(type);
                 if (obj is IFuncPresenter presenter && presenter.IsPresent)
-                    lbFuncSelector.Items.Add(presenter.FuncDesc ?? entry.Key);
+                    lbFuncSelector.Items.Add(obj);
             }
         }
 

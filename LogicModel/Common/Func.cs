@@ -584,5 +584,10 @@ namespace LogicModel
                 }
             }
         }
+
+        public override string? ToString()
+        {
+            return FuncDesc ?? base.ToString();
+        }
     }
 }
