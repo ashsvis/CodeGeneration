@@ -206,7 +206,7 @@ namespace CodeGenerator
                 }
                 if (shape.IsPointInTargets(point))
                 {
-                    if (shape.IsOuputTargetsPoint(point, out int outputIndex))
+                    if (shape.IsOutputTargetsPoint(point, out int outputIndex))
                     {
                         if (e.Button == MouseButtons.Left)
                         {

@@ -167,7 +167,7 @@ namespace PluginSupport
             return false;
         }
 
-        public bool IsOuputTargetsPoint(Point point, out int index)
+        public bool IsOutputTargetsPoint(Point point, out int index)
         {
             index = -1;
             foreach (var t in GetTargets().Where(x => x.IsOutput))
@@ -191,10 +191,6 @@ namespace PluginSupport
         {
             List<ToolStripItem> items = [];
             ToolStripMenuItem item;
-            //item = new ToolStripMenuItem() { Text = "Свойства..." };
-            //item.Click += (s, e) => ShowProperties();
-            //items.Add(item);
-            //items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Дублировать" };
             item.Click += (s, e) => MakeCopy();
             items.Add(item);
@@ -265,39 +261,4 @@ namespace PluginSupport
         public abstract ValueKind GetInputValueKind(int index);
         public virtual void SetInvertStatePinByIndex(bool isOutput, int pinIndex, bool state) { }
     }
-
-    public class InvertPinByIndexEventArgs(bool isOutput, int pinIndex, bool state) : EventArgs
-    {
-        public readonly int PinIndex = pinIndex;
-        public bool State = state;
-        public readonly bool IsOutput = isOutput;
-        
-    }
-
-    public delegate void InvertPinByIndexEventHandler(object sender, InvertPinByIndexEventArgs e);
-
-    public class DeleteLinkFromTargetEventArgs(Shape? source, Shape? target, int targetPinIndex) : EventArgs
-    {
-        public Shape? Source { get; set; } = source;
-        public Shape? Target { get; set; } = target;
-        public int TargetPinIndex { get; set; } = targetPinIndex;
-    }
-
-    public delegate void DeleteLinkFromTargetEventHandler(object sender, DeleteLinkFromTargetEventArgs e);
-
-    public class QueryEventArgs(object[] args) : EventArgs
-    {
-        public object[] Args { get; set; } = args;
-        public object[] Results { get; set; } = [];
-    }
-
-    public delegate void QueryEventHandler(object sender, QueryEventArgs e);
-
-    public class ClickEventArgs(Action<MouseButtons, object[]> action, object[] args) : EventArgs
-    {
-        public Action<MouseButtons, object[]> Action { get; set; } = action;
-        public object[] Args { get; set; } = args;
-    }
-
-    public delegate void ClickEventHandler(object sender, ClickEventArgs e);
 }
