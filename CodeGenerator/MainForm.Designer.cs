@@ -74,7 +74,6 @@
             tsbCopy = new ToolStripButton();
             tsbPaste = new ToolStripButton();
             toolStripSeparator7 = new ToolStripSeparator();
-            tsbEditProperties = new ToolStripButton();
             tsbRun = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             tsslStatus = new ToolStripStatusLabel();
@@ -347,7 +346,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbUndo, tsbRedo, toolStripSeparator5, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, tsbEditProperties, tsbRun });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbCreate, tsbOpen, tsbSave, tsbPrint, toolStripSeparator6, tsbUndo, tsbRedo, toolStripSeparator5, tsbCut, tsbCopy, tsbPaste, toolStripSeparator7, tsbRun });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 25);
@@ -463,17 +462,6 @@
             // 
             toolStripSeparator7.Name = "toolStripSeparator7";
             toolStripSeparator7.Size = new Size(6, 25);
-            // 
-            // tsbEditProperties
-            // 
-            tsbEditProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbEditProperties.Enabled = false;
-            tsbEditProperties.Image = Properties.Resources.props;
-            tsbEditProperties.ImageTransparentColor = Color.Magenta;
-            tsbEditProperties.Name = "tsbEditProperties";
-            tsbEditProperties.Size = new Size(23, 22);
-            tsbEditProperties.Text = "Показать свойства";
-            tsbEditProperties.Click += TsbEditProperties_Click;
             // 
             // tsbRun
             // 
@@ -765,7 +753,6 @@
         private ToolStripButton tsbUndo;
         private ToolStripButton tsbRedo;
         private ToolStripSeparator toolStripSeparator5;
-        private ToolStripButton tsbEditProperties;
         private SplitContainer splitContainer1;
         private PropertyGrid propGrid;
     }

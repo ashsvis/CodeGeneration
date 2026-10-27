@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class DigitalOutputPageLink : Func, IPageSourceLink
+    public class DigitalOutputPageLink : Func, IPageSourceLink, IBeforeRemove
     {
         public DigitalOutputPageLink()
         {
@@ -144,11 +144,10 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public override void Delete()
+        public void Delete()
         {
             foreach (var item in Targets)
                 item.SourcePageLink = null;
-            base.Delete();
         }
 
         public override bool ContainsPoint(Point point, float width)
@@ -180,25 +179,6 @@ namespace LogicModel
         public int GetLinkNumber()
         {
             return Number;
-        }
-
-        /// <summary>
-        /// Добавление пунктов в контекстное меню
-        /// </summary>
-        /// <param name="point">Точка нажатия на элементе</param>
-        /// <param name="several">Признак выбора нескольких элементов</param>
-        /// <returns></returns>
-        public override ToolStripItem[] GetContextMenuItems(Point point, bool several)
-        {
-            List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = "Свойства..." };
-            item.Click += (s, e) => ShowProperties();
-            items.Add(item);
-            items.Add(new ToolStripSeparator());
-            item = new ToolStripMenuItem() { Text = "Удалить" };
-            item.Click += (s, e) => Delete();
-            items.Add(item);
-            return [.. items];
         }
     }
 }

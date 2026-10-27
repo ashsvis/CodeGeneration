@@ -481,7 +481,7 @@ namespace PluginSupport.Assistants
             unsubscribeAction(shape);
             pageIndexes.Add(shape.Page);
 
-            shape.Delete();
+            if (shape is IBeforeRemove beforeRemove) beforeRemove.Delete();
             ContextAssistant.ContextShapes.Remove(shape);
 
             SortAndAssignToPages();

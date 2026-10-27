@@ -529,20 +529,14 @@ namespace CodeGenerator
 
         private void SubscribeShapeEvents(Shape shape)
         {
-            shape.OnShowProperties += Shape_OnShowProperties;
-            shape.OnDelete += Shape_OnDelete;
             shape.OnDeleteLink += Shape_OnDeleteLink;
-            shape.OnMakeCopy += Shape_OnMakeCopy;
             shape.OnChange += Shape_OnChange;
             shape.OnClick += Shape_OnClick;
         }
 
         private void UnsubscribeShapeEvents(Shape shape)
         {
-            shape.OnShowProperties -= Shape_OnShowProperties;
-            shape.OnDelete -= Shape_OnDelete;
             shape.OnDeleteLink -= Shape_OnDeleteLink;
-            shape.OnMakeCopy -= Shape_OnMakeCopy;
             shape.OnChange -= Shape_OnChange;
             shape.OnClick -= Shape_OnClick;
         }
@@ -558,31 +552,24 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void Shape_OnShowProperties(object? sender, EventArgs e)
-        {
-            var dlg = new EditPropertyForm(sender);
-            dlg.PropertyChanged += (o, arg) => drawPanel.Invalidate();
-            dlg.Show();
-        }
+        //private void Shape_OnMakeCopy(object? sender, EventArgs e)
+        //{
+        //    if (runEmulate) return;
+        //    if (sender is Shape source)
+        //    {
+        //        Shapes.ForEach(shape => shape.Selected = false);
+        //        var shape = source.DeepClone();
+        //        shape.NewGuid();
 
-        private void Shape_OnMakeCopy(object? sender, EventArgs e)
-        {
-            if (runEmulate) return;
-            if (sender is Shape source)
-            {
-                Shapes.ForEach(shape => shape.Selected = false);
-                var shape = source.DeepClone();
-                shape.NewGuid();
+        //        var point = Point.Add(shape.Location, new Size(0, shape.Bounds.Height));
+        //        UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
 
-                var point = Point.Add(shape.Location, new Size(0, shape.Bounds.Height));
-                UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
-
-                ModelAssistant.SortAndAssignToPages();
-                shape.Selected = true;
-                modelChanged = true;
-                drawPanel.Invalidate();
-            }
-        }
+        //        ModelAssistant.SortAndAssignToPages();
+        //        shape.Selected = true;
+        //        modelChanged = true;
+        //        drawPanel.Invalidate();
+        //    }
+        //}
 
         private void Shape_OnDeleteLink(object sender, DeleteLinkFromTargetEventArgs e)
         {
@@ -868,25 +855,12 @@ namespace CodeGenerator
         {
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
+            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, 
+                Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
             modelChanged = true;
             drawPanel.Invalidate();
             Cursor = Cursors.Default;
             Cursor.Hide();
-        }
-
-        private void Shape_OnDelete(object? sender, EventArgs e)
-        {
-            if (sender is Shape shape)
-            {
-                Cursor = Cursors.WaitCursor;
-                Cursor.Show();
-                UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapeCommand(ContextAssistant.Context, shape, SubscribeShapeEvents, UnsubscribeShapeEvents));
-                modelChanged = true;
-                drawPanel.Invalidate();
-                Cursor = Cursors.Default;
-                Cursor.Hide();
-            }
         }
 
         private void TsmiSave_Click(object sender, EventArgs e)
@@ -1120,7 +1094,7 @@ namespace CodeGenerator
             tsmiField.Checked = ContextAssistant.Context == ContextKind.Field;
             tsmiUndo.Enabled = tsbUndo.Enabled = CanUndo();
             tsmiRedo.Enabled = tsbRedo.Enabled = CanRedo();
-            tsbEditProperties.Enabled = !runEmulate && Shapes.Where(x => x.Selected).Count() == 1;
+            //tsbEditProperties.Enabled = !runEmulate && Shapes.Where(x => x.Selected).Count() == 1;
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1372,17 +1346,6 @@ namespace CodeGenerator
                 UnselectAll();
                 UndoRedoAssistant.UndoRedoManager.Redo();
                 Cursor = Cursors.Default;
-            }
-        }
-
-        private void TsbEditProperties_Click(object sender, EventArgs e)
-        {
-            if (Shapes.Where(x => x.Selected).Count() == 1)
-            {
-                if (Shapes.FirstOrDefault(x => x.Selected) is Shape shape)
-                {
-                    shape.ShowProperties();
-                }
             }
         }
 

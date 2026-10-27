@@ -34,7 +34,7 @@ namespace CodeGenerator.Commands
             if (founded != null)
             {
                 unsubscribeShapeEvents(founded);
-                founded.Delete();
+                if (founded is IBeforeRemove beforeRemove) beforeRemove.Delete();
                 ContextAssistant.ContextShapes.Remove(founded);
                 ModelAssistant.SortAndAssignToPages();
             }

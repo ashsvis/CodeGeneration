@@ -57,9 +57,6 @@ namespace PluginSupport
         public int Index { get; set; }
 
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
-        public event EventHandler? OnShowProperties;
-        public event EventHandler? OnDelete;
-        public event EventHandler? OnMakeCopy;
         public event EventHandler? OnChange;
         public event ClickEventHandler? OnClick;
 
@@ -188,30 +185,7 @@ namespace PluginSupport
         public virtual ToolStripItem[] GetContextMenuItems(Point point, bool several)
         {
             List<ToolStripItem> items = [];
-            ToolStripMenuItem item;
-            item = new ToolStripMenuItem() { Text = "Дублировать" };
-            item.Click += (s, e) => MakeCopy();
-            items.Add(item);
-            items.Add(new ToolStripSeparator());
-            item = new ToolStripMenuItem() { Text = "Удалить" };
-            item.Click += (s, e) => Delete();  
-            items.Add(item);
             return [.. items];
-        }
-
-        public void ShowProperties()
-        {
-            OnShowProperties?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void MakeCopy()
-        {
-            OnMakeCopy?.Invoke(this, EventArgs.Empty);
-        }
-
-        public virtual void Delete()
-        {
-            OnDelete?.Invoke(this, EventArgs.Empty);
         }
 
         public void Changed()

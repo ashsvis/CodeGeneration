@@ -5,7 +5,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class DigitalInputPageLink : Func, IPageTargetLink
+    public class DigitalInputPageLink : Func, IPageTargetLink, IBeforeRemove
     {
         public DigitalInputPageLink()
         {
@@ -95,9 +95,7 @@ namespace LogicModel
         public override ToolStripItem[] GetContextMenuItems(Point point, bool several)
         {
             List<ToolStripItem> items = [];
-            var item = new ToolStripMenuItem() { Text = "Свойства..." };
-            item.Click += (s, e) => ShowProperties();
-            items.Add(item);
+            ToolStripMenuItem item;
 
             List<object> results = [];
             var contexts = ContextAssistant.ShapesFromAllContexts.Values;
@@ -126,17 +124,12 @@ namespace LogicModel
                 }
                 items.Add(item);
             }
-            items.Add(new ToolStripSeparator());
-            item = new ToolStripMenuItem() { Text = "Удалить" };
-            item.Click += (s, e) => Delete();
-            items.Add(item);
             return [.. items];
         }
 
-        public override void Delete()
+        public void Delete()
         {
             SourcePageLink?.Targets.Remove(this);
-            base.Delete();
         }
 
         public void RemoveTargetFromOutput(Shape? target, int targetPinIndex)
