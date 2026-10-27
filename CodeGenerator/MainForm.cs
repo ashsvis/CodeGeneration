@@ -22,7 +22,6 @@ namespace CodeGenerator
 
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
-        private readonly UndoRedoManager UndoRedoManager = new();
 
 
         public MainForm()
@@ -86,7 +85,7 @@ namespace CodeGenerator
                 Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = 2 });
             }
             ContextAssistant.Context = ContextKind.Model;
-            UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChanged;
+            UndoRedoAssistant.UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChanged;
         }
 
         private void UndoRedoManager_OnStateChanged(object? sender, EventArgs e)
@@ -157,7 +156,7 @@ namespace CodeGenerator
                 {
                     if (copycuted != null)
                     {
-                        UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage,
+                        UndoRedoAssistant.UndoRedoManager.Execute(new PasteShapesAndLinksCommand(ContextAssistant.Context, currentPage,
                             copycuted, startPoint, SubscribeShapeEvents));
                         modelChanged = true;
                     }
@@ -357,7 +356,7 @@ namespace CodeGenerator
                         var dx = loc.X;
                         var dy = loc.Y;
 
-                        UndoRedoManager.Execute(new MoveShapesAndLinksCommand(ContextAssistant.Context, page, dx, dy,
+                        UndoRedoAssistant.UndoRedoManager.Execute(new MoveShapesAndLinksCommand(ContextAssistant.Context, page, dx, dy,
                             [.. ModelAssistant.ShapesFrom(page).Where(x => x.Selected)]));
 
                         movePasted = false;
@@ -386,7 +385,7 @@ namespace CodeGenerator
                                 }
                                 else if (linked.Page == shape.Page)
                                 {
-                                    UndoRedoManager.Execute(new BuildLinkCommand(ContextAssistant.Context, page, firstShape, 0, shape, index));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new BuildLinkCommand(ContextAssistant.Context, page, firstShape, 0, shape, index));
                                     modelChanged = !runEmulate;
                                 }
                                 else
@@ -518,7 +517,7 @@ namespace CodeGenerator
 
                     UnselectAll();
                     var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
                     if (draged.Shape is IAcceptClick clickedShape)
                         draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
                     modelChanged = true;
@@ -555,7 +554,7 @@ namespace CodeGenerator
         {
             if (sender is Shape shape)
             {
-                UndoRedoManager.Execute(new InversePinCommand(ContextAssistant.Context, shape, e.IsOutput, e.PinIndex, e.State));
+                UndoRedoAssistant.UndoRedoManager.Execute(new InversePinCommand(ContextAssistant.Context, shape, e.IsOutput, e.PinIndex, e.State));
                 modelChanged = true;
                 drawPanel.Invalidate();
             }
@@ -600,7 +599,7 @@ namespace CodeGenerator
                 shape.NewGuid();
 
                 var point = Point.Add(shape.Location, new Size(0, shape.Bounds.Height));
-                UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
 
                 ModelAssistant.SortAndAssignToPages();
                 shape.Selected = true;
@@ -614,7 +613,7 @@ namespace CodeGenerator
             if (runEmulate) return;
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-            UndoRedoManager.Execute(new RemoveLinkCommand(ContextAssistant.Context, e, SubscribeShapeEvents));
+            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveLinkCommand(ContextAssistant.Context, e, SubscribeShapeEvents));
             modelChanged = true;
             drawPanel.Invalidate();
             Cursor = Cursors.Default;
@@ -893,7 +892,7 @@ namespace CodeGenerator
         {
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-            UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
+            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
             modelChanged = true;
             drawPanel.Invalidate();
             Cursor = Cursors.Default;
@@ -906,7 +905,7 @@ namespace CodeGenerator
             {
                 Cursor = Cursors.WaitCursor;
                 Cursor.Show();
-                UndoRedoManager.Execute(new RemoveShapeCommand(ContextAssistant.Context, shape, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapeCommand(ContextAssistant.Context, shape, SubscribeShapeEvents, UnsubscribeShapeEvents));
                 modelChanged = true;
                 drawPanel.Invalidate();
                 Cursor = Cursors.Default;
@@ -1131,7 +1130,7 @@ namespace CodeGenerator
             copycuted = null;
             pasted.Item2 = Point.Empty;
             TraceAssistant.InitField(Shapes, Links);
-            UndoRedoManager.Clear();
+            UndoRedoAssistant.UndoRedoManager.Clear();
         }
 
         private void TimerInterface_Tick(object sender, EventArgs e)
@@ -1360,22 +1359,22 @@ namespace CodeGenerator
 
         public void Undo()
         {
-            UndoRedoManager.Undo();
+            UndoRedoAssistant.UndoRedoManager.Undo();
         }
 
         public void Redo()
         {
-            UndoRedoManager.Redo();
+            UndoRedoAssistant.UndoRedoManager.Redo();
         }
 
         public bool CanUndo()
         {
-            return !runEmulate && UndoRedoManager.UndoPossible();
+            return !runEmulate && UndoRedoAssistant.UndoRedoManager.UndoPossible();
         }
 
         public bool CanRedo()
         {
-            return !runEmulate && UndoRedoManager.RedoPossible();
+            return !runEmulate && UndoRedoAssistant.UndoRedoManager.RedoPossible();
         }
 
         private void TsmiUndo_Click(object sender, EventArgs e)
@@ -1384,7 +1383,7 @@ namespace CodeGenerator
             {
                 Cursor = Cursors.WaitCursor;
                 UnselectAll();
-                UndoRedoManager.Undo();
+                UndoRedoAssistant.UndoRedoManager.Undo();
                 Cursor = Cursors.Default;
             }
         }
@@ -1395,7 +1394,7 @@ namespace CodeGenerator
             {
                 Cursor = Cursors.WaitCursor;
                 UnselectAll();
-                UndoRedoManager.Redo();
+                UndoRedoAssistant.UndoRedoManager.Redo();
                 Cursor = Cursors.Default;
             }
         }

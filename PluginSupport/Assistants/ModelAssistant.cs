@@ -1,5 +1,4 @@
-﻿using PluginSupport;
-using System.Drawing.Drawing2D;
+﻿using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
 

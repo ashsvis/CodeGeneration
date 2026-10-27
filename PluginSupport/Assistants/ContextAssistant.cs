@@ -1,6 +1,4 @@
-﻿using PluginSupport;
-
-namespace PluginSupport.Assistants
+﻿namespace PluginSupport.Assistants
 {
     public static class ContextAssistant
     {
