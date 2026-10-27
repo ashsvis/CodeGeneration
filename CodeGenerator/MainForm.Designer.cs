@@ -81,7 +81,9 @@
             panLeft = new Panel();
             tcUtilites = new TabControl();
             tpLibrary = new TabPage();
+            splitContainer1 = new SplitContainer();
             tvLibrary = new TreeView();
+            propGrid = new PropertyGrid();
             panRight = new Panel();
             splitterLeft = new Splitter();
             splitterRight = new Splitter();
@@ -99,6 +101,10 @@
             panLeft.SuspendLayout();
             tcUtilites.SuspendLayout();
             tpLibrary.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
             contextMenu.SuspendLayout();
             SuspendLayout();
             // 
@@ -520,7 +526,7 @@
             // 
             // tpLibrary
             // 
-            tpLibrary.Controls.Add(tvLibrary);
+            tpLibrary.Controls.Add(splitContainer1);
             tpLibrary.Location = new Point(4, 24);
             tpLibrary.Margin = new Padding(0);
             tpLibrary.Name = "tpLibrary";
@@ -529,18 +535,46 @@
             tpLibrary.TabIndex = 0;
             tpLibrary.Text = "Библиотека";
             // 
+            // splitContainer1
+            // 
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.Location = new Point(3, 3);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Orientation = Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            splitContainer1.Panel1.Controls.Add(tvLibrary);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(propGrid);
+            splitContainer1.Size = new Size(286, 345);
+            splitContainer1.SplitterDistance = 172;
+            splitContainer1.TabIndex = 1;
+            // 
             // tvLibrary
             // 
             tvLibrary.BorderStyle = BorderStyle.None;
             tvLibrary.Dock = DockStyle.Fill;
             tvLibrary.FullRowSelect = true;
             tvLibrary.HideSelection = false;
-            tvLibrary.Location = new Point(3, 3);
+            tvLibrary.Location = new Point(0, 0);
             tvLibrary.Margin = new Padding(0);
             tvLibrary.Name = "tvLibrary";
-            tvLibrary.Size = new Size(286, 345);
+            tvLibrary.Size = new Size(286, 172);
             tvLibrary.TabIndex = 0;
             tvLibrary.MouseDown += TvLibrary_MouseDown;
+            // 
+            // propGrid
+            // 
+            propGrid.BackColor = SystemColors.Control;
+            propGrid.Dock = DockStyle.Fill;
+            propGrid.Location = new Point(0, 0);
+            propGrid.Name = "propGrid";
+            propGrid.Size = new Size(286, 169);
+            propGrid.TabIndex = 0;
+            propGrid.PropertyValueChanged += PropGrid_PropertyValueChanged;
             // 
             // panRight
             // 
@@ -658,6 +692,10 @@
             panLeft.ResumeLayout(false);
             tcUtilites.ResumeLayout(false);
             tpLibrary.ResumeLayout(false);
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
             contextMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -728,5 +766,7 @@
         private ToolStripButton tsbRedo;
         private ToolStripSeparator toolStripSeparator5;
         private ToolStripButton tsbEditProperties;
+        private SplitContainer splitContainer1;
+        private PropertyGrid propGrid;
     }
 }

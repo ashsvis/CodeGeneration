@@ -179,6 +179,32 @@ namespace CodeGenerator
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             foreach (var shape in ModelAssistant.ShapesFrom(page))
             {
+                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
+                {
+                    var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
+                    if (!other && ModelAssistant.ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
+                        ModelAssistant.UnselectAllOnPage(page);
+                    shape.Selected = !runEmulate;
+                    shape.Hover = !runEmulate;
+                    shapeFound = true;
+                    dragShapesPreview = !runEmulate;
+                    dragCopiedShapes = ctrl;
+                    if (runEmulate)
+                    {
+                        shape.Click(runEmulate);
+                        dragShapesPreview = false;
+                        dragCopiedShapes = false;
+                    }
+                    else
+                    {
+                        if (e.Button == MouseButtons.Right)
+                        {
+                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, Shapes.Count(x => x.Selected) > 1));
+                            contextMenu.Show(drawPanel, e.Location);
+                        }
+                    }
+                    break;
+                }
                 if (shape.IsPointInTargets(point))
                 {
                     if (shape.IsOuputTargetsPoint(point, out int outputIndex))
@@ -196,7 +222,7 @@ namespace CodeGenerator
                         }
                         break;
                     }
-                    else if (shape.IsInputTargetsPoint(point, out int inputIndex))
+                    if (shape.IsInputTargetsPoint(point, out int inputIndex))
                     {
                         var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
                         if (!other && Shapes.Count(x => x.Selected) > 1 && !ctrl)
@@ -238,43 +264,21 @@ namespace CodeGenerator
                         break;
                     }
                 }
-                else if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
-                {
-                    var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
-                    if (!other && ModelAssistant.ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
-                        ModelAssistant.UnselectAllOnPage(page);
-                    shape.Selected = !runEmulate;
-                    shape.Hover = !runEmulate;
-                    shapeFound = true;
-                    dragShapesPreview = !runEmulate;
-                    dragCopiedShapes = ctrl;
-                    if (runEmulate)
-                    {
-                        shape.Click(runEmulate);
-                        dragShapesPreview = false;
-                        dragCopiedShapes = false;
-                    }
-                    else
-                    {
-                        if (e.Button == MouseButtons.Right)
-                        {
-                            contextMenu.Items.AddRange(shape.GetContextMenuItems(point, Shapes.Count(x => x.Selected) > 1));
-                            contextMenu.Show(drawPanel, e.Location);
-                        }
-                    }
-                    break;
-                }
             }
             if (shapeFound)
             {
                 if (e.Button == MouseButtons.Left)
                     SelectLinksForBothSelectedShapes(page);
+                propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
+                propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
             }
             else
             {
                 UnselectAll();
                 //ничего не выбрано, рисуем рамку выбора
                 frameBuilding = !runEmulate;
+                propGrid.SelectedObject = null;
+                propGrid.SelectedObjects = null;
             }
             drawPanel.Invalidate();
         }
@@ -292,7 +296,7 @@ namespace CodeGenerator
                 HighLight(page, point);
             if (leftPressed)
             {
-                if (!dragShapes && dragShapesPreview)
+                if (!dragShapes && dragShapesPreview && currentPoint is Point pt && (startPoint.X != pt.X || startPoint.Y != pt.Y))
                 {
                     dragShapesPreview = false;
                     pasted = ModelAssistant.PasteFromXml(ModelAssistant.CopySelectedToXml(), currentPoint);
@@ -414,7 +418,9 @@ namespace CodeGenerator
                         }
                         SelectLinksForBothSelectedShapes(page);
                         ribbonRect = Rectangle.Empty;
-                        drawPanel.Refresh();
+                        drawPanel.Invalidate();
+                        propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
+                        propGrid.SelectedObjects = [.. Shapes.Where(x => x.Selected)];
                     }
                 }
             }
@@ -1403,6 +1409,11 @@ namespace CodeGenerator
                     shape.ShowProperties();
                 }
             }
+        }
+
+        private void PropGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            drawPanel.Invalidate();
         }
     }
 }

@@ -191,10 +191,10 @@ namespace PluginSupport
         {
             List<ToolStripItem> items = [];
             ToolStripMenuItem item;
-            item = new ToolStripMenuItem() { Text = "Свойства..." };
-            item.Click += (s, e) => ShowProperties();
-            items.Add(item);
-            items.Add(new ToolStripSeparator());
+            //item = new ToolStripMenuItem() { Text = "Свойства..." };
+            //item.Click += (s, e) => ShowProperties();
+            //items.Add(item);
+            //items.Add(new ToolStripSeparator());
             item = new ToolStripMenuItem() { Text = "Дублировать" };
             item.Click += (s, e) => MakeCopy();
             items.Add(item);
