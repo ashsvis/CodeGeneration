@@ -51,7 +51,7 @@
             }
         }
 
-        public static Dictionary<ContextKind, List<Shape>> AllShapes
+        public static Dictionary<ContextKind, List<Shape>> ShapesFromAllContexts
         {
             get 
             {

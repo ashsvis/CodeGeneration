@@ -60,7 +60,6 @@ namespace PluginSupport
         public event EventHandler? OnShowProperties;
         public event EventHandler? OnDelete;
         public event EventHandler? OnMakeCopy;
-        public event QueryEventHandler? OnQuery;
         public event EventHandler? OnChange;
         public event ClickEventHandler? OnClick;
 
@@ -198,13 +197,6 @@ namespace PluginSupport
             item.Click += (s, e) => Delete();  
             items.Add(item);
             return [.. items];
-        }
-
-        public object[] Query(params object[] args)
-        {
-            var arg = new QueryEventArgs(args);
-            OnQuery?.Invoke(this, arg);
-            return arg.Results;
         }
 
         public void ShowProperties()

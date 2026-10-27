@@ -1,4 +1,5 @@
 using PluginSupport;
+using PluginSupport.Assistants;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 
@@ -97,8 +98,13 @@ namespace LogicModel
             var item = new ToolStripMenuItem() { Text = "Свойства..." };
             item.Click += (s, e) => ShowProperties();
             items.Add(item);
-            var results = Query(typeof(DigitalOutputPageLink));
-            if (results.Length > 0)
+
+            List<object> results = [];
+            var contexts = ContextAssistant.ShapesFromAllContexts.Values;
+            foreach (var shapes in contexts)
+                results.AddRange(shapes.Where(x => x.GetType() == typeof(DigitalOutputPageLink)));
+
+            if (results.Count > 0)
             {
                 items.Add(new ToolStripSeparator());
                 item = new ToolStripMenuItem("Установить связь");

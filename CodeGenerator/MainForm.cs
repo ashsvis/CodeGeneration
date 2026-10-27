@@ -533,7 +533,6 @@ namespace CodeGenerator
             shape.OnDelete += Shape_OnDelete;
             shape.OnDeleteLink += Shape_OnDeleteLink;
             shape.OnMakeCopy += Shape_OnMakeCopy;
-            shape.OnQuery += Shape_OnQuery;
             shape.OnChange += Shape_OnChange;
             shape.OnClick += Shape_OnClick;
         }
@@ -544,7 +543,6 @@ namespace CodeGenerator
             shape.OnDelete -= Shape_OnDelete;
             shape.OnDeleteLink -= Shape_OnDeleteLink;
             shape.OnMakeCopy -= Shape_OnMakeCopy;
-            shape.OnQuery -= Shape_OnQuery;
             shape.OnChange -= Shape_OnChange;
             shape.OnClick -= Shape_OnClick;
         }
@@ -558,17 +556,6 @@ namespace CodeGenerator
         {
             modelChanged = true;
             drawPanel.Invalidate();
-        }
-
-        private void Shape_OnQuery(object sender, QueryEventArgs e)
-        {
-            List<object> items = [];
-            foreach (var arg in e.Args)
-            {
-                if (arg is Type type)
-                    items.AddRange(Shapes.Where(x => x.GetType() == type));
-            }
-            e.Results = [.. items];
         }
 
         private void Shape_OnShowProperties(object? sender, EventArgs e)
@@ -1281,7 +1268,7 @@ namespace CodeGenerator
         private void EmulateBackground_ProgressChanged(object sender, System.ComponentModel.ProgressChangedEventArgs e)
         {
             Dictionary<string, double> values = [];
-            foreach (var shapes in ContextAssistant.AllShapes.Values)
+            foreach (var shapes in ContextAssistant.ShapesFromAllContexts.Values)
             {
                 foreach (var shape in shapes)
                 {
@@ -1300,7 +1287,7 @@ namespace CodeGenerator
                         cycle.SwitchOffSubscibers();
                 }
             }
-            foreach (var shapes in ContextAssistant.AllShapes.Values)
+            foreach (var shapes in ContextAssistant.ShapesFromAllContexts.Values)
             {
                 foreach (var shape in shapes)
                 {
