@@ -1,13 +1,7 @@
 ﻿using PluginSupport;
 
-namespace CodeGenerator.Assistants
+namespace PluginSupport.Assistants
 {
-    public enum ContextKind
-    {
-        Model,
-        Field,
-    }
-
     public static class ContextAssistant
     {
         public static ContextKind Context { get; set; } = ContextKind.Model;

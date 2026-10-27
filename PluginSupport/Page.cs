@@ -1,7 +1,7 @@
-using CodeGenerator.Assistants;
+using PluginSupport.Assistants;
 using System.Xml.Linq;
 
-namespace CodeGenerator
+namespace PluginSupport
 {
     public class Page(int number, int width, int height, int row, int column)
     {

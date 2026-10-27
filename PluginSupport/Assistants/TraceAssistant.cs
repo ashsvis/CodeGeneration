@@ -1,6 +1,6 @@
 ﻿using PluginSupport;
 
-namespace CodeGenerator.Assistants
+namespace PluginSupport.Assistants
 {
     public static class TraceAssistant
     {

@@ -1,5 +1,5 @@
 
-namespace CodeGenerator
+namespace PluginSupport
 {
     public class Cell
     {

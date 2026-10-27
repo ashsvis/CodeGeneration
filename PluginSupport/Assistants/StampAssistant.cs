@@ -1,6 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 
-namespace CodeGenerator.Assistants
+namespace PluginSupport.Assistants
 {
     public static class StampAssistant
     {

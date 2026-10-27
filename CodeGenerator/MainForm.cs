@@ -1,6 +1,6 @@
-using CodeGenerator.Assistants;
 using CodeGenerator.Commands;
 using PluginSupport;
+using PluginSupport.Assistants;
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Globalization;

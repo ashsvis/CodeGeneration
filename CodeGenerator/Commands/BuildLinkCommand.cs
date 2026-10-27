@@ -1,5 +1,5 @@
-﻿using CodeGenerator.Assistants;
-using PluginSupport;
+﻿using PluginSupport;
+using PluginSupport.Assistants;
 
 namespace CodeGenerator.Commands
 {

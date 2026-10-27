@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
 
-namespace CodeGenerator.Assistants
+namespace PluginSupport.Assistants
 {
     public static class ModelAssistant
     {
