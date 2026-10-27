@@ -16,7 +16,19 @@ namespace LogicModel
         public override int Height { get; set; } = 24;
 
         [Browsable(false)]
-        public override Rectangle Bounds => new(Location.X, Location.Y, Width, Height);
+        public override Rectangle Bounds 
+        {
+            get
+            {
+                var paths = GetGraphicsPaths();
+                var rect = paths.First().GetBounds();
+                foreach (var path in paths.Skip(1))
+                    rect = RectangleF.Union(rect, path.GetBounds());
+                Width = (int)rect.Width;
+                Height = (int)rect.Height;
+                return new(Location.X, Location.Y, Width, Height);
+            }
+        }
 
         public bool CanAcceptClick => false;
 
@@ -24,6 +36,7 @@ namespace LogicModel
         {
             return new FuncPresenter
             {
+                func = func?.DeepClone(),
                 Width = Width,
                 Height = Height,
             };
@@ -46,44 +59,54 @@ namespace LogicModel
             return func.GetGraphicsPaths();
         }
 
+        public override GraphicsPath[] GetTextPaths()
+        {
+            if (func == null)
+                return base.GetTextPaths();
+            return func.GetTextPaths();
+        }
+
         public override void ReadContent(XElement xfunc)
         {
             if (xfunc == null || xfunc.Name != $"{this.GetType().FullName}") return;
             var sId = xfunc.Attribute("Id")?.Value;
             if (!string.IsNullOrWhiteSpace(sId) && Guid.TryParse(sId, out Guid objId))
                 id = objId;
+            var sEmbeded = xfunc.Attribute("Embeded")?.Value;
+            if (!string.IsNullOrWhiteSpace(sEmbeded))
+            {
+                var pl = new PluginLogic();
+                if (pl.GetTypes().ContainsKey(sEmbeded))
+                {
+                    func = (Func?)Activator.CreateInstance(pl.GetTypes()[sEmbeded]);
+                }
+            }
             var sLeft = xfunc.Attribute("X")?.Value;
             var sTop = xfunc.Attribute("Y")?.Value;
             if (!string.IsNullOrWhiteSpace(sLeft) && !string.IsNullOrWhiteSpace(sTop))
                 Location = new Point(ParseHelper.ParseInteger(sLeft, 0), ParseHelper.ParseInteger(sTop, 0));
-            var sWidth = xfunc.Attribute("Width")?.Value;
-            if (!string.IsNullOrWhiteSpace(sWidth))
-                Width = ParseHelper.ParseInteger(sWidth, 24);
-            var sHeight = xfunc.Attribute("Height")?.Value;
-            if (!string.IsNullOrWhiteSpace(sHeight))
-                Height = ParseHelper.ParseInteger(sHeight, 24);
         }
 
         public override XElement WriteContent()
         {
             var xfunc = new XElement($"{this.GetType().FullName}");
             xfunc.Add(new XAttribute("Id", Id));
+            if (func != null)
+                xfunc.Add(new XAttribute("Embeded", $"{func.GetType().FullName}"));
             xfunc.Add(new XAttribute("X", Location.X));
             xfunc.Add(new XAttribute("Y", Location.Y));
-            xfunc.Add(new XAttribute("Width", Width));
-            xfunc.Add(new XAttribute("Height", Height));
             return xfunc;
         }
 
         public override void Click(bool runEmulate, Point? point = null)
         {
             if (!runEmulate)
-                Click(ChangeText, point ?? Point.Empty);
+                Click(ChangePresendedFunction, point ?? Point.Empty);
         }
 
-        private void ChangeText(MouseButtons mouseButtons, params object[] args)
+        private void ChangePresendedFunction(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new FuncPresenterTuningForm { };
+            var dlg = new FuncPresenterTuningForm(func) { };
             if (args.Length > 0 && args[0] is Point location)
             {
                 dlg.StartPosition = FormStartPosition.Manual;
@@ -92,11 +115,6 @@ namespace LogicModel
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 func = dlg.Selected;
-                if (func != null)
-                {
-                    Width = func.Width;
-                    Height = func.Height;
-                }
                 Changed();
             }
         }

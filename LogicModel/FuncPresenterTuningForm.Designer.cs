@@ -43,6 +43,7 @@
             lbFuncSelector.Size = new Size(265, 227);
             lbFuncSelector.TabIndex = 0;
             lbFuncSelector.SelectedIndexChanged += LbFuncSelector_SelectedIndexChanged;
+            lbFuncSelector.MouseDown += LbFuncSelector_MouseDown;
             // 
             // btnCancel
             // 

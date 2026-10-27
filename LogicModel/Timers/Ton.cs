@@ -12,7 +12,7 @@ namespace LogicModel
         private bool input;
         private uint time;
 
-        public uint MilliSeconds { private get; set; } = 2000;
+        public uint MilliSeconds { private get; set; } = 1000;
 
         public Ton()
         {
