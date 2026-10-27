@@ -7,6 +7,7 @@ namespace CodeGenerator.Commands
     {
         private readonly ContextKind commandContext = context;
         private readonly Shape shape = draggedShape;
+        private readonly Guid shapeId = draggedShape.Id;
         private readonly Point point = insertPoint;
         private readonly Action<Shape> subscribeShapeEvents = subscribeAction;
         private readonly Action<Shape> unsubscribeShapeEvents = unsubscribeAction;
@@ -29,10 +30,14 @@ namespace CodeGenerator.Commands
         {
             var oldcontext = ContextAssistant.Context;
             ContextAssistant.Context = commandContext;
-            unsubscribeShapeEvents(shape);
-            shape.Delete();
-            ContextAssistant.ContextShapes.Remove(shape);
-            ModelAssistant.SortAndAssignToPages();
+            var founded = ContextAssistant.ContextShapes.FirstOrDefault(x => x.Id == shapeId);
+            if (founded != null)
+            {
+                unsubscribeShapeEvents(founded);
+                founded.Delete();
+                ContextAssistant.ContextShapes.Remove(founded);
+                ModelAssistant.SortAndAssignToPages();
+            }
             ContextAssistant.Context = oldcontext;
         }
     }
