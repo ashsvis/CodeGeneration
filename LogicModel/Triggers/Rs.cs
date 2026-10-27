@@ -3,7 +3,7 @@ using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class Rs : Func, IResetable
+    public class Rs : Func, IResetable, IFuncPresenter
     {
         public Rs()
         {
@@ -27,6 +27,8 @@ namespace LogicModel
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }
+
+        public bool IsPresent => true;
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);

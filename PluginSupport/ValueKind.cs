@@ -2,6 +2,7 @@ namespace PluginSupport
 {
     public enum ValueKind
     {
+        None,
         Digital,
         Analog,
         DI,

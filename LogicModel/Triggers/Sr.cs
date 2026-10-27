@@ -1,6 +1,6 @@
 namespace LogicModel
 {
-    public class Sr : Rs
+    public class Sr : Rs, IFuncPresenter
     {
         public Sr()
         {
@@ -10,6 +10,8 @@ namespace LogicModel
             Outputs = [new PinOutput { Name = "Q" }];
             CalculateHeight();
         }
+
+        public new bool IsPresent => false;
 
         public override Sr DeepClone()
         {

@@ -1,6 +1,6 @@
 namespace LogicModel
 {
-    public class Dt : Rs
+    public class Dt : Rs, IFuncPresenter
     {
         public Dt()
         {
@@ -10,6 +10,8 @@ namespace LogicModel
             Outputs = [new PinOutput { Name = "Q" }];
             CalculateHeight();
         }
+
+        public new bool IsPresent => false;
 
         public override Dt DeepClone()
         {

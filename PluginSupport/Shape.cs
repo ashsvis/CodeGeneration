@@ -33,7 +33,13 @@ namespace PluginSupport
         public Point Location { get; set; }
 
         [Browsable(false)]
-        public abstract Rectangle Bounds { get; }
+        public virtual int Width { get; set; }
+
+        [Browsable(false)]
+        public virtual int Height { get; set; }
+
+        [Browsable(false)]
+        public virtual Rectangle Bounds => new(Location.X, Location.Y, Width, Height);
 
         [Browsable(false)]
         public Color Foreground { get; set; } = Color.FromArgb(200, 200, 200);
@@ -66,8 +72,8 @@ namespace PluginSupport
 
         public virtual GraphicsPath[] GetValuesPaths() { return []; }
 
-        public abstract TargetInfo[] GetTargets();
-        public abstract PinInfo[] GetPinPoints();
+        public virtual TargetInfo[] GetTargets() { return []; }
+        public virtual PinInfo[] GetPinPoints() { return []; }
 
 
         public virtual void Draw(Graphics? g, Pen pen, Brush brush)
@@ -130,22 +136,22 @@ namespace PluginSupport
             return false;
         }
 
-        public abstract double GetOutputValue(int index = 0);
-        public abstract ValueKind GetOutputValueKind(int index = 0);
-        public abstract void SetInputValue(int index, double value);
-        public abstract double GetInputValue(int index);
+        public virtual double GetOutputValue(int index = 0) { return double.NaN; }
+        public virtual ValueKind GetOutputValueKind(int index = 0) { return ValueKind.None; }
+        public virtual void SetInputValue(int index, double value) { }
+        public virtual double GetInputValue(int index) { return double.NaN; }
 
-        public abstract void SetInputSource(int index, Shape source, int pinIndex, Guid linkId);
-        public abstract void RemoveInputSource(int index);
-        public abstract void SetOutputTarget(int index, Shape target, int pinIndex, Guid linkId);
-        public abstract void RemoveOutputTarget(int index, Shape? target, int pinIndex);
+        public virtual void SetInputSource(int index, Shape source, int pinIndex, Guid linkId) { }
+        public virtual void RemoveInputSource(int index) { }
+        public virtual void SetOutputTarget(int index, Shape target, int pinIndex, Guid linkId) { }
+        public virtual void RemoveOutputTarget(int index, Shape? target, int pinIndex) { }
 
-        public abstract Point? GetInputPinPoint(int index);
-        public abstract Guid GetInputPinLinkId(int index);
-        public abstract void SetInputPinLinkId(int index, Guid guid);
-        public abstract Point? GetOutputPinPoint(int index = 0);
-        public abstract Guid GetOutputPinLinkId(int index = 0);
-        public abstract void SetOutputPinLinkId(int index = 0, Guid guid = default);
+        public virtual Point? GetInputPinPoint(int index) { return null; }
+        public virtual Guid GetInputPinLinkId(int index) { return Guid.Empty; }
+        public virtual void SetInputPinLinkId(int index, Guid guid) { }
+        public virtual Point? GetOutputPinPoint(int index = 0) { return null; }
+        public virtual Guid GetOutputPinLinkId(int index = 0) { return Guid.Empty; }
+        public virtual void SetOutputPinLinkId(int index = 0, Guid guid = default) { }
 
 
         public bool IsInputTargetsPoint(Point point, out int index)
@@ -200,13 +206,13 @@ namespace PluginSupport
             OnClick?.Invoke(this, new ClickEventArgs(action, args));
         }
 
-        public abstract void Calculate();
-        protected abstract void CalculateHeight();
-        public abstract int CountInputs();
-        public abstract int CountOutputs();
-        public abstract bool IsLinked(int index);
+        public virtual void Calculate() { }
+        protected virtual void CalculateHeight() { }
+        public virtual int CountInputs() { return 0; }
+        public virtual int CountOutputs() { return 0; }
+        public virtual bool IsLinked(int index) { return false; }
 
-        public abstract Type GetLinkTypeToCreate();
+        public virtual Type GetLinkTypeToCreate() { return typeof(object);  }
 
         public void DeleteLinkFromTarget(Shape? source, Shape target, int pinIndex)
         {
@@ -217,8 +223,8 @@ namespace PluginSupport
 
         public abstract XElement WriteContent();
         public abstract void ReadContent(XElement element);
-        public abstract bool NoDataToWrite();
-        public abstract ValueKind GetInputValueKind(int index);
+        public virtual bool NoDataToWrite() { return false; }
+        public virtual ValueKind GetInputValueKind(int index) { return ValueKind.None; }
         public virtual void SetInvertStatePinByIndex(bool isOutput, int pinIndex, bool state) { }
     }
 }

@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class DigitalOutput : DigitalInput
+    public class DigitalOutput : DigitalInput, IFuncPresenter
     {
         public DigitalOutput()
         {

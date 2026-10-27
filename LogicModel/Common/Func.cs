@@ -15,10 +15,10 @@ namespace LogicModel
         public const int BaseHeight = 48;
 
         [Browsable(false)]
-        public int Width { get; set; } = BaseWidth;
+        public override int Width { get; set; } = BaseWidth;
 
         [Browsable(false)]
-        public int Height { get; set; } = BaseHeight;
+        public override int Height { get; set; } = BaseHeight;
 
         private int CalcHeight { get; set; }
         protected PinInput[] Inputs = [];

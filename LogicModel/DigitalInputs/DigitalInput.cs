@@ -1,9 +1,10 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
+using System.Drawing.Printing;
 
 namespace LogicModel
 {
-    public class DigitalInput : Func, IResetable
+    public class DigitalInput : Func, IResetable, IFuncPresenter
     {
         public DigitalInput()
         {
@@ -13,6 +14,8 @@ namespace LogicModel
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);

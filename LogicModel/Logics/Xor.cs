@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class Xor : Func
+    public class Xor : Func, IFuncPresenter
     {
         public Xor()
         {
@@ -12,6 +12,8 @@ namespace LogicModel
             Outputs = [new PinOutput { }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Xor DeepClone()
         {

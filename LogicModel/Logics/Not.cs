@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class Not : Func
+    public class Not : Func, IFuncPresenter
     {
         public Not() 
         {
@@ -12,6 +12,8 @@ namespace LogicModel
             Outputs = [new PinOutput { IsInverted = true }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override Not DeepClone()
         {

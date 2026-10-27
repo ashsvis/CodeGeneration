@@ -2,7 +2,7 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class Seld : Func
+    public class Seld : Func, IFuncPresenter
     {
         public Seld()
         {
@@ -12,6 +12,8 @@ namespace LogicModel
             Outputs = [new PinOutput { }];
             CalculateHeight();
         }
+
+        public bool IsPresent => true;
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 AllowedFuncProperties.PinInverted;

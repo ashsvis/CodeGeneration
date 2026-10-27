@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class Ton : Func, IAcceptClick
+    public class Ton : Func, IAcceptClick, IFuncPresenter
     {
         private readonly System.Timers.Timer timer;
 
@@ -24,6 +24,8 @@ namespace LogicModel
             timer = new System.Timers.Timer(MilliSeconds);
             timer.Elapsed += OnTimedEvent;
         }
+
+        public bool IsPresent => true;
 
         public override Ton DeepClone()
         {
