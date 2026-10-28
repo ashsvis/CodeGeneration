@@ -16,13 +16,18 @@ namespace LogicModel
 <#
     var compareTypes = new Tuple<string, string, string, string, string>[] 
     { 
-        new("Eq", "==", "Элемент \\\"Сравнение\\\"", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon", 
-            "Производит операцию сравнения аналоговой величины с константой"),
-        new("Ne", "!=", "Элемент \\\"Не равно\\\"", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)", ""),
-        new("Gt", ">", "Элемент \\\"Больше\\\"", "Inputs[0].Value > Inputs[1].Value", ""),
-        new("Ge", ">=", "Элемент \\\"Больше или равно\\\"", "Inputs[0].Value >= Inputs[1].Value", ""),
-        new("Lt", "<", "Элемент \\\"Меньше\\\"", "Inputs[0].Value < Inputs[1].Value", ""),
-        new("Le", "<=", "Элемент \\\"Меньше или равно\\\"", "Inputs[0].Value <= Inputs[1].Value", ""),
+        new("Eq", "==", "Элемент \\\"Равно\\\"", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon", 
+            "Производит операцию сравнения на равенство аналоговой величины с константой"),
+        new("Ne", "!=", "Элемент \\\"Не равно\\\"", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)", 
+            "Производит операцию сравнения на неравенство аналоговой величины с константой"),
+        new("Gt", ">", "Элемент \\\"Больше\\\"", "Inputs[0].Value > Inputs[1].Value", 
+            "Производит операцию сравнения, что первая аналоговая величина больше второй"),
+        new("Ge", ">=", "Элемент \\\"Больше или равно\\\"", "Inputs[0].Value >= Inputs[1].Value", 
+            "Производит операцию сравнения, что первая аналоговая величина больше или равна второй"),
+        new("Lt", "<", "Элемент \\\"Меньше\\\"", "Inputs[0].Value < Inputs[1].Value", 
+            "Производит операцию сравнения, что первая аналоговая величина меньше второй"),
+        new("Le", "<=", "Элемент \\\"Меньше или равно\\\"", "Inputs[0].Value <= Inputs[1].Value", 
+            "Производит операцию сравнения, что первая аналоговая величина меньше или равна второй"),
     };
     foreach (var type in compareTypes)
     {
@@ -49,7 +54,7 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => <#= (type.Item2 == "==").ToString().ToLower()  #>;
+        public bool IsPresent => true;
         public string[] FuncPresenter => ["<#= type.Item5 #>"];
 
         public override <#= type.Item1 #> DeepClone()

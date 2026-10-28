@@ -81,22 +81,6 @@ namespace PluginSupport.Assistants
             return new Point(point.X / Step * Step, point.Y / Step * Step);
         }
 
-        //public static XElement CopyPageToXml(Page? page)
-        //{
-        //    var xmodel = new XElement("Copy");
-        //    foreach (var shape in ShapesFrom(page))
-        //    {
-        //        var xshape = shape.WriteContent();
-        //        xmodel.Add(xshape);
-        //    }
-        //    foreach (var link in LinksFrom(page))
-        //    {
-        //        var xlink = link.WriteContentExtended();
-        //        xmodel.Add(xlink);
-        //    }
-        //    return xmodel;
-        //}
-
         public static XElement CopySelectedToXml()
         {
             var xmodel = new XElement("Copy");
@@ -184,67 +168,6 @@ namespace PluginSupport.Assistants
             }
             return ([.. list], rect.Location, Point.Subtract(point ?? Point.Empty, new Size(zero.X, zero.Y)));
         }
-
-        /// <summary>
-        /// Вставка фигур и связей по конфигурации из xmodel
-        /// </summary>
-        /// <param name="xmodel"></param>
-        /// <param name="subscribeShapeEvents"></param>
-        //public static void PastePageFromXml(XElement xmodel, Action<Shape> subscribeShapeEvents)
-        //{
-        //    if (xmodel == null) return;
-        //    Dictionary<Guid, Guid> guids = [];
-        //    List<Shape> pastedShapes = [];
-        //    List<Link> pastedLinks = [];
-        //    int n = 0;
-        //    foreach (var xelement in xmodel.Descendants())
-        //    {
-        //        if (types.ContainsKey($"{xelement.Name}"))
-        //        {
-        //            var type = types[$"{xelement.Name}"];
-        //            var obj = Activator.CreateInstance(type);
-        //            if (obj is Shape shape)
-        //            {
-        //                shape.Index = n++;
-        //                shape.ReadContent(xelement);
-        //                subscribeShapeEvents(shape);
-        //                pastedShapes.Add(shape);
-
-        //                if (!guids.ContainsKey(shape.Id))
-        //                {
-        //                    var id = Guid.NewGuid();
-        //                    guids.Add(shape.Id, id);
-        //                    shape.NewGuid(id);
-        //                }
-        //            }
-        //            else if (obj is Link link)
-        //            {
-        //                link.ReadContent(xelement);
-        //                var oldid = link.SourceId;
-        //                if (guids.TryGetValue(oldid, out Guid svalue))
-        //                {
-        //                    link.SourceId = svalue;
-        //                }
-        //                oldid = link.TargetId;
-        //                if (guids.TryGetValue(oldid, out Guid tvalue))
-        //                {
-        //                    link.TargetId = tvalue;
-        //                }
-        //                var source = pastedShapes.FirstOrDefault(x => x.Id == link.SourceId);
-        //                var target = pastedShapes.FirstOrDefault(x => x.Id == link.TargetId);
-        //                if (source != null && target != null)
-        //                {
-        //                    link.LinkToLocation(source, link.SourcePinIndex, link.StartPoint, target, link.TargetPinIndex, link.EndPoint, [.. link.GetPoints()]);
-        //                    pastedLinks.Add(link);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    ContextAssistant.ContextShapes.AddRange(pastedShapes);
-        //    ContextAssistant.ContextLinks.AddRange(pastedLinks);
-        //    SortAndAssignToPages();
-        //}
 
         public static void PasteFromXml(XElement xmodel, Point point, Action<Shape> subscribeShapeEvents)
         {
@@ -440,6 +363,14 @@ namespace PluginSupport.Assistants
             }
         }
 
+        public static Type[] ContextTypes()
+        {
+            List<Type> types = [];
+            foreach (var type in ContextAssistant.ContextShapes.Select(x => x.GetType()).Distinct())
+                types.Add(type);
+            return [.. types];
+        }
+
         public static void ConnectExternalLinks()
         {
             // подключение внешних ссылок
@@ -492,125 +423,6 @@ namespace PluginSupport.Assistants
                 UpdateLinksOnPage(page);
             }
         }
-
-        //public static void RemoveShapes(IEnumerable<Shape> shapes, Action<Shape> unsubscribeAction)
-        //{
-        //    // сбор элементов для удаления на основании их выбранности
-        //    // сбор связей, которые используются удаляемыми элементами
-        //    var linksForDelete = ContextAssistant.ContextLinks.Where(x => shapes.Any(y => y == x.Source || y == x.Target)).ToList();
-        //    List<int> pageIndexes = [];
-        //    foreach (var link in linksForDelete)
-        //    {
-        //        // ищем источник и цель
-        //        var source = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Source);
-        //        var target = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Target);
-
-        //        // если найдены оба, то отписывается
-        //        if (source != null && target != null)
-        //            link.UnlinkToLocation(source, target);
-
-        //        pageIndexes.Add(link.Page);
-
-        //        // удаляем визуальную ссылку
-        //        ContextAssistant.ContextLinks.Remove(link);
-        //    }
-        //    // для всех удаляемых элементов
-        //    foreach (var shape in shapes)
-        //        unsubscribeAction(shape);
-        //    foreach (var shape in shapes)
-        //    {
-        //        pageIndexes.Add(shape.Page);
-
-        //        shape.Delete();
-        //        ContextAssistant.ContextShapes.Remove(shape);
-        //    }
-        //    SortAndAssignToPages();
-
-        //    foreach (var index in pageIndexes.Distinct())
-        //    {
-        //        var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == index);
-        //        UpdateLinksOnPage(page);
-        //    }
-        //}
-
-        //public static void RemoveSelected(Action<Shape> unsubscribeAction)
-        //{
-        //    // сбор элементов для удаления на основании их выбранности
-        //    var shapesForDelete = ContextAssistant.ContextShapes.Where(x => x.Selected).ToList();
-        //    // сбор связей, которые используются удаляемыми элементами
-        //    var linksForDelete = ContextAssistant.ContextLinks.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
-        //    List<int> pageIndexes = [];
-        //    foreach (var link in linksForDelete)
-        //    {
-        //        // ищем источник и цель
-        //        var source = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Source);
-        //        var target = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Target);
-
-        //        // если найдены оба, то отписывается
-        //        if (source != null && target != null)
-        //            link.UnlinkToLocation(source, target);
-
-        //        pageIndexes.Add(link.Page);
-
-        //        // удаляем визуальную ссылку
-        //        ContextAssistant.ContextLinks.Remove(link);
-        //    }
-        //    // для всех удаляемых элементов
-        //    foreach (var shape in shapesForDelete)
-        //        unsubscribeAction(shape);
-        //    foreach (var shape in shapesForDelete)
-        //    {
-        //        pageIndexes.Add(shape.Page);
-
-        //        shape.Delete();
-        //        ContextAssistant.ContextShapes.Remove(shape);
-        //    }
-        //    SortAndAssignToPages();
-
-        //    foreach (var index in pageIndexes.Distinct())
-        //    {
-        //        var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == index);
-        //        UpdateLinksOnPage(page);
-        //    }
-        //}
-
-        //public static void RemoveInPage(Page? page, Action<Shape> unsubscribeAction)
-        //{
-        //    // сбор элементов для удаления на основании их выбранности
-        //    var shapesForDelete = ContextAssistant.ContextShapes.Where(x => page != null && x.Page == page.Number || page == null && x.Page == 0).ToList();
-        //    // сбор связей, которые используются удаляемыми элементами
-        //    var linksForDelete = ContextAssistant.ContextLinks.Where(x => shapesForDelete.Any(y => y == x.Source || y == x.Target)).ToList();
-        //    List<int> pageIndexes = [];
-        //    foreach (var link in linksForDelete)
-        //    {
-        //        // ищем источник и цель
-        //        var source = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Source);
-        //        var target = ContextAssistant.ContextShapes.FirstOrDefault(x => x == link.Target);
-
-        //        // если найдены оба, то отписывается
-        //        if (source != null && target != null)
-        //            link.UnlinkToLocation(source, target);
-
-        //        pageIndexes.Add(link.Page);
-
-        //        // удаляем визуальную ссылку
-        //        ContextAssistant.ContextLinks.Remove(link);
-        //    }
-        //    // для всех удаляемых элементов
-        //    foreach (var shape in shapesForDelete)
-        //        unsubscribeAction(shape);
-        //    foreach (var shape in shapesForDelete)
-        //    {
-        //        pageIndexes.Add(shape.Page);
-
-        //        shape.Delete();
-        //        ContextAssistant.ContextShapes.Remove(shape);
-        //    }
-        //    SortAndAssignToPages();
-
-        //    foreach (var index in pageIndexes.Distinct())
-        //        UpdateLinksOnPage(page);
-        //}
 
         public static void UpdateContextEnvironment(Matrix? matrix, Point origin, double zoom)
         {

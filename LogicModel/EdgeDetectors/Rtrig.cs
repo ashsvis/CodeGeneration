@@ -16,7 +16,7 @@ namespace LogicModel
         }
 
         public new bool IsPresent => true;
-        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать в течении одного такта контроллера при переходе из состояния логического \"0\" в \"1\""];
+        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать в течение одного такта контроллера при переходе из состояния логического \"0\" в \"1\""];
 
         public override Rtrig DeepClone()
         {

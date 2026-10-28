@@ -6,7 +6,7 @@ namespace LogicModel
     {
         static partial void AddTreeNodeCompareItems(TreeNodeCollection items)
         {
-            items.Add(new TreeNode("Элемент \"Сравнение\"") { Tag = typeof(Eq) });
+            items.Add(new TreeNode("Элемент \"Равно\"") { Tag = typeof(Eq) });
             items.Add(new TreeNode("Элемент \"Не равно\"") { Tag = typeof(Ne) });
             items.Add(new TreeNode("Элемент \"Больше\"") { Tag = typeof(Gt) });
             items.Add(new TreeNode("Элемент \"Больше или равно\"") { Tag = typeof(Ge) });
@@ -20,14 +20,14 @@ namespace LogicModel
         public Eq()
         {
             FuncName = "==";
-            FuncDesc = "Элемент \"Сравнение\"";
+            FuncDesc = "Элемент \"Равно\"";
             Inputs = [new PinInput { Kind = ValueKind.Analog }, new PinInput { Kind = ValueKind.Analog }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => ["Производит операцию сравнения аналоговой величины с константой"];
+        public string[] FuncPresenter => ["Производит операцию сравнения на равенство аналоговой величины с константой"];
 
         public override Eq DeepClone()
         {
@@ -71,8 +71,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => false;
-        public string[] FuncPresenter => [""];
+        public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сравнения на неравенство аналоговой величины с константой"];
 
         public override Ne DeepClone()
         {
@@ -116,8 +116,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => false;
-        public string[] FuncPresenter => [""];
+        public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сравнения, что первая аналоговая величина больше второй"];
 
         public override Gt DeepClone()
         {
@@ -161,8 +161,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => false;
-        public string[] FuncPresenter => [""];
+        public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сравнения, что первая аналоговая величина больше или равна второй"];
 
         public override Ge DeepClone()
         {
@@ -206,8 +206,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => false;
-        public string[] FuncPresenter => [""];
+        public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сравнения, что первая аналоговая величина меньше второй"];
 
         public override Lt DeepClone()
         {
@@ -251,8 +251,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public bool IsPresent => false;
-        public string[] FuncPresenter => [""];
+        public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сравнения, что первая аналоговая величина меньше или равна второй"];
 
         public override Le DeepClone()
         {

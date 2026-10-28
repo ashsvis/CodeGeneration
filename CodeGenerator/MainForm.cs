@@ -517,16 +517,22 @@ namespace CodeGenerator
                     addShape = null;
 
                     UnselectAll();
+                    var existTypes = ModelAssistant.ContextTypes();
                     var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
                     if (draged.Shape is IGroupToPlace group)
                     {
                         var page = Pages.FirstOrDefault(x => x.Bounds.Contains(point));
                         var corner = new Point(point.X, point.Y);
+                        bool found = false;
                         foreach (var shape in group.GetShapes())
                         {
+                            if (!existTypes.Contains(shape.GetType())) continue;
                             var clone = draged.Shape.DeepClone();
                             UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
                                 clone, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                            clone.Selected = true;
+                            found = true;
+                            
                             if (clone is IGroupToPlace item)
                                 item.SetPresentFunction(shape);
 
@@ -544,20 +550,23 @@ namespace CodeGenerator
 
                             point = Point.Add(point, new Size(shape.Width * 3, 0));
                         }
+                        if (found)
+                        {
+                            modelChanged = true;
+                            drawPanel.Invalidate();
+                            return;
+                        }
                     }
-                    else
-                    {
-                        UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
-                        draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
-                        propGrid.SelectedObjects = null;
-                        propGrid.SelectedObject = null;
-                        draged.Shape.Selected = true;
-                        propGrid.SelectedObject = draged.Shape;
-                        if (draged.Shape is IAcceptClick clickedShape)
-                            draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
-                        propGrid.SelectedObject = null;
-                        propGrid.SelectedObject = draged.Shape;
-                    }
+                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
+                    draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                    propGrid.SelectedObjects = null;
+                    propGrid.SelectedObject = null;
+                    draged.Shape.Selected = true;
+                    propGrid.SelectedObject = draged.Shape;
+                    if (draged.Shape is IAcceptClick clickedShape)
+                        draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
+                    propGrid.SelectedObject = null;
+                    propGrid.SelectedObject = draged.Shape;
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }
