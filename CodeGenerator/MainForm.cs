@@ -106,6 +106,7 @@ namespace CodeGenerator
         private Point firstPoint = Point.Empty;
         private Point startPoint = Point.Empty;
         private Shape? firstShape = null;
+        private int firstShapeOutputIndex = 0;
         private bool linkBuilding = false;
         private bool leftPressed = false;
         private bool dragShapesPreview = false;
@@ -209,6 +210,7 @@ namespace CodeGenerator
                 {
                     if (shape.IsOutputTargetsPoint(point, out int outputIndex))
                     {
+                        firstShapeOutputIndex = outputIndex;
                         if (e.Button == MouseButtons.Left)
                         {
                             firstShape = shape;
@@ -372,10 +374,9 @@ namespace CodeGenerator
                         linkBuilding = false;
                         foreach (var shape in ModelAssistant.ShapesFrom(page))
                         {
-                            if (firstShape is Shape linked &&
-                                shape.IsInputTargetsPoint(point, out int index) &&
-                                !shape.IsLinked(index) &&
-                                firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index))
+                            if (firstShape is Shape linked && 
+                                shape.IsInputTargetsPoint(point, out int targetIndex) && !shape.IsLinked(targetIndex) &&
+                                firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(targetIndex))
                             {
                                 if (linked.Page == 0 || shape.Page == 0)
                                 {
@@ -386,7 +387,8 @@ namespace CodeGenerator
                                 }
                                 else if (linked.Page == shape.Page)
                                 {
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new BuildLinkCommand(ContextAssistant.Context, page, firstShape, 0, shape, index));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(
+                                        new BuildLinkCommand(ContextAssistant.Context, page, firstShape, firstShapeOutputIndex, shape, targetIndex));
                                     modelChanged = !runEmulate;
                                 }
                                 else

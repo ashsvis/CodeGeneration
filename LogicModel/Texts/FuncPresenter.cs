@@ -79,7 +79,7 @@ namespace LogicModel
             if (func is IFuncPresenter funcPresenter)
             {
                 rect.Offset(0, Bounds.Height + 40);
-                rect.Height += 40;
+                rect.Height += 100;
                 sf.LineAlignment = StringAlignment.Near;
                 path = new GraphicsPath();
                 fname = string.Join("\n", funcPresenter.FuncPresenter);

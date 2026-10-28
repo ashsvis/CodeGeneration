@@ -12,12 +12,17 @@ namespace LogicModel
             Inputs = [new PinInput { Kind = ValueKind.Analog }];
             Outputs = [
                 new PinOutput { Name = "HH", Kind = ValueKind.Digital },
-                new PinOutput { Name = "H", Kind = ValueKind.Digital },
-                new PinOutput { Name = "L", Kind = ValueKind.Digital },
+                new PinOutput { Name = "Hi", Kind = ValueKind.Digital },
+                new PinOutput { Name = "Lo", Kind = ValueKind.Digital },
                 new PinOutput { Name = "LL", Kind = ValueKind.Digital },
             ];
             CalculateHeight();
         }
+
+        public double LowLow { get; set; } = 15.0;
+        public double Low { get; set; } = 20.0;
+        public double High { get; set; } = 80.0;
+        public double HighHigh { get; set; } = 85.0;
 
         public bool IsPresent => true;
         public string[] FuncPresenter => 
@@ -43,18 +48,39 @@ namespace LogicModel
 
         public override void Calculate()
         {
-            //if (Inputs.Length > 0)
-            //{
-            //    var choose = Inputs[0].Value > 0;
-            //    var input0 = Inputs[1].Value > 0;
-            //    var input1 = Inputs[2].Value > 0;
-            //    var result = choose ? input1 : input0;
-            //    if (Outputs.Length > 0 && Outputs[0].Value > 0 != result)
-            //    {
-            //        Outputs[0].Value = result ? 1 : 0;
-            //        Transfer();
-            //    }
-            //}
+            if (Inputs.Length > 0)
+            {
+                var result1 = Inputs[0].Value >= HighHigh ? 1 : 0;
+                var result2 = Inputs[0].Value >= High ? 1 : 0;
+                var result3 = Inputs[0].Value <= Low ? 1 : 0;
+                var result4 = Inputs[0].Value <= LowLow ? 1 : 0;
+                if (Outputs.Length == 4)
+                {
+                    var changed = false;
+                    if (Outputs[0].Value != result1)
+                    {
+                        Outputs[0].Value = result1;
+                        changed = true;
+                    }
+                    if (Outputs[1].Value != result2)
+                    {
+                        Outputs[1].Value = result2;
+                        changed = true;
+                    }
+                    if (Outputs[2].Value != result3)
+                    {
+                        Outputs[2].Value = result3;
+                        changed = true;
+                    }
+                    if (Outputs[3].Value != result4)
+                    {
+                        Outputs[3].Value = result4;
+                        changed = true;
+                    }
+                    if (changed)
+                        Transfer();
+                }
+            }
         }
 
         public override GraphicsPath[] GetTextPaths()

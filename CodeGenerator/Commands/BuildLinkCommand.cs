@@ -3,13 +3,7 @@ using PluginSupport.Assistants;
 
 namespace CodeGenerator.Commands
 {
-    public class BuildLinkCommand(
-        ContextKind context,
-        Page? page,
-        Shape source,
-        int sourceIndex,
-        Shape target,
-        int targetIndex) : ICommand
+    public class BuildLinkCommand(ContextKind context, Page? page, Shape source, int sourceIndex, Shape target, int targetIndex) : ICommand
     {
         private readonly ContextKind commandContext = context;
         private readonly Shape sourceShape = source;
@@ -31,7 +25,7 @@ namespace CodeGenerator.Commands
             if (link != null)
             {
                 createdLink = link;
-                var startPoint = sourceShape.GetOutputPinPoint(0);
+                var startPoint = sourceShape.GetOutputPinPoint(sourceIndex);
                 var endPoint = targetShape.GetInputPinPoint(targetIndex);
                 if (startPoint != null && endPoint != null)
                 {
@@ -43,7 +37,7 @@ namespace CodeGenerator.Commands
                     link.LinkToLocation(sourceShape, sourceIndex, link.StartPoint, targetShape, targetIndex, link.EndPoint, points);
                     ContextAssistant.ContextLinks.Add(link);
                     // настройка фигуры для установления связи
-                    targetShape.SetInputValue(targetIndex, sourceShape.GetOutputValue(0));
+                    targetShape.SetInputValue(targetIndex, sourceShape.GetOutputValue(sourceIndex));
 
                     // сохранение настроек для визуальной связи
                     link.Source = sourceShape;
