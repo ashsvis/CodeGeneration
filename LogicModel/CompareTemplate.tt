@@ -14,14 +14,15 @@ namespace LogicModel
         static partial void AddTreeNodeCompareItems(TreeNodeCollection items)
         {
 <#
-    var compareTypes = new Tuple<string, string, string, string>[] 
+    var compareTypes = new Tuple<string, string, string, string, string>[] 
     { 
-        new("Eq", "==", "Элемент \\\"Сравнение\\\"", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon"),
-        new("Ne", "!=", "Элемент \\\"Не равно\\\"", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)"),
-        new("Gt", ">", "Элемент \\\"Больше\\\"", "Inputs[0].Value > Inputs[1].Value"),
-        new("Ge", ">=", "Элемент \\\"Больше или равно\\\"", "Inputs[0].Value >= Inputs[1].Value"),
-        new("Lt", "<", "Элемент \\\"Меньше\\\"", "Inputs[0].Value < Inputs[1].Value"),
-        new("Le", "<=", "Элемент \\\"Меньше или равно\\\"", "Inputs[0].Value <= Inputs[1].Value"),
+        new("Eq", "==", "Элемент \\\"Сравнение\\\"", "Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon", 
+            "Производит операцию сравнения аналоговой величины с константой"),
+        new("Ne", "!=", "Элемент \\\"Не равно\\\"", "!(Math.Abs(Inputs[0].Value - Inputs[1].Value) < double.Epsilon)", ""),
+        new("Gt", ">", "Элемент \\\"Больше\\\"", "Inputs[0].Value > Inputs[1].Value", ""),
+        new("Ge", ">=", "Элемент \\\"Больше или равно\\\"", "Inputs[0].Value >= Inputs[1].Value", ""),
+        new("Lt", "<", "Элемент \\\"Меньше\\\"", "Inputs[0].Value < Inputs[1].Value", ""),
+        new("Le", "<=", "Элемент \\\"Меньше или равно\\\"", "Inputs[0].Value <= Inputs[1].Value", ""),
     };
     foreach (var type in compareTypes)
     {
@@ -49,7 +50,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => <#= (type.Item2 == "==").ToString().ToLower()  #>;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["<#= type.Item5 #>"];
 
         public override <#= type.Item1 #> DeepClone()
         {

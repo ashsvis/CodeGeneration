@@ -27,7 +27,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["Производит операцию сравнения аналоговой величины с константой"];
 
         public override Eq DeepClone()
         {

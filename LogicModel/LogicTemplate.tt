@@ -16,7 +16,10 @@ namespace LogicModel
             TreeNode nodesGroup;
 <#
     var inputCount = 8;
-    var logicTypes = new Tuple<string, string, string, string>[] { new("Or", "1", "Элемент \\\"ИЛИ\\\"", "||"), new("And", "&", "Элемент \\\"И\\\"", "&&") };
+    var logicTypes = new Tuple<string, string, string, string, string>[] { 
+            new("Or", "1", "Элемент \\\"ИЛИ\\\"", "||", "Производит операцию логического сложения (логическое \\\"ИЛИ\\\")"), 
+            new("And", "&", "Элемент \\\"И\\\"", "&&", "Производит операцию логического умножения (логическое \\\"И\\\")") 
+        };
     foreach (var type in logicTypes)
     {
 #>
@@ -61,7 +64,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => <#= (i == 2).ToString().ToLower() #>;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["<#= type.Item5 #>"];
 
         public override <#= type.Item1 #><#= i #> DeepClone()
         {

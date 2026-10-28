@@ -25,7 +25,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["Производит операцию математического сложения значения первого аналогового входа со значением второго"];
 
         public override Add DeepClone()
         {
@@ -70,7 +70,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["Производит операцию математического вычитания значения второго (нижнего) аналогового входа из первого"];
 
         public override Sub DeepClone()
         {
@@ -115,7 +115,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["Производит операцию математического умножения значения первого аналогового входа на значение второго"];
 
         public override Mul DeepClone()
         {
@@ -160,7 +160,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["Производит операцию математического деления значения первого аналогового входа на значение второго"];
 
         public override Div DeepClone()
         {

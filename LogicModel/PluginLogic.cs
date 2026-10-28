@@ -48,8 +48,8 @@ namespace LogicModel
             //
             nodesGroup = new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) };
             items.Add(nodesGroup);
-            nodesGroup.Nodes.Add(new TreeNode("Детектор фронта") { Tag = typeof(Rtrig) });
-            nodesGroup.Nodes.Add(new TreeNode("Детектор спада") { Tag = typeof(Ftrig) });
+            nodesGroup.Nodes.Add(new TreeNode("Признак срабатывания по фронту") { Tag = typeof(Rtrig) });
+            nodesGroup.Nodes.Add(new TreeNode("Признак срабатывания по спаду") { Tag = typeof(Ftrig) });
             //
             nodesGroup = new TreeNode("Таймеры");
             items.Add(nodesGroup);

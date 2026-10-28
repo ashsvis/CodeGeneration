@@ -15,7 +15,7 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public new bool IsPresent => false;
+        public new bool IsPresent => true;
         public new string[] FuncPresenter => 
             ["D - вход данных", "C - запись по фронту 0 -> 1", "Значение D фиксируется строго в момент фронта такта"];
 

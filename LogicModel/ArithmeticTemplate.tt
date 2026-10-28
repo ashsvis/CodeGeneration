@@ -14,12 +14,12 @@ namespace LogicModel
         static partial void AddTreeNodeArithmeticItems(TreeNodeCollection items)
         {
 <#
-    var arithmeticTypes = new Tuple<string, string, string, string>[] 
+    var arithmeticTypes = new Tuple<string, string, string, string, string>[] 
     { 
-        new("Add", "ADD", "Блок сложения", "+"),
-        new("Sub", "SUB", "Блок вычитания", "-"),
-        new("Mul", "MUL", "Блок умножения", "*"),
-        new("Div", "DIV", "Блок деления", "/"),
+        new("Add", "ADD", "Блок сложения", "+", "Производит операцию математического сложения значения первого аналогового входа со значением второго"),
+        new("Sub", "SUB", "Блок вычитания", "-", "Производит операцию математического вычитания значения второго (нижнего) аналогового входа из первого"),
+        new("Mul", "MUL", "Блок умножения", "*", "Производит операцию математического умножения значения первого аналогового входа на значение второго"),
+        new("Div", "DIV", "Блок деления", "/", "Производит операцию математического деления значения первого аналогового входа на значение второго"),
     };
     foreach (var type in arithmeticTypes)
     {
@@ -47,7 +47,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => [""];
+        public string[] FuncPresenter => ["<#= type.Item5 #>"];
 
         public override <#= type.Item1 #> DeepClone()
         {
