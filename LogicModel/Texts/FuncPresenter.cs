@@ -7,7 +7,7 @@ namespace LogicModel
 {
     public class FuncPresenter : Shape, ITraceTransparent, IAcceptClick, IGroupToPlace
     {
-        private Func? func = null;
+        private Shape? func = null;
 
         [Browsable(false)]
         public override int Width { get; set; } = 24;
@@ -36,7 +36,9 @@ namespace LogicModel
         {
             return new FuncPresenter
             {
+                id = Id,
                 func = func?.DeepClone(),
+                Location = Location,
                 Width = Width,
                 Height = Height,
             };
@@ -44,9 +46,9 @@ namespace LogicModel
 
         public override GraphicsPath[] GetGraphicsPaths()
         {
+            List<GraphicsPath> paths = [];
             if (func == null)
             {
-                List<GraphicsPath> paths = [];
                 GraphicsPath path = new();
                 path.AddLine(new Point(Location.X, Location.Y), new Point(Location.X + Width, Location.Y));
                 path.CloseFigure();
@@ -56,12 +58,15 @@ namespace LogicModel
                 return [.. paths];
             }
             func.Location = Location;
-            return func.GetGraphicsPaths();
+            paths.AddRange(func.GetGraphicsPaths());
+            return [.. paths];
         }
 
         public override GraphicsPath[] GetTextPaths()
         {
-            if (func == null) return base.GetTextPaths();
+            if (func == null) 
+                return base.GetTextPaths();
+            func.Location = Location;
             var paths = func.GetTextPaths().ToList();
             var rect = Bounds;
             rect.Height = 24;
@@ -72,12 +77,13 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = (func.FuncDesc ?? "").Split('/').First();
-            var sz = TextRenderer.MeasureText(fname, fontFunc);
-            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, fontFunc.Size, rect, sf);
-            paths.Add(path);
             if (func is IFuncPresenter funcPresenter)
             {
+                var fname = (funcPresenter.FuncDesc ?? "").Split('/').First();
+                var sz = TextRenderer.MeasureText(fname, fontFunc);
+                path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, fontFunc.Size, rect, sf);
+                paths.Add(path);
+
                 rect.Offset(0, Bounds.Height + 40);
                 rect.Height += 100;
                 sf.LineAlignment = StringAlignment.Near;
@@ -145,21 +151,21 @@ namespace LogicModel
 
         public Shape[] GetShapes()
         {
-            List<Shape> shapes = [];
+            List<Func> funcs = [];
             var pl = new PluginLogic();
             foreach (var entry in pl.GetTypes())
             {
                 var type = entry.Value;
                 var obj = Activator.CreateInstance(type);
                 if (obj is IFuncPresenter presenter && presenter.IsPresent)
-                    shapes.Add((Shape)obj);
+                    funcs.Add((Func)obj);
             }
-            return [.. shapes];
+            return [.. funcs];
         }
 
         public void SetPresentFunction(Shape shape)
         {
-            func = shape.DeepClone() as Func;
+            func = (Shape?)Activator.CreateInstance(shape.GetType());
         }
     }
 }

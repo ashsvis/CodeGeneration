@@ -526,31 +526,29 @@ namespace CodeGenerator
                         var page = Pages.FirstOrDefault(x => x.Bounds.Contains(point));
                         var corner = new Point(point.X, point.Y);
                         bool found = false;
-                        foreach (var shape in group.GetShapes())
+                        foreach (var libShape in group.GetShapes())
                         {
-                            if (!existTypes.Contains(shape.GetType())) continue;
+                            if (!existTypes.Contains(libShape.GetType())) continue;
                             var clone = draged.Shape.DeepClone();
+                            if (clone is IGroupToPlace item)  item.SetPresentFunction(libShape);
                             UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
                                 clone, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
                             clone.Selected = true;
                             found = true;
-                            
-                            if (clone is IGroupToPlace item)
-                                item.SetPresentFunction(shape);
 
                             if (page != null)
                             {
                                 var rect = page.Bounds;
                                 rect.Inflate(-25, -25);
-                                if (!rect.Contains(clone.Bounds))
+                                if (!rect.Contains(libShape.Bounds))
                                 {
                                     point = new Point(corner.X, point.Y);
-                                    point.Y += shape.Height * 4;
+                                    point.Y += libShape.Height * 4;
                                     clone.Location = point;
                                 }
                             }
 
-                            point = Point.Add(point, new Size(shape.Width * 3, 0));
+                            point = Point.Add(point, new Size(libShape.Width * 3, 0));
                         }
                         if (found)
                         {

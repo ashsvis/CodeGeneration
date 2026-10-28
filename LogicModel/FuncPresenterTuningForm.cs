@@ -1,16 +1,18 @@
-﻿namespace LogicModel
+﻿using PluginSupport;
+
+namespace LogicModel
 {
     public partial class FuncPresenterTuningForm : Form
     {
-        public FuncPresenterTuningForm(Func? func)
+        public FuncPresenterTuningForm(Shape? func)
         {
             InitializeComponent();
             BuildContent(func);
         }
 
-        public Func[] Selected => [..lbFuncSelector.SelectedItems.Cast<Func>()];
+        public Shape[] Selected => [..lbFuncSelector.SelectedItems.Cast<Shape>()];
 
-        private void BuildContent(Func? func)
+        private void BuildContent(Shape? func)
         {
             var pl = new PluginLogic();
             lbFuncSelector.Items.Clear();
