@@ -469,7 +469,7 @@ namespace CodeGenerator
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
                         shape.CanInputLink = !runEmulate &&
                             firstShape.Page == shape.Page &&
-                            firstShape.GetOutputValueKind(0) == shape.GetInputValueKind(index);
+                            firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(index);
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !runEmulate && !linkBuilding;
@@ -762,9 +762,9 @@ namespace CodeGenerator
                 using var defaultpen = new Pen(link.Foreground);
                 if (runEmulate)
                 {
-                    if (link.Source != null && link.Source.GetOutputValueKind() == ValueKind.Digital)
+                    if (link.Source != null && link.Source.GetOutputValueKind(link.SourcePinIndex) == ValueKind.Digital)
                     {
-                        if (link.Source.GetOutputValue() > 0)
+                        if (link.Source.GetOutputValue(link.SourcePinIndex) > 0)
                             pen = Pens.Lime;
                         else
                             pen = Pens.Red;
@@ -791,9 +791,9 @@ namespace CodeGenerator
                     using var defaultbrush = new SolidBrush(link.Foreground);
                     if (runEmulate)
                     {
-                        if (link.Source != null && link.Source.GetOutputValueKind() == ValueKind.Digital)
+                        if (link.Source != null && link.Source.GetOutputValueKind(link.SourcePinIndex) == ValueKind.Digital)
                         {
-                            if (link.Source.GetOutputValue() > 0)
+                            if (link.Source.GetOutputValue(link.SourcePinIndex) > 0)
                                 brush = Brushes.Lime;
                             else
                                 brush = Brushes.Red;
