@@ -145,12 +145,20 @@ namespace LogicModel
             if (AllowedFuncProperties.HasFlag(AllowedFuncProperties.ShowPins))
             {
                 // вывод входов
-                hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
-                for (int i = 0; i < Inputs.Length; i++)
+                if (Inputs.Length == 1)
                 {
-                    path.AddLine(rect.Left, rect.Top + hi, rect.Left - BaseWidth / 4f, rect.Top + hi);
+                    path.AddLine(rect.Left, rect.Top + rect.Height / 2, rect.Left - BaseWidth / 4, rect.Top + rect.Height / 2);
                     path.CloseFigure();
-                    hi += step;
+                }
+                else
+                {
+                    hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
+                    for (int i = 0; i < Inputs.Length; i++)
+                    {
+                        path.AddLine(rect.Left, rect.Top + hi, rect.Left - BaseWidth / 4f, rect.Top + hi);
+                        path.CloseFigure();
+                        hi += step;
+                    }
                 }
                 // вывод выходов
                 if (Outputs.Length == 1)
@@ -342,13 +350,22 @@ namespace LogicModel
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = BaseWidth / 4;
             // вывод целей входов
-            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            if (Inputs.Length == 1)
             {
-                var r = new Rectangle(rect.Left - sizeTarget, rect.Top + hi - sizeTarget, sizeTarget, sizeTarget * 2);
+                var r = new Rectangle(rect.Left - sizeTarget, rect.Top + rect.Height / 2 - sizeTarget, sizeTarget, sizeTarget * 2);
                 r.Inflate(0, -1);
-                items.Add(new TargetInfo(false, i, r));
-                hi += step;
+                items.Add(new TargetInfo(false, 0, r));
+            }
+            else
+            {
+                var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
+                for (int i = 0; i < Inputs.Length; i++)
+                {
+                    var r = new Rectangle(rect.Left - sizeTarget, rect.Top + hi - sizeTarget, sizeTarget, sizeTarget * 2);
+                    r.Inflate(0, -1);
+                    items.Add(new TargetInfo(false, i, r));
+                    hi += step;
+                }
             }
             // вывод целей выходов
             if (Outputs.Length == 1)
@@ -384,13 +401,22 @@ namespace LogicModel
             var rect = new Rectangle(Location.X, Location.Y, Width, CalcHeight);
             var sizeTarget = BaseWidth / 4;
             // вывод целей входов
-            var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
-            for (int i = 0; i < Inputs.Length; i++)
+            if (Inputs.Length == 1)
             {
-                var id = Inputs[i]?.Source?.LinkId;
-                var p = new Point(rect.Left - sizeTarget, rect.Top + hi);
-                items.Add(new PinInfo(this, false, i, p, id ?? Guid.Empty));
-                hi += step;
+                var id = Inputs[0]?.Source?.LinkId;
+                var p = new Point(rect.Left - sizeTarget, rect.Top + rect.Height / 2);
+                items.Add(new PinInfo(this, false, 0, p, id ?? Guid.Empty));
+            }
+            else
+            {
+                var hi = Inputs.Length < maxPins ? (CalcHeight - (step * Inputs.Length + 1) + step) / 2 : step;
+                for (int i = 0; i < Inputs.Length; i++)
+                {
+                    var id = Inputs[i]?.Source?.LinkId;
+                    var p = new Point(rect.Left - sizeTarget, rect.Top + hi);
+                    items.Add(new PinInfo(this, false, i, p, id ?? Guid.Empty));
+                    hi += step;
+                }
             }
             // вывод целей выходов
             if (Outputs.Length == 1)

@@ -69,6 +69,8 @@ namespace LogicModel
             nodesGroup = new TreeNode("Сравнение");
             items.Add(nodesGroup);
             AddTreeNodeCompareItems(nodesGroup.Nodes);
+            //
+            items.Add(new TreeNode("Блок сигнализации и выделения уставок") { Tag = typeof(AlarmDetector) });
             return [.. items];
         }
 
