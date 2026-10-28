@@ -14,7 +14,7 @@ namespace LogicModel
             items.Add(nodesGroup);
             nodesGroup.Nodes.Add(new TreeNode("Комментарий") { Tag = typeof(Comment) });
             nodesGroup.Nodes.Add(new TreeNode("Дескриптор сигнала") { Tag = typeof(DescriptionBox) });
-            nodesGroup.Nodes.Add(new TreeNode("Презентатор функции") { Tag = typeof(FuncPresenter) });
+            nodesGroup.Nodes.Add(new TreeNode("Представление функции") { Tag = typeof(FuncPresenter) });
             //
             nodesGroup = new TreeNode("Ввод сигнала");
             items.Add(nodesGroup);

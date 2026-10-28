@@ -25,6 +25,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Add DeepClone()
         {
@@ -69,6 +70,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Sub DeepClone()
         {
@@ -113,6 +115,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Mul DeepClone()
         {
@@ -157,6 +160,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Div DeepClone()
         {

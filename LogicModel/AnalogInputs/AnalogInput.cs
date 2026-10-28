@@ -13,6 +13,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["Преобразует аналоговый сигнал в цифровую переменную контроллера"];
+
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 

@@ -13,6 +13,9 @@ namespace LogicModel
             CalculateHeight();
         }
 
+        public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["Преобразует переменную контроллера в дискретный сигнал"];
+
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName | AllowedFuncProperties.ShowLabelNumber);
 

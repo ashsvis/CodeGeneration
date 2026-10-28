@@ -27,6 +27,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Eq DeepClone()
         {
@@ -71,6 +72,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Ne DeepClone()
         {
@@ -115,6 +117,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Gt DeepClone()
         {
@@ -159,6 +162,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Ge DeepClone()
         {
@@ -203,6 +207,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Lt DeepClone()
         {
@@ -247,6 +252,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Le DeepClone()
         {

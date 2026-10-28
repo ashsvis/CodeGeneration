@@ -29,6 +29,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["S - установка", "R - сброс", "Приоритетом обладает вход триггера R"];
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);

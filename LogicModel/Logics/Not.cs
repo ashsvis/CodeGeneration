@@ -14,6 +14,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["Инвертирует дискретную переменную контроллера"];
 
         public override Not DeepClone()
         {

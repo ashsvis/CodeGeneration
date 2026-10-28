@@ -47,6 +47,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override <#= type.Item1 #> DeepClone()
         {

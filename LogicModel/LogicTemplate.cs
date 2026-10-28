@@ -40,6 +40,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override Or2 DeepClone()
         {
@@ -85,6 +86,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or3 DeepClone()
         {
@@ -130,6 +132,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or4 DeepClone()
         {
@@ -175,6 +178,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or5 DeepClone()
         {
@@ -220,6 +224,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or6 DeepClone()
         {
@@ -265,6 +270,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or7 DeepClone()
         {
@@ -310,6 +316,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override Or8 DeepClone()
         {
@@ -355,6 +362,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => [""];
 
         public override And2 DeepClone()
         {
@@ -400,6 +408,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And3 DeepClone()
         {
@@ -445,6 +454,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And4 DeepClone()
         {
@@ -490,6 +500,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And5 DeepClone()
         {
@@ -535,6 +546,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And6 DeepClone()
         {
@@ -580,6 +592,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And7 DeepClone()
         {
@@ -625,6 +638,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => false;
+        public string[] FuncPresenter => [""];
 
         public override And8 DeepClone()
         {

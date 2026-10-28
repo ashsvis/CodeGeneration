@@ -13,7 +13,8 @@ namespace LogicModel
             CalculateHeight();
         }
 
-        public new bool IsPresent => false;
+        public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["S - установка", "R - сброс", "Приоритетом обладает вход триггера S"];
 
         public override Sr DeepClone()
         {

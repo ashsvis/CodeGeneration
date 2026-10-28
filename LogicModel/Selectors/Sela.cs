@@ -17,6 +17,7 @@ namespace LogicModel
         }
 
         public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["Производит передачу аналогового значения с заданного входа"];
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 (AllowedFuncProperties.PinInverted);

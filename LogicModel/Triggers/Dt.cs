@@ -4,6 +4,8 @@ namespace LogicModel
 {
     public class Dt : Rs, IFuncPresenter
     {
+        private bool strob = false;
+
         public Dt()
         {
             FuncName = "T";
@@ -14,6 +16,8 @@ namespace LogicModel
         }
 
         public new bool IsPresent => false;
+        public new string[] FuncPresenter => 
+            ["D - вход данных", "C - запись по фронту 0 -> 1", "Значение D фиксируется строго в момент фронта такта"];
 
         public override Dt DeepClone()
         {
@@ -35,13 +39,16 @@ namespace LogicModel
             {
                 var Data = (Inputs[0].Value > 0) ^ Inputs[0].IsInverted;
                 var Strob = (Inputs[1].Value > 0) ^ Inputs[1].IsInverted;
-                if (Strob)
+                if (Strob && !strob)
                 {
+                    strob = true;
                     var result = Data;
                     result ^= Outputs[0].IsInverted;
                     Outputs[0].Value = result ? 1 : 0;
                     Transfer();
                 }
+                else if (!Strob && strob)
+                    strob = false;
             }
         }
     }

@@ -14,6 +14,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит операцию сумма по модулю 2 (исключающее \"ИЛИ\")"];
 
         public override Xor DeepClone()
         {

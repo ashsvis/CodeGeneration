@@ -26,6 +26,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["Формирует импульс длительностью t"];
 
         public override Pulse DeepClone()
         {

@@ -61,9 +61,33 @@ namespace LogicModel
 
         public override GraphicsPath[] GetTextPaths()
         {
-            if (func == null)
-                return base.GetTextPaths();
-            return func.GetTextPaths();
+            if (func == null) return base.GetTextPaths();
+            var paths = func.GetTextPaths().ToList();
+            var rect = Bounds;
+            rect.Height = 24;
+            rect.Inflate(24, 0);
+            rect.Offset(-10, -30);
+            using var fontFunc = new Font("Arial Narrow", 10f);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
+            var path = new GraphicsPath();
+            var fname = (func.FuncDesc ?? "").Split('/').First();
+            var sz = TextRenderer.MeasureText(fname, fontFunc);
+            path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, fontFunc.Size, rect, sf);
+            paths.Add(path);
+            if (func is IFuncPresenter funcPresenter)
+            {
+                rect.Offset(0, Bounds.Height + 40);
+                rect.Height += 40;
+                sf.LineAlignment = StringAlignment.Near;
+                path = new GraphicsPath();
+                fname = string.Join("\n", funcPresenter.FuncPresenter);
+                sz = TextRenderer.MeasureText(fname, fontFunc, sz);
+                path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular, fontFunc.Size, rect, sf);
+                paths.Add(path);
+            }
+            return [..paths];
         }
 
         public override void ReadContent(XElement xfunc)

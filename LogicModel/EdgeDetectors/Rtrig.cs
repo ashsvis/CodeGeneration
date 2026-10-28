@@ -2,18 +2,21 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class Rtrig : Not, ICycle
+    public class Rtrig : Not, ICycle, IFuncPresenter
     {
         private bool lastState;
 
         public Rtrig()
         {
             FuncName = "Rtrig";
-            FuncDesc = "Детектор фронта";
+            FuncDesc = "Признак срабатывания по фронту";
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать в течении одного такта контроллера при переходе из состояния логического \"0\" в \"1\""];
 
         public override Rtrig DeepClone()
         {

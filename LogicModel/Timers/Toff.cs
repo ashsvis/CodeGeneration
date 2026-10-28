@@ -26,6 +26,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["t - время задержки заднего фронта"];
 
         public override Toff DeepClone()
         {

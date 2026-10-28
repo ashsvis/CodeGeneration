@@ -17,6 +17,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
+        public string[] FuncPresenter => ["Производит передачу дисктретного значения с заданного входа"];
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
                 AllowedFuncProperties.PinInverted;

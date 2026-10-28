@@ -2,18 +2,21 @@ using PluginSupport;
 
 namespace LogicModel
 {
-    public class Ftrig : Rtrig, ICycle
+    public class Ftrig : Rtrig, ICycle, IFuncPresenter
     {
         private bool lastState;
 
         public Ftrig()
         {
             FuncName = "Ftrig";
-            FuncDesc = "ƒетектор спада";
+            FuncDesc = "ѕризнак срабатывани€ по спаду";
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
         }
+
+        public new bool IsPresent => true;
+        public new string[] FuncPresenter => ["”казывает, что данный логический вход должен срабатывать в течении одного такта контроллера при переходе из состо€ни€ логического \"1\" в \"0\""];
 
         public override Ftrig DeepClone()
         {
