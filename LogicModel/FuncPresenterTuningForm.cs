@@ -8,7 +8,7 @@
             BuildContent(func);
         }
 
-        public Func? Selected => lbFuncSelector.SelectedItem as Func;
+        public Func[] Selected => [..lbFuncSelector.SelectedItems.Cast<Func>()];
 
         private void BuildContent(Func? func)
         {

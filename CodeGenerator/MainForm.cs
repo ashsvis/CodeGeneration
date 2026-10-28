@@ -518,16 +518,46 @@ namespace CodeGenerator
 
                     UnselectAll();
                     var point = ModelAssistant.MovePointToGrid(drawPanel.GetLocation(new Point(e.X, e.Y)));
-                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
+                    if (draged.Shape is IGroupToPlace group)
+                    {
+                        var page = Pages.FirstOrDefault(x => x.Bounds.Contains(point));
+                        var corner = new Point(point.X, point.Y);
+                        foreach (var shape in group.GetShapes())
+                        {
+                            var clone = draged.Shape.DeepClone();
+                            UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
+                                clone, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
+                            if (clone is IGroupToPlace item)
+                                item.SetPresentFunction(shape);
+
+                            if (page != null)
+                            {
+                                var rect = page.Bounds;
+                                rect.Inflate(-25, -25);
+                                if (!rect.Contains(clone.Bounds))
+                                {
+                                    point = new Point(corner.X, point.Y);
+                                    point.Y += shape.Height * 4;
+                                    clone.Location = point;
+                                }
+                            }
+
+                            point = Point.Add(point, new Size(shape.Width * 3, 0));
+                        }
+                    }
+                    else
+                    {
+                        UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
                         draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
-                    propGrid.SelectedObjects = null;
-                    propGrid.SelectedObject = null;
-                    draged.Shape.Selected = true;
-                    propGrid.SelectedObject = draged.Shape;
-                    if (draged.Shape is IAcceptClick clickedShape)
-                        draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
-                    propGrid.SelectedObject = null;
-                    propGrid.SelectedObject = draged.Shape;
+                        propGrid.SelectedObjects = null;
+                        propGrid.SelectedObject = null;
+                        draged.Shape.Selected = true;
+                        propGrid.SelectedObject = draged.Shape;
+                        if (draged.Shape is IAcceptClick clickedShape)
+                            draged.Shape.Click(runEmulate, PointToScreen(new Point(e.X, e.Y)));
+                        propGrid.SelectedObject = null;
+                        propGrid.SelectedObject = draged.Shape;
+                    }
                     modelChanged = true;
                     drawPanel.Invalidate();
                 }

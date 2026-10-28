@@ -87,7 +87,7 @@
             MinimizeBox = false;
             Name = "FuncPresenterTuningForm";
             StartPosition = FormStartPosition.Manual;
-            Text = "Презентатор функции";
+            Text = "Представление функций";
             ResumeLayout(false);
         }
 

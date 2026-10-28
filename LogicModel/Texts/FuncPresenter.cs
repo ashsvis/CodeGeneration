@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class FuncPresenter : Shape, ITraceTransparent, IAcceptClick
+    public class FuncPresenter : Shape, ITraceTransparent, IAcceptClick, IGroupToPlace
     {
         private Func? func = null;
 
@@ -138,9 +138,28 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                func = dlg.Selected;
+                func = dlg.Selected.First();
                 Changed();
             }
+        }
+
+        public Shape[] GetShapes()
+        {
+            List<Shape> shapes = [];
+            var pl = new PluginLogic();
+            foreach (var entry in pl.GetTypes())
+            {
+                var type = entry.Value;
+                var obj = Activator.CreateInstance(type);
+                if (obj is IFuncPresenter presenter && presenter.IsPresent)
+                    shapes.Add((Shape)obj);
+            }
+            return [.. shapes];
+        }
+
+        public void SetPresentFunction(Shape shape)
+        {
+            func = shape.DeepClone() as Func;
         }
     }
 }
