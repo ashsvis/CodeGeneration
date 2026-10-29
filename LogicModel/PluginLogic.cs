@@ -56,6 +56,7 @@ namespace LogicModel
             nodesGroup.Nodes.Add(new TreeNode("Одновибратор") { Tag = typeof(Pulse) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка включения") { Tag = typeof(Ton) });
             nodesGroup.Nodes.Add(new TreeNode("Задержка выключения") { Tag = typeof(Toff) });
+            nodesGroup.Nodes.Add(new TreeNode("Генератор импульсов") { Tag = typeof(PulseGenerator) });
             //
             nodesGroup = new TreeNode("Выбор сигнала");
             items.Add(nodesGroup);
