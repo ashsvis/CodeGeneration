@@ -12,6 +12,8 @@ namespace LogicModel
 
         public float FontHeight { get; set; } = 14f;
 
+        public bool Undeline { get; set; }
+
         public Comment()
         {
             FuncDesc = "Комментарий";
@@ -37,6 +39,7 @@ namespace LogicModel
                 Outputs = [],
                 Lines = Lines,
                 FontHeight = FontHeight,
+                Undeline = Undeline
             };
         }
 
@@ -65,6 +68,19 @@ namespace LogicModel
                 CalculateHeight();
                 return new(Location.X, Location.Y, Width, Height);
             }
+        }
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            List<GraphicsPath> paths = [.. base.GetGraphicsPaths()];
+            if (Undeline)
+            {
+                var rect = Bounds;
+                var path = new GraphicsPath();
+                path.AddLine(new Point(rect.Left, rect.Bottom + 6), new Point(rect.Right, rect.Bottom + 6));
+                paths.Add(path);
+            }
+            return [.. paths];
         }
 
         public override GraphicsPath[] GetTextPaths()
@@ -111,6 +127,8 @@ namespace LogicModel
             if (!IsEmpty)
             {
                 xfunc.Add(new XAttribute("FontHeight", FontHeight));
+                if (Undeline)
+                    xfunc.Add(new XAttribute("Underline", true));
                 var xlines = new XElement("Lines");
                 xfunc.Add(xlines);
                 foreach (var line in Lines)
@@ -125,6 +143,9 @@ namespace LogicModel
             var xfontheight = xfunc.Attribute("FontHeight")?.Value;
             if (xfontheight != null)
                 FontHeight = ParseHelper.ParseSingle(xfontheight, CultureInfo.GetCultureInfo("en-US"), 14f);
+            var xunderline = xfunc.Attribute("Underline")?.Value;
+            if (xunderline != null)
+                Undeline = ParseHelper.ParseBoolean(xunderline, false);
             var xlines = xfunc.Element("Lines");
             if (xlines != null)
             {
