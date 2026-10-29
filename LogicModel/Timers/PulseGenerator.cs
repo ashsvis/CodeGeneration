@@ -162,6 +162,8 @@ namespace LogicModel
         public void Reset()
         {
             time = 0;
+            if (!Inputs[0].IsLinked)
+                Inputs[0].Value = 0;
             if (Outputs[0].Value != 0)
             {
                 Outputs[0].Value = 0;
