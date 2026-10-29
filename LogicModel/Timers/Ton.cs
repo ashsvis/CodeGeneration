@@ -1,15 +1,11 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.Timers;
 using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class Ton : Func, IAcceptClick, IFuncPresenter
+    public class Ton : Func, IAcceptClick, IFuncPresenter, IResetable
     {
-        private readonly System.Timers.Timer timer;
-
-        private bool input;
         private uint time;
 
         public uint MilliSeconds { private get; set; } = 1000;
@@ -21,8 +17,6 @@ namespace LogicModel
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
-            timer = new System.Timers.Timer(MilliSeconds);
-            timer.Elapsed += OnTimedEvent;
         }
 
         public bool IsPresent => true;
@@ -48,36 +42,46 @@ namespace LogicModel
 
         public bool CanAcceptClick => false;
 
-        private void OnTimedEvent(object? source, ElapsedEventArgs e)
-        {
-            timer.Enabled = false;
-            Outputs[0].Value = 1;
-            time = 0;
-            Transfer();
-        }
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
-                if (time > 0 && timer.Enabled) time -= 100;
                 var input = Inputs[0].Value > 0;
-                if (this.input == input) return;
-                this.input = input;
-                if (input && !timer.Enabled)
+                if (input)
                 {
-                    timer.Interval = MilliSeconds;
-                    timer.Enabled = true;
+                    if (time > 0)
+                      time -= 100;
+                    else
+                    {
+                        time = 0;
+                        if (Outputs[0].Value != 1)
+                        {
+                            Outputs[0].Value = 1;
+                            Transfer();
+                        }
+                    }
+                }
+                else
+                {
                     time = MilliSeconds;
+                    if (Outputs[0].Value != 0)
+                    {
+                        Outputs[0].Value = 0;
+                        Transfer();
+                    }
                 }
-                else if (!input)
-                {
-                    if (timer.Enabled)
-                        timer.Enabled = false;
-                    Outputs[0].Value = 0;
-                    time = 0;
-                    Transfer();
-                }
+            }
+        }
+
+        public void Reset()
+        {
+            time = MilliSeconds;
+            if (!Inputs[0].IsLinked)
+                Inputs[0].Value = 0;
+            if (Outputs[0].Value != 0)
+            {
+                Outputs[0].Value = 0;
+                Transfer();
             }
         }
 
@@ -112,7 +116,7 @@ namespace LogicModel
             path.AddString("t1", tNumber.FontFamily, (int)FontStyle.Regular, tNumber.Size, rect.Location, sf);
 
             // вывод времени задержки
-            var fnumber = time > 0 ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
+            var fnumber = time > 0 && time < MilliSeconds ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
             using var fontNumber = new Font("Segoe UI", 10f);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
@@ -139,6 +143,7 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                time = 0;
                 var oldMilliSeconds = MilliSeconds;
                 MilliSeconds = (uint)(dlg.DoubleValue * 1000);
                 PropertyChanged(nameof(MilliSeconds), oldMilliSeconds, MilliSeconds);

@@ -1,15 +1,11 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.Timers;
 using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class Toff : Func, IAcceptClick, IFuncPresenter
+    public class Toff : Func, IAcceptClick, IFuncPresenter, IResetable
     {
-        private readonly System.Timers.Timer timer;
-
-        private bool input;
         private uint time;
 
         public uint MilliSeconds { private get; set; } = 1000;
@@ -21,8 +17,6 @@ namespace LogicModel
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
-            timer = new System.Timers.Timer(MilliSeconds);
-            timer.Elapsed += OnTimedEvent;
         }
 
         public bool IsPresent => true;
@@ -48,44 +42,53 @@ namespace LogicModel
 
         public bool CanAcceptClick => false;
 
-        private void OnTimedEvent(object? source, ElapsedEventArgs e)
-        {
-            timer.Enabled = false;
-            Outputs[0].Value = 0;
-            time = 0;
-            Transfer();
-        }
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
-                if (time > 0 && timer.Enabled) time -= 100;
                 var input = Inputs[0].Value > 0;
-                if (this.input == input) return;
-                this.input = input;
-                if (input)
+                if (!input)
                 {
-                    timer.Enabled = false;
-                    Outputs[0].Value = 1;
-                    time = 0;
-                    Transfer();
-                }
-                else
-                {
-                    if (!timer.Enabled)
+                    if (time > 0)
                     {
-                        timer.Interval = MilliSeconds;
-                        timer.Enabled = true;
-                        time = MilliSeconds;
+                        if (Outputs[0].Value != 1)
+                        {
+                            Outputs[0].Value = 1;
+                            Transfer();
+                        }
+                        time -= 100;
                     }
                     else
                     {
-                        Outputs[0].Value = 0;
                         time = 0;
+                        if (Outputs[0].Value != 0)
+                        {
+                            Outputs[0].Value = 0;
+                            Transfer();
+                        }
+                    }
+                }
+                else
+                {
+                    time = MilliSeconds;
+                    if (Outputs[0].Value != 1)
+                    {
+                        Outputs[0].Value = 1;
                         Transfer();
                     }
                 }
+            }
+        }
+
+        public void Reset()
+        {
+            time = 0;
+            if (!Inputs[0].IsLinked)
+                Inputs[0].Value = 0;
+            if (Outputs[0].Value != 0)
+            {
+                Outputs[0].Value = 0;
+                Transfer();
             }
         }
 
@@ -120,7 +123,7 @@ namespace LogicModel
             path.AddString("t2", tNumber.FontFamily, (int)FontStyle.Regular, tNumber.Size, new Point(rect.Right, rect.Top), sf);
 
             // вывод времени задержки
-            var fnumber = time > 0 ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
+            var fnumber = time > 0 && time < MilliSeconds ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
             using var fontNumber = new Font("Segoe UI", 10f);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
@@ -147,6 +150,7 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                time = 0;
                 var oldMilliSeconds = MilliSeconds;
                 MilliSeconds = (uint)(dlg.DoubleValue * 1000);
                 PropertyChanged(nameof(MilliSeconds), oldMilliSeconds, MilliSeconds);
