@@ -67,8 +67,19 @@ namespace LogicModel
 
         private void ChangeValue(MouseButtons mouseButtons, params object[] args)
         {
-            Value = !Value;
-            Changed();
+            var dlg = new InputStateForm { Text = "Укажите состояние", BooleanValue = Value };
+            if (args.Length > 0 && args[0] is Point location)
+            {
+                dlg.StartPosition = FormStartPosition.Manual;
+                dlg.Location = location;
+            }
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                var oldValue = Value;
+                Value = dlg.BooleanValue;
+                if (oldValue != Value)
+                    PropertyChanged(nameof(Value), oldValue, Value);
+            }
         }
 
         public override GraphicsPath[] GetTextPaths()

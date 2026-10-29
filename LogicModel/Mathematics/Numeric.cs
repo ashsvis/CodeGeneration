@@ -75,12 +75,10 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                var oldValue = Value;
                 Value = dlg.DoubleValue;
-                if (Inputs.Length > 0)
-                {
-                    Inputs[0].Value = Value;
-                    Changed();
-                }
+                if (oldValue != Value)
+                    PropertyChanged(nameof(Value), oldValue, Value);
             }
         }
 
