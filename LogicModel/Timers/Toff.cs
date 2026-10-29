@@ -122,8 +122,9 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                var oldMilliSeconds = MilliSeconds;
                 MilliSeconds = (uint)(dlg.DoubleValue * 1000);
-                Changed();
+                PropertyChanged(nameof(MilliSeconds), oldMilliSeconds, MilliSeconds);
             }
         }
 

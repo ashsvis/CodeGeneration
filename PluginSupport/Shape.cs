@@ -64,6 +64,8 @@ namespace PluginSupport
 
         public event DeleteLinkFromTargetEventHandler? OnDeleteLink;
         public event EventHandler? OnChange;
+        public event PropertyChangedEventHandler? OnPropertyChange;
+
         public event ClickEventHandler? OnClick;
 
         public abstract GraphicsPath[] GetGraphicsPaths();
@@ -197,6 +199,11 @@ namespace PluginSupport
         public void Changed()
         {
             OnChange?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void PropertyChanged(string? propName, object? oldValue, object? newValue)
+        {
+            OnPropertyChange?.Invoke(this, new PropertyChangedEventArgs(propName, oldValue, newValue));
         }
 
         public virtual void Click(bool runEmulate, Point? point = null) { }

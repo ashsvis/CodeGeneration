@@ -6,7 +6,7 @@ namespace LogicModel
 {
     public class DescriptionBox : Func, IAcceptClick
     {
-        public string[] Lines = [""];
+        public string[] Lines { get; set; } = [""];
 
         public DescriptionBox()
         {
@@ -105,8 +105,9 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                string[] oldLines = [.. Lines];
                 Lines = dlg.LinesValue;
-                Changed();
+                PropertyChanged(nameof(Lines), oldLines, Lines);
             }
         }
 

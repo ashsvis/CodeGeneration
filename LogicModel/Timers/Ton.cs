@@ -2,6 +2,7 @@ using PluginSupport;
 using System.Drawing.Drawing2D;
 using System.Timers;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace LogicModel
 {
@@ -114,8 +115,9 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                var oldMilliSeconds = MilliSeconds;
                 MilliSeconds = (uint)(dlg.DoubleValue * 1000);
-                Changed();
+                PropertyChanged(nameof(MilliSeconds), oldMilliSeconds, MilliSeconds);
             }
         }
 

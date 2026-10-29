@@ -8,11 +8,29 @@ namespace LogicModel
 {
     public class Comment : Func, ITraceTransparent, IAcceptClick
     {
-        public string[] Lines = [""];
+        public string[] Lines { get; set; } = [""];
+        private float fontHeight = 14f;
+        private bool undeline;
 
-        public float FontHeight { get; set; } = 14f;
+        public float FontHeight 
+        { 
+            get => fontHeight; 
+            set 
+            { 
+                if (fontHeight == value) return;
+                fontHeight = value;
+            }
+        }
 
-        public bool Undeline { get; set; }
+        public bool Undeline 
+        { 
+            get => undeline; 
+            set 
+            {
+                if (undeline == value) return;
+                undeline = value; 
+            }
+        }
 
         public Comment()
         {
@@ -114,10 +132,11 @@ namespace LogicModel
             }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                string[] oldLines = [.. Lines];
                 Lines = dlg.LinesValue;
                 if (IsEmpty)
                     Lines = [FuncName ?? ""];
-                Changed();
+                PropertyChanged(nameof(Lines), oldLines, Lines);
             }
         }
 

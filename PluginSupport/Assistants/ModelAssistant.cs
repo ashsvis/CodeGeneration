@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Reflection;
 using System.Xml.Linq;
 
 namespace PluginSupport.Assistants
@@ -624,6 +625,23 @@ namespace PluginSupport.Assistants
             }
 
             ContextAssistant.Context = oldcontext;
+        }
+
+        public static void ChangePropertyByName(object obj, string propertyName, object? value)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentException("Имя свойства не может быть пустым", nameof(propertyName));
+
+            Type type = obj.GetType();
+            PropertyInfo? property = type.GetProperty(propertyName) ?? throw new ArgumentException($"Свойство '{propertyName}' не найдено в типе {type.Name}");
+
+            // Проверяем, доступно ли свойство для записи
+            if (!property.CanWrite)
+                throw new InvalidOperationException($"Свойство '{propertyName}' не имеет сеттера");
+
+            // Изменяем значение
+            property.SetValue(obj, value);
         }
     }
 }

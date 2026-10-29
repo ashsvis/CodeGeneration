@@ -577,6 +577,7 @@ namespace CodeGenerator
         {
             shape.OnDeleteLink += Shape_OnDeleteLink;
             shape.OnChange += Shape_OnChange;
+            shape.OnPropertyChange += Shape_OnPropertyChange;
             shape.OnClick += Shape_OnClick;
         }
 
@@ -584,7 +585,16 @@ namespace CodeGenerator
         {
             shape.OnDeleteLink -= Shape_OnDeleteLink;
             shape.OnChange -= Shape_OnChange;
+            shape.OnPropertyChange -= Shape_OnPropertyChange;
             shape.OnClick -= Shape_OnClick;
+        }
+
+        private void Shape_OnPropertyChange(object sender, PluginSupport.PropertyChangedEventArgs e)
+        {
+            if (sender is Shape shape && e.PropName is string propName)
+            {
+                UndoRedoAssistant.UndoRedoManager.Execute(new PropertyChangeCommand(ContextAssistant.Context, shape, propName, e.OldValue, e.NewValue));
+            }
         }
 
         private void Shape_OnClick(object sender, ClickEventArgs e)
@@ -1384,6 +1394,12 @@ namespace CodeGenerator
 
         private void PropGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
+            if (s is PropertyGrid pg && pg.SelectedObject is Shape shape)
+            {
+                shape.PropertyChanged(e.ChangedItem?.Label, e.OldValue, e.ChangedItem?.Value);
+            }
+
+            modelChanged = true;
             drawPanel.Invalidate();
         }
     }
