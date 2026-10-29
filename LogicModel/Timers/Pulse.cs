@@ -44,7 +44,7 @@ namespace LogicModel
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted);
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName);
 
         public bool CanAcceptClick => false;
 
@@ -76,6 +76,22 @@ namespace LogicModel
                     }
                 }
             }
+        }
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            rect.Height /= 2;
+            rect.Inflate(-12, -6);
+            var path = new GraphicsPath();
+            path.AddLine(new Point(rect.Left, rect.Bottom), new Point(rect.Left + rect.Width / 4, rect.Bottom));
+            path.AddLine(new Point(rect.Left + rect.Width / 4, rect.Bottom), new Point(rect.Left + rect.Width / 4, rect.Top));
+            path.AddLine(new Point(rect.Left + rect.Width / 4, rect.Top), new Point(rect.Right - rect.Width / 4, rect.Top));
+            path.AddLine(new Point(rect.Right - rect.Width / 4, rect.Top), new Point(rect.Right - rect.Width / 4, rect.Bottom));
+            path.AddLine(new Point(rect.Right - rect.Width / 4, rect.Bottom), new Point(rect.Right, rect.Bottom));
+            paths.Add(path);
+            return [.. paths];
         }
 
         public override GraphicsPath[] GetTextPaths()

@@ -26,7 +26,7 @@ namespace LogicModel
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => ["t - время задержки заднего фронта"];
+        public string[] FuncPresenter => ["t2 - время задержки заднего фронта"];
 
         public override Toff DeepClone()
         {
@@ -44,7 +44,7 @@ namespace LogicModel
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted);
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName);
 
         public bool CanAcceptClick => false;
 
@@ -89,16 +89,41 @@ namespace LogicModel
             }
         }
 
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            rect.Height /= 2;
+            rect.Inflate(-6, -9);
+            rect.Offset(0, 3);
+            var path = new GraphicsPath();
+            path.AddLine(new Point(rect.Left, rect.Top + rect.Height / 2), new Point(rect.Right, rect.Top + rect.Height / 2));
+            path.CloseFigure();
+            path.AddLine(new Point(rect.Right, rect.Top), new Point(rect.Right, rect.Bottom));
+            path.CloseFigure();
+            paths.Add(path);
+            return [.. paths];
+        }
+
         public override GraphicsPath[] GetTextPaths()
         {
             List<GraphicsPath> paths = [.. base.GetTextPaths()];
-            // вывод времени задержки
             var path = new GraphicsPath();
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Far;
+            var rect = Bounds;
+            rect.Height /= 2;
+            rect.Inflate(-6, -9);
+            rect.Offset(0, 3);
+            using var tNumber = new Font("Segoe UI", 8f);
+            path.AddString("t2", tNumber.FontFamily, (int)FontStyle.Regular, tNumber.Size, new Point(rect.Right, rect.Top), sf);
+
+            // вывод времени задержки
             var fnumber = time > 0 ? $"{time / 1000f:0.0}" : $"{MilliSeconds / 1000f:0.#} с";
             using var fontNumber = new Font("Segoe UI", 10f);
             var sz = TextRenderer.MeasureText(fnumber, fontNumber);
             var trect = new Rectangle(Location, new Size(Width, Height));
-            using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
             path.AddString(fnumber, fontNumber.FontFamily, (int)FontStyle.Regular, fontNumber.Size, trect, sf);
