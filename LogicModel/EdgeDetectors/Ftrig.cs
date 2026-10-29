@@ -1,8 +1,9 @@
 using PluginSupport;
+using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
-    public class Ftrig : Rtrig, ICycle, IFuncPresenter
+    public class Ftrig : Not, ICycle, IFuncPresenter
     {
         private bool lastState;
 
@@ -16,7 +17,8 @@ namespace LogicModel
         }
 
         public new bool IsPresent => true;
-        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать в течение одного такта контроллера при переходе из состояния логического \"1\" в \"0\""];
+        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать" +
+            " в течение одного такта контроллера при переходе из состояния логического \"1\" в \"0\""];
 
         public override Ftrig DeepClone()
         {
@@ -31,6 +33,9 @@ namespace LogicModel
                 Outputs = [.. Outputs.Select(x => x.DeepClone())],
             };
         }
+
+        public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName);
 
         public override void Calculate()
         {
@@ -47,6 +52,26 @@ namespace LogicModel
                         lastState = true;
                 }
             }
+        }
+
+        public void SwitchOffSubscibers()
+        {
+            Outputs[0].Value = 0;
+            Transfer();
+        }
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            rect.Height /= 3;
+            rect.Height *= 2;
+            rect.Inflate(-12, -6);
+            var path = new GraphicsPath();
+            path.AddLines(new Point(rect.Left, rect.Top), new Point(rect.Left + rect.Width / 2, rect.Top),
+                new Point(rect.Left + rect.Width / 2, rect.Bottom), new Point(rect.Right, rect.Bottom));
+            paths.Add(path);
+            return [.. paths];
         }
     }
 }

@@ -1,4 +1,5 @@
 using PluginSupport;
+using System.Drawing.Drawing2D;
 
 namespace LogicModel
 {
@@ -16,7 +17,8 @@ namespace LogicModel
         }
 
         public new bool IsPresent => true;
-        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать в течение одного такта контроллера при переходе из состояния логического \"0\" в \"1\""];
+        public new string[] FuncPresenter => ["Указывает, что данный логический вход должен срабатывать" +
+            " в течение одного такта контроллера при переходе из состояния логического \"0\" в \"1\""];
 
         public override Rtrig DeepClone()
         {
@@ -33,7 +35,7 @@ namespace LogicModel
         }
 
         public override AllowedFuncProperties AllowedFuncProperties => AllowedFuncProperties.All ^
-                (AllowedFuncProperties.PinInverted);
+                (AllowedFuncProperties.PinInverted | AllowedFuncProperties.ShowFuncName);
 
         public override void Calculate()
         {
@@ -56,6 +58,20 @@ namespace LogicModel
         {
             Outputs[0].Value = 0;
             Transfer();
+        }
+
+        public override GraphicsPath[] GetGraphicsPaths()
+        {
+            var paths = base.GetGraphicsPaths().ToList();
+            var rect = Bounds;
+            rect.Height /= 3;
+            rect.Height *= 2;
+            rect.Inflate(-12, -6);
+            var path = new GraphicsPath();
+            path.AddLines(new Point(rect.Left, rect.Bottom), new Point(rect.Left + rect.Width / 2, rect.Bottom),
+                new Point(rect.Left + rect.Width / 2, rect.Top), new Point(rect.Right, rect.Top));
+            paths.Add(path);
+            return [.. paths];
         }
     }
 }
