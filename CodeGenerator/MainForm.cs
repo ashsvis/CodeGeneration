@@ -1322,6 +1322,7 @@ namespace CodeGenerator
 
         private void EmulateBackground_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
+            ModelAssistant.Reset();
             runEmulate = false;
             drawPanel.Invalidate();
         }

@@ -1,15 +1,11 @@
 using PluginSupport;
 using System.Drawing.Drawing2D;
-using System.Timers;
 using System.Xml.Linq;
 
 namespace LogicModel
 {
-    public class PulseGenerator : Func, IAcceptClick, IFuncPresenter
+    public class PulseGenerator : Func, IAcceptClick, IFuncPresenter, IResetable
     {
-        private readonly System.Timers.Timer timer;
-
-        private bool input;
         private uint time;
 
         public uint MilliSeconds { private get; set; } = 1000;
@@ -21,12 +17,10 @@ namespace LogicModel
             Inputs = [new PinInput { Kind = ValueKind.Digital }];
             Outputs = [new PinOutput { Kind = ValueKind.Digital }];
             CalculateHeight();
-            timer = new System.Timers.Timer(MilliSeconds);
-            timer.Elapsed += OnTimedEvent;
         }
 
         public bool IsPresent => true;
-        public string[] FuncPresenter => ["Формирует последовательность импульсов длительностью t1 с шагом t2"];
+        public string[] FuncPresenter => ["Формирует последовательность импульсов с периодом длительностью t"];
 
         public override PulseGenerator DeepClone()
         {
@@ -48,31 +42,31 @@ namespace LogicModel
 
         public bool CanAcceptClick => false;
 
-        private void OnTimedEvent(object? source, ElapsedEventArgs e)
-        {
-            timer.Enabled = false;
-            Outputs[0].Value = 0;
-            time = 0;
-            Transfer();
-        }
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)
             {
-                if (time > 0 && timer.Enabled) time -= 100;
                 var input = Inputs[0].Value > 0;
-                if (this.input == input) return;
-                this.input = input;
                 if (input)
                 {
-                    Outputs[0].Value = 1;
-                    Transfer();
-                    if (!timer.Enabled)
+                    var result = time > MilliSeconds / 2 ? 1 : 0;
+                    if (Outputs[0].Value != result)
                     {
-                        timer.Interval = MilliSeconds;
-                        timer.Enabled = true;
+                        Outputs[0].Value = result;
+                        Transfer();
+                    }
+                    if (time > 0) 
+                        time -= 100;
+                    else
                         time = MilliSeconds;
+                }
+                else
+                {
+                    time = 0;
+                    if (Outputs[0].Value != 0)
+                    {
+                        Outputs[0].Value = 0;
+                        Transfer();
                     }
                 }
             }
@@ -130,7 +124,7 @@ namespace LogicModel
 
         private void ChangeValue(MouseButtons mouseButtons, params object[] args)
         {
-            var dlg = new InputValueForm { Text = "Длительность импульса, сек", DoubleValue = MilliSeconds / 1000.0 };
+            var dlg = new InputValueForm { Text = "Длительность периода импульсов, сек", DoubleValue = MilliSeconds / 1000.0 };
             if (args.Length > 0 && args[0] is Point location)
             {
                 dlg.StartPosition = FormStartPosition.Manual;
@@ -162,6 +156,16 @@ namespace LogicModel
             if (xvalue != null)
             {
                 MilliSeconds = (uint)(ParseHelper.ParseDouble(xvalue, System.Globalization.CultureInfo.GetCultureInfo("en-US"), 0) * 1000);
+            }
+        }
+
+        public void Reset()
+        {
+            time = 0;
+            if (Outputs[0].Value != 0)
+            {
+                Outputs[0].Value = 0;
+                Transfer();
             }
         }
     }
