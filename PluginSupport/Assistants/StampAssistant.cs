@@ -23,6 +23,46 @@ namespace PluginSupport.Assistants
             DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
+        public static void DrawBigStampTargets(Graphics? graphics, Page? page, int kf)
+        {
+            if (page == null) return;
+            var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
+            rect.Offset(-5 * kf, -5 * kf);
+            List<Rectangle> targets = [];
+            //targets.Add(rect);
+            // номер проекта
+            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf));
+            // наименование заказчика
+            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 10 * kf, 120 * kf, 15 * kf));
+            // наименование проекта
+            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 25 * kf, 70 * kf, 15 * kf));
+            // наименование документа
+            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 40 * kf, 70 * kf, 15 * kf));
+            // стадия
+            targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 30 * kf, 15 * kf, 10 * kf));
+            // наименование исполнителя
+            targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 40 * kf, 50 * kf, 15 * kf));
+            foreach (var target in targets)
+            {
+                graphics?.DrawRectangle(Pens.Yellow, target);
+            }
+        }
+
+        public static void DrawSmallStampTargets(Graphics? graphics, Page? page, int kf)
+        {
+            if (page == null) return;
+            var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 15 * kf, 185 * kf, 15 * kf);
+            rect.Offset(-5 * kf, -5 * kf);
+            List<Rectangle> targets = [];
+            //targets.Add(rect);
+            // номер проекта
+            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 110 * kf, 15 * kf));
+            foreach (var target in targets)
+            {
+                graphics?.DrawRectangle(Pens.Yellow, target);
+            }
+        }
+
         public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber, int pagesCount)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 55 * kf, 185 * kf, 55 * kf);
@@ -53,7 +93,7 @@ namespace PluginSupport.Assistants
                     new Point(stamptRect.Left + 65 * kf, stamptRect.Top + y));
             }
             steps = [20 * kf, 20 * kf, 15 * kf, 10 * kf];
-            names = ["Разраб.", "Пров.", "Т.контр.", "", "Н.контр.", "Утв."];
+            names = ["Разраб.", "Пров.", "", "", "Н.контр.", "ГИП"];
             x = 0;
             for (var i = 0; i < steps.Length; i++)
             {

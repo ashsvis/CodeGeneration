@@ -2,6 +2,7 @@ using CodeGenerator.Commands;
 using PluginSupport;
 using PluginSupport.Assistants;
 using System.ComponentModel;
+using System.Data.Common;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -68,22 +69,10 @@ namespace CodeGenerator
                 foreach (var key in dict.Keys)
                     ModelAssistant.AddType(key, dict[key]);
             }
-            const int totalPages = 5;
-            const int totalPagesInRow = 10;
             ContextAssistant.Context = ContextKind.Model;
-            for (var i = 1; i <= totalPages; i++)
-            {
-                var row = (i - 1) / totalPagesInRow;
-                var column = (i - 1) - row * totalPagesInRow;
-                Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = totalPages });
-            }
+            Pages.Add(new Page(1, 420, 297, 0, 0) { PagesCount = 1 });
             ContextAssistant.Context = ContextKind.Field;
-            for (var i = 1; i <= 2; i++)
-            {
-                var row = (i - 1) / totalPagesInRow;
-                var column = (i - 1) - row * totalPagesInRow;
-                Pages.Add(new Page(i, 420, 297, row, column) { PagesCount = 2 });
-            }
+            Pages.Add(new Page(1, 420, 297, 0, 0) { PagesCount = 1 });
             ContextAssistant.Context = ContextKind.Model;
             UndoRedoAssistant.UndoRedoManager.OnStateChaned += UndoRedoManager_OnStateChanged;
         }
@@ -295,7 +284,9 @@ namespace CodeGenerator
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
             if (currentPoint is Point point)
-                HighLight(page, point);
+            { 
+                HighLight(page, point); 
+            }
             if (leftPressed)
             {
                 if (!dragShapes && dragShapesPreview && currentPoint is Point pt && (startPoint.X != pt.X || startPoint.Y != pt.Y))
@@ -453,6 +444,7 @@ namespace CodeGenerator
             });
             ModelAssistant.LinksFrom(page).ForEach(link => link.Hover = false);
             var list = ModelAssistant.ShapesFrom(page);
+            var found = false;
             foreach (var shape in list)
             {
                 if (shape.ContainsPoint(point))
@@ -460,6 +452,7 @@ namespace CodeGenerator
                     shape.Hover = !runEmulate;
                     if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
                         Cursor = Cursors.Hand;
+                    found = true;
                     break;
                 }
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
@@ -467,6 +460,7 @@ namespace CodeGenerator
                     if (!runEmulate)
                         Cursor = Cursors.Cross;
                     shape.CanOutputLink = !runEmulate;
+                    found = true;
                     break;
                 }
                 if (shape.IsInputTargetsPoint(point, out int index))
@@ -479,7 +473,14 @@ namespace CodeGenerator
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !runEmulate && !linkBuilding;
+                    found = true;
                     break;
+                }
+            }
+            if (!found)
+            {
+                if (page != null)
+                {
                 }
             }
         }
@@ -1027,6 +1028,7 @@ namespace CodeGenerator
 
         private void ReadContextFromXml(XElement? xcontext)
         {
+            Pages.Clear();
             Shapes.Clear();
             Links.Clear();
             if (xcontext == null) return;
@@ -1055,9 +1057,15 @@ namespace CodeGenerator
                         zoom);
                 }
             }
+            int p = 1;
             int n = 0;
+            const int totalPagesInRow = 10;
             foreach (var xpage in xcontext.Elements("Page"))
             {
+                var row = (p - 1) / totalPagesInRow;
+                var column = (p - 1) - row * totalPagesInRow;
+                Pages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
+
                 var xnumber = xpage.Attribute("Number")?.Value;
                 if (!string.IsNullOrWhiteSpace(xnumber))
                 {
@@ -1074,7 +1082,10 @@ namespace CodeGenerator
                     }
                 }
                 n = ModelAssistant.ReadElements(n, xpage, SubscribeShapeEvents);
+                p++;
             }
+            if (Pages.Count > 0)
+                Pages[0].PagesCount = Pages.Count;
             var xothers = xcontext.Element("OutsidePages");
             if (xothers != null)
             {
@@ -1104,6 +1115,8 @@ namespace CodeGenerator
             foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
             ContextAssistant.ContextEnvironment.Reset();
+            Pages.Clear();
+            Pages.Add(new Page(1, 420, 297, 0, 0) { PagesCount = 1 });
 
             ContextAssistant.Context = ContextKind.Field;
             Links.Clear();
@@ -1111,6 +1124,8 @@ namespace CodeGenerator
             foreach (var shape in Shapes) UnsubscribeShapeEvents(shape);
             Shapes.Clear();
             ContextAssistant.ContextEnvironment.Reset();
+            Pages.Clear();
+            Pages.Add(new Page(1, 420, 297, 0, 0) { PagesCount = 1 });
 
             ContextAssistant.Context = context;
             modelChanged = false;

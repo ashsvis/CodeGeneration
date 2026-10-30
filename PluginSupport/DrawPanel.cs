@@ -4,15 +4,15 @@ namespace PluginSupport
 {
     public partial class DrawPanel : UserControl
     {
-        private float ZoomSensitivity { get; set; } = 0.1f; /// Controls how much zoom per zoom mouse scroll
-        private float MaxZoom { get; set; } = 100f;
-        private float MinZoom { get; set; } = 0.01f;
+        private double ZoomSensitivity { get; set; } = 0.1; /// Controls how much zoom per zoom mouse scroll
+        private double MaxZoom { get; set; } = 100.0;
+        private double MinZoom { get; set; } = 0.01;
 
         public event EventHandler<DrawEventArgs>? OnDraw;
         public event EventHandler<PanOrZoomEventArgs>? OnPanOrZoom;
 
         private double zoomScale = 1; /// Current Zoom value
-        private PointF origin = new(0, 0); /// Origin is the left most point of a viewport
+        private PointF origin = new(0f, 0f); /// Origin is the left most point of a viewport
 
         private PointF LastMousePosition = new(-1, -1);
         private MouseWheelEvent? MouseWheelData { get; set; }
@@ -57,7 +57,7 @@ namespace PluginSupport
         /// </summary>
         public void Reset()
         {
-            origin = new PointF(0, 0);
+            origin = new Point(0, 0);
             zoomScale = 1;
             transformation = new Matrix();
             Invalidate();
@@ -78,7 +78,7 @@ namespace PluginSupport
 
         private class MouseData
         {
-            public Point Position { get; set; }
+            public PointF Position { get; set; }
         }
 
         private class MouseMoveEvent : MouseData
@@ -178,7 +178,7 @@ namespace PluginSupport
 
                 this.MouseMoveData = new MouseMoveEvent()
                 {
-                    Position = new Point(mouseX, mouseY),
+                    Position = new PointF(mouseX, mouseY),
                 };
                 OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
                 {
@@ -203,7 +203,7 @@ namespace PluginSupport
 
                     this.MouseWheelData = new MouseWheelEvent()
                     {
-                        Position = new Point(mouseX, mouseY),
+                        Position = new PointF(mouseX, mouseY),
                         Zoom = zoom,
                     };
                     OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()

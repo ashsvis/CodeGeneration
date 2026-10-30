@@ -18,6 +18,10 @@ namespace PluginSupport
         public void Draw(Graphics? graphics, Color foreground)
         {
             StampAssistant.DrawPageBorder(graphics, new Point(Column * Width, Row * Height), Width, Height, foreground, Number, PagesCount);
+            if (Number == 1)
+                StampAssistant.DrawBigStampTargets(graphics, this, kf);
+            else if (Number > 1)
+                StampAssistant.DrawSmallStampTargets(graphics, this, kf);
         }
 
         public XElement WriteContent()
