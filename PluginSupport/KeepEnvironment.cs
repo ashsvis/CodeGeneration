@@ -9,11 +9,9 @@ namespace PluginSupport
             Matrix = new float[6];
             Matrix[0] = 1f;
             Matrix[3] = 1f;
-            Origin = Point.Empty;
-            Zoom = 1.0;
         }
 
-        public KeepEnvironment(float m11, float m12, float m21, float m22, float dx, float dy, Point point, double zoom)
+        public KeepEnvironment(float m11, float m12, float m21, float m22, float dx, float dy)
         {
             Matrix = new float[6];
             Matrix[0] = m11;
@@ -22,28 +20,20 @@ namespace PluginSupport
             Matrix[3] = m22;
             Matrix[4] = dx;
             Matrix[5] = dy;
-            Origin = point;
-            Zoom = zoom;
         }
 
         public float[] Matrix { get; set; }
-        public Point Origin { get; set; }
-        public double Zoom { get; set; }
 
         public void Reset()
         {
             Matrix = new float[6];
             Matrix[0] = 1f;
             Matrix[3] = 1f;
-            Origin = Point.Empty;
-            Zoom = 1.0;
         }
 
         public void SetValues(KeepEnvironment value)
         {
             Matrix = value.Matrix;
-            Origin = value.Origin;
-            Zoom = value.Zoom;
         }
     }
 

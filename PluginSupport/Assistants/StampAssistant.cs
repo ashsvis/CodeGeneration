@@ -7,10 +7,7 @@ namespace PluginSupport.Assistants
         public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, Color foreground, int pageNumber, int pagesCount)
         {
             int kf = 5;
-            var borderPen = new Pen(foreground, 0)
-            {
-                //DashStyle = DashStyle.Dash
-            };
+            var borderPen = new Pen(foreground, 0);
             var borderRect = new Rectangle(origin.X * kf - 20 * kf, origin.Y * kf - 5 * kf, width * kf, height * kf);
             graphics?.DrawRectangle(borderPen, borderRect);
             var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf,

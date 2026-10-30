@@ -1022,7 +1022,7 @@ namespace CodeGenerator
             ContextAssistant.Context = context;
 
             var env = ContextAssistant.ContextEnvironment;
-            drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+            drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5]);
             drawPanel.Invalidate();
         }
 
@@ -1035,14 +1035,10 @@ namespace CodeGenerator
             var xenvironment = xcontext.Element("Environment");
             var fp = CultureInfo.GetCultureInfo("en-US");
             var xmatrix = xenvironment?.Element("Matrix")?.Value;
-            var xorigin = xenvironment?.Element("Origin");
-            var xzoom = xenvironment?.Element("Zoom")?.Value;
-            if (xmatrix != null && xorigin != null && xzoom != null)
+            if (xmatrix != null)
             {
-                var xoX = xorigin.Attribute("X")?.Value;
-                var xoY = xorigin.Attribute("Y")?.Value;
                 var svals = xmatrix.Split(", ");
-                if (xoX != null && xoY != null && svals.Length == 6)
+                if (svals.Length == 6)
                 {
                     var m11 = ParseHelper.ParseSingle(svals[0], fp, 1);
                     var m12 = ParseHelper.ParseSingle(svals[1], fp, 0);
@@ -1050,11 +1046,7 @@ namespace CodeGenerator
                     var m22 = ParseHelper.ParseSingle(svals[3], fp, 1);
                     var dx = ParseHelper.ParseSingle(svals[4], fp, 0);
                     var dy = ParseHelper.ParseSingle(svals[5], fp, 0);
-                    var zoom = ParseHelper.ParseDouble(xzoom, fp, 1);
-
-                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy,
-                        new Point(ParseHelper.ParseInteger(xoX, 0), ParseHelper.ParseInteger(xoY, 0)),
-                        zoom);
+                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy);
                 }
             }
             int p = 1;
@@ -1096,7 +1088,7 @@ namespace CodeGenerator
 
         public void SaveXml(string filename)
         {
-            ModelAssistant.SaveXml(filename, drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
+            ModelAssistant.SaveXml(filename, drawPanel.Transformation);
             modelChanged = false;
         }
 
@@ -1343,10 +1335,10 @@ namespace CodeGenerator
         {
             if (ContextAssistant.Context != ContextKind.Model)
             {
-                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation/*, drawPanel.Origin, drawPanel.Zoom*/);
                 ContextAssistant.Context = ContextKind.Model;
                 var env = ContextAssistant.ContextEnvironment;
-                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5]);
                 drawPanel.Invalidate();
             }
         }
@@ -1355,10 +1347,10 @@ namespace CodeGenerator
         {
             if (ContextAssistant.Context != ContextKind.Field)
             {
-                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation, drawPanel.Origin, drawPanel.Zoom);
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation/*, drawPanel.Origin, drawPanel.Zoom*/);
                 ContextAssistant.Context = ContextKind.Field;
                 var env = ContextAssistant.ContextEnvironment;
-                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5], env.Origin, env.Zoom);
+                drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5]);
                 drawPanel.Invalidate();
             }
         }

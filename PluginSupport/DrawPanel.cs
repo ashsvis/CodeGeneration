@@ -4,24 +4,24 @@ namespace PluginSupport
 {
     public partial class DrawPanel : UserControl
     {
-        private double ZoomSensitivity { get; set; } = 0.1; /// Controls how much zoom per zoom mouse scroll
-        private double MaxZoom { get; set; } = 100.0;
-        private double MinZoom { get; set; } = 0.01;
+        private float ZoomSensitivity { get; set; } = 0.1f; /// Controls how much zoom per zoom mouse scroll
+        private float MaxZoom { get; set; } = 100f;
+        private float MinZoom { get; set; } = 0.01f;
 
         public event EventHandler<DrawEventArgs>? OnDraw;
         public event EventHandler<PanOrZoomEventArgs>? OnPanOrZoom;
 
-        private double zoomScale = 1; /// Current Zoom value
+        private float zoomScale = 1f; /// Current Zoom value
         private PointF origin = new(0f, 0f); /// Origin is the left most point of a viewport
 
-        private PointF LastMousePosition = new(-1, -1);
+        private PointF LastMousePosition = new(-1f, -1f);
         private MouseWheelEvent? MouseWheelData { get; set; }
         private MouseMoveEvent? MouseMoveData { get; set; }
         private Matrix? transformation; /// Keeps track of zoom transformations
 
         public Matrix? Transformation => transformation;
         public Point Origin => Point.Ceiling(origin);
-        public double Zoom => zoomScale;
+        public float Zoom => zoomScale;
 
         public DrawPanel()
         {
@@ -57,17 +57,19 @@ namespace PluginSupport
         /// </summary>
         public void Reset()
         {
-            origin = new Point(0, 0);
-            zoomScale = 1;
+            origin = PointF.Empty;
+            zoomScale = 1f;
             transformation = new Matrix();
             Invalidate();
         }
 
-        public void RestoreWheelData(float m11, float m12, float m21, float m22, float dx, float dy, Point point, double zoom)
+        public void RestoreWheelData(float m11, float m12, float m21, float m22, float dx, float dy)
         {
             transformation = new Matrix(m11, m12, m21, m22, dx, dy);
-            origin = point;
-            zoomScale = zoom;
+            zoomScale = m11;
+            origin.X = -dx / m11;
+            origin.Y = -dy / m22;
+
             OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
             {
                 Zoom = zoomScale,

@@ -425,22 +425,22 @@ namespace PluginSupport.Assistants
             }
         }
 
-        public static void UpdateContextEnvironment(Matrix? matrix, Point origin, double zoom)
+        public static void UpdateContextEnvironment(Matrix? matrix)
         {
             if (matrix != null)
             {
                 float[] el = matrix.Elements;
-                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5], origin, zoom);
+                ContextAssistant.ContextEnvironment = new KeepEnvironment(el[0], el[1], el[2], el[3], el[4], el[5]);
             }
         }
 
-        public static void SaveXml(string filename, Matrix? matrix, Point origin, double zoom)
+        public static void SaveXml(string filename, Matrix? matrix)
         {
             var root = new XElement("Document");
             root.Add(new XAttribute("Name", Path.GetFileNameWithoutExtension(filename)));
             var doc = new XDocument(new XComment("Данные чертёжного документа"), root);
 
-            UpdateContextEnvironment(matrix, origin, zoom);
+            UpdateContextEnvironment(matrix);
             var currentContext = ContextAssistant.Context;
             try
             {
@@ -489,11 +489,6 @@ namespace PluginSupport.Assistants
             float[] el = env.Matrix;
             var fp = CultureInfo.GetCultureInfo("en-US");
             xenvironment.Add(new XElement("Matrix", string.Join(", ", el.Select(x => x.ToString(fp)))));
-            var xorigin = new XElement("Origin");
-            xorigin.Add(new XAttribute("X", env.Origin.X));
-            xorigin.Add(new XAttribute("Y", env.Origin.Y));
-            xenvironment.Add(xorigin);
-            xenvironment.Add(new XElement("Zoom", env.Zoom.ToString(fp)));
 
             foreach (var page in ContextAssistant.ContextPages)
             {
@@ -548,14 +543,10 @@ namespace PluginSupport.Assistants
             var xenvironment = xcontext.Element("Environment");
             var fp = CultureInfo.GetCultureInfo("en-US");
             var xmatrix = xenvironment?.Element("Matrix")?.Value;
-            var xorigin = xenvironment?.Element("Origin");
-            var xzoom = xenvironment?.Element("Zoom")?.Value;
-            if (xmatrix != null && xorigin != null && xzoom != null)
+            if (xmatrix != null)
             {
-                var xoX = xorigin.Attribute("X")?.Value;
-                var xoY = xorigin.Attribute("Y")?.Value;
                 var svals = xmatrix.Split(", ");
-                if (xoX != null && xoY != null && svals.Length == 6)
+                if (svals.Length == 6)
                 {
                     var m11 = ParseHelper.ParseSingle(svals[0], fp, 1);
                     var m12 = ParseHelper.ParseSingle(svals[1], fp, 0);
@@ -563,11 +554,8 @@ namespace PluginSupport.Assistants
                     var m22 = ParseHelper.ParseSingle(svals[3], fp, 1);
                     var dx = ParseHelper.ParseSingle(svals[4], fp, 0);
                     var dy = ParseHelper.ParseSingle(svals[5], fp, 0);
-                    var zoom = ParseHelper.ParseDouble(xzoom, fp, 1);
 
-                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy,
-                        new Point(ParseHelper.ParseInteger(xoX, 0), ParseHelper.ParseInteger(xoY, 0)),
-                        zoom);
+                    ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy);
                 }
             }
             int n = 0;
