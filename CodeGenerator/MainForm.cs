@@ -45,7 +45,7 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
-            drawPanel.MouseEnter += (o, e) => { /*Cursor.Hide();*/ };
+            drawPanel.MouseEnter += (o, e) => { Cursor.Hide(); };
             drawPanel.MouseLeave += (o, e) =>
             {
                 currentPoint = null;

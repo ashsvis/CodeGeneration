@@ -20,7 +20,7 @@ namespace PluginSupport.Assistants
             DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
-        public static void DrawBigStampTargets(Graphics? graphics, Page? page, int kf)
+        public static void DrawBigStampFields(Graphics? graphics, Page? page, int kf)
         {
             if (page == null) return;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
@@ -45,7 +45,7 @@ namespace PluginSupport.Assistants
             }
         }
 
-        public static void DrawSmallStampTargets(Graphics? graphics, Page? page, int kf)
+        public static void DrawSmallStampFields(Graphics? graphics, Page? page, int kf)
         {
             if (page == null) return;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 15 * kf, 185 * kf, 15 * kf);

@@ -19,9 +19,9 @@ namespace PluginSupport
         {
             StampAssistant.DrawPageBorder(graphics, new Point(Column * Width, Row * Height), Width, Height, foreground, Number, PagesCount);
             if (Number == 1)
-                StampAssistant.DrawBigStampTargets(graphics, this, kf);
+                StampAssistant.DrawBigStampFields(graphics, this, kf);
             else if (Number > 1)
-                StampAssistant.DrawSmallStampTargets(graphics, this, kf);
+                StampAssistant.DrawSmallStampFields(graphics, this, kf);
         }
 
         public XElement WriteContent()
