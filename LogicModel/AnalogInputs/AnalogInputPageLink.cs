@@ -75,11 +75,6 @@ namespace LogicModel
             return [.. paths];
         }
 
-        public override bool ContainsPoint(Point point, float width)
-        {
-            return Bounds.Contains(point);
-        }
-
         public override void SetInputValue(int index, double value)
         {
             Outputs[0].Value = value;

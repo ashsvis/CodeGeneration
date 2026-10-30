@@ -41,15 +41,15 @@ namespace PluginSupport
 
         private void DrawPanel_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            //if (e.Button == MouseButtons.Middle && e.Clicks > 1)
-            //{
-            //    Reset();
-            //    OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
-            //    {
-            //        Zoom = zoomScale,
-            //        Origin = origin
-            //    });
-            //}
+            if (e.Button == MouseButtons.Middle && e.Clicks > 1)
+            {
+                Reset();
+                OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
+                {
+                    Zoom = zoomScale,
+                    Origin = origin
+                });
+            }
         }
 
         /// <summary>

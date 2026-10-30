@@ -44,7 +44,7 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
-            drawPanel.MouseEnter += (o, e) => Cursor.Hide();
+            drawPanel.MouseEnter += (o, e) => { /*Cursor.Hide();*/ };
             drawPanel.MouseLeave += (o, e) =>
             {
                 currentPoint = null;
@@ -138,7 +138,7 @@ namespace CodeGenerator
             {
                 foreach (var shape in ModelAssistant.ShapesFrom(page))
                 {
-                    if (shape.ContainsPoint(startPoint, 5f / (float)drawPanel.Zoom))
+                    if (shape.ContainsPoint(startPoint/*, 5f / (float)drawPanel.Zoom*/))
                     {
                         shape.Click(runEmulate, drawPanel.PointToScreen(e.Location));
                         break;
@@ -180,7 +180,7 @@ namespace CodeGenerator
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             foreach (var shape in ModelAssistant.ShapesFrom(page))
             {
-                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
+                if (shape.ContainsPoint(point/*, 5f / (float)drawPanel.Zoom*/))
                 {
                     var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
@@ -455,6 +455,13 @@ namespace CodeGenerator
             var list = ModelAssistant.ShapesFrom(page);
             foreach (var shape in list)
             {
+                if (shape.ContainsPoint(point))
+                {
+                    shape.Hover = !runEmulate;
+                    if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
+                        Cursor = Cursors.Hand;
+                    break;
+                }
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
                     if (!runEmulate)
@@ -462,7 +469,6 @@ namespace CodeGenerator
                     shape.CanOutputLink = !runEmulate;
                     break;
                 }
-                else
                 if (shape.IsInputTargetsPoint(point, out int index))
                 {
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
@@ -473,14 +479,6 @@ namespace CodeGenerator
                     else
                         shape.CanInputLink = false;
                     shape.Hover = !runEmulate && !linkBuilding;
-                    break;
-                }
-                else
-                if (shape.ContainsPoint(point, 5f / (float)drawPanel.Zoom))
-                {
-                    shape.Hover = !runEmulate;
-                    if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
-                        Cursor = Cursors.Hand;
                     break;
                 }
             }
@@ -639,7 +637,7 @@ namespace CodeGenerator
         /// <param name="e"></param>
         private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
         {
-            //tsslStatus.Text = $"Смещение базовой точки: {e.Origin}, зум: {e.Zoom}";
+            modelChanged = true;
         }
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
@@ -1137,7 +1135,6 @@ namespace CodeGenerator
             tsmiField.Checked = ContextAssistant.Context == ContextKind.Field;
             tsmiUndo.Enabled = tsbUndo.Enabled = CanUndo();
             tsmiRedo.Enabled = tsbRedo.Enabled = CanRedo();
-            //tsbEditProperties.Enabled = !runEmulate && Shapes.Where(x => x.Selected).Count() == 1;
         }
 
         private void TsmiCopy_Click(object sender, EventArgs e)
@@ -1195,7 +1192,7 @@ namespace CodeGenerator
         private void PrintPreviewDialog1_Shown(object sender, EventArgs e)
         {
             var screen = Screen.FromRectangle(this.Bounds);
-            if (/*Screen.PrimaryScreen?*/screen.WorkingArea is Rectangle rect)
+            if (screen.WorkingArea is Rectangle rect)
             {
                 printPreviewDialog1.SetDesktopLocation(rect.Left, rect.Top);
                 printPreviewDialog1.SetDesktopBounds(rect.Left, rect.Top, rect.Width, rect.Height);

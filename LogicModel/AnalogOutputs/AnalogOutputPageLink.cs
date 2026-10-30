@@ -150,11 +150,6 @@ namespace LogicModel
                 item.SourcePageLink = null;
         }
 
-        public override bool ContainsPoint(Point point, float width)
-        {
-            return Bounds.Contains(point);
-        }
-
         public override void Calculate()
         {
             if (Inputs.Length > 0)

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
 
@@ -108,7 +109,7 @@ namespace PluginSupport
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public virtual bool ContainsPoint(Point point, float width)
+        public bool ContainsPoint(Point point)
         {
             return Bounds.Contains(point);
         }
