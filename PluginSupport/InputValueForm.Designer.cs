@@ -41,7 +41,6 @@
             tbValue.BorderStyle = BorderStyle.FixedSingle;
             tbValue.Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point, 204);
             tbValue.Location = new Point(12, 12);
-            tbValue.MaxLength = 60;
             tbValue.Name = "tbValue";
             tbValue.Size = new Size(343, 25);
             tbValue.TabIndex = 0;

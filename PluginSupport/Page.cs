@@ -20,6 +20,7 @@ namespace PluginSupport
         public string? CustomerName { get; set; } = "ООО \"ЛУКОЙЛ-Волгограднефтепереработка\"";
         public string[] ProjectName { get; set; } = ["Техническое перевооружение.", "«Модернизация узла слива высокооктановых добавок на площадке переработки нефти ОПО № А39-00045-001»"];
         public string? DocumentName { get; set; } = "Описание алгоритма";
+        public string? DocumentStage { get; set; } = "Р";
         public string[] OrganizationName { get; set; } = ["ООО «ПКБ «АИСТ»", "г. Волгоград"];
 
         public PageChangeInfo[] Changes { get; set; } = 

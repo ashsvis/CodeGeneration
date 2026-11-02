@@ -270,16 +270,26 @@ namespace CodeGenerator
                     var targets = StamptAssistant.GetStamptTargets(page);
                     if (targets.Any(x => x.Item1.Contains(point)))
                     {
-                        (Rectangle rect, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(point));
+                        (Rectangle rect, string propName, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(point));
                         var value = func(index);
-                        Form frm;
+                        InputValueForm frm;
                         if (value is string[] lines)
                             frm = new InputValueForm() { LinesValue = lines };
                         else
                             frm = new InputValueForm() { StrValue = $"{value}" };
                         if (frm.ShowDialog() == DialogResult.OK)
                         {
-
+                            try
+                            {
+                                if (value is string[] text)
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, text, frm.LinesValue));
+                                else
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, value, frm.StrValue));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Ошибка при записи изменённых данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
                         }
                     }
                 }
@@ -621,7 +631,7 @@ namespace CodeGenerator
         {
             if (sender is Shape shape && e.PropName is string propName)
             {
-                UndoRedoAssistant.UndoRedoManager.Execute(new PropertyChangeCommand(ContextAssistant.Context, shape, propName, e.OldValue, e.NewValue));
+                UndoRedoAssistant.UndoRedoManager.Execute(new ShapePropertyChangeCommand(ContextAssistant.Context, shape, propName, e.OldValue, e.NewValue));
             }
         }
 

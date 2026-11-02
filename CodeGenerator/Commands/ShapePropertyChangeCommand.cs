@@ -3,7 +3,7 @@ using PluginSupport.Assistants;
 
 namespace CodeGenerator.Commands
 {
-    public class PropertyChangeCommand(ContextKind context, Shape shape, string propertyName, object? oldValue, object? newValue) : ICommand
+    public class ShapePropertyChangeCommand(ContextKind context, Shape shape, string propertyName, object? oldValue, object? newValue) : ICommand
     {
         private readonly ContextKind commandContext = context;
         private readonly Guid shapeId = shape.Id;
@@ -11,7 +11,7 @@ namespace CodeGenerator.Commands
         private readonly object? oldValue = oldValue;
         private readonly object? newValue = newValue;
 
-        public string Name => "Изменить значение свойства";
+        public string Name => "Изменить значение свойства фигуры";
 
         public void Execute()
         {
