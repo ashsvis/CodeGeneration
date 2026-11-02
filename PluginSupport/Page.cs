@@ -17,9 +17,9 @@ namespace PluginSupport
 
         public string? DocumentNumber { get; set; } = "00148599-ПИР/РНД 9-23-1сп-659/1-АК.ПБ";
         public string? CustomerName { get; set; } = "ООО \"ЛУКОЙЛ-Волгограднефтепереработка\"";
-        public string? ProjectName { get; set; } = "Техническое перевооружение.\r\n«Модернизация узла слива высокооктановых добавок на площадке переработки нефти ОПО № А39-00045-001»";
+        public string[] ProjectName { get; set; } = ["Техническое перевооружение.", "«Модернизация узла слива высокооктановых добавок на площадке переработки нефти ОПО № А39-00045-001»"];
         public string? DocumentName { get; set; } = "Описание алгоритма";
-        public string? OrganizationName { get; set; } = "ООО «ПКБ «АИСТ»\r\nг. Волгоград";
+        public string[] OrganizationName { get; set; } = ["ООО «ПКБ «АИСТ»", "г. Волгоград"];
 
         public PageChangeInfo[] Changes { get; set; } = 
         [
@@ -50,7 +50,7 @@ namespace PluginSupport
         public bool StampContain(Point point)
         {
             var targets = StamptAssistant.GetStamptTargets(this, kf);
-            foundTargets = [..targets.Where(x => x.Contains(point))];
+            foundTargets = [..targets.Select(x => x.Item1).Where(x => x.Contains(point))];
             return foundTargets.Length > 0;
         }
 

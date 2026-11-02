@@ -20,61 +20,63 @@ namespace PluginSupport.Assistants
             DrawSideStampt(graphics, borderPen, outRect, kf, foreground);
         }
 
-        public static Rectangle[] GetStamptTargets(Page page, int kf)
+        public static (Rectangle, int, Func<int, object?>)[] GetStamptTargets(Page page, int kf)
         {
             if (page == null) return [];
-            var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
-            rect.Offset(-5 * kf, -5 * kf);
-            List<Rectangle> targets = [];
+            List<(Rectangle, int, Func<int, object?>)> targets = [];
             if (page.Number == 1)
             {
+                var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
+                rect.Offset(-5 * kf, -5 * kf);
                 // номер проекта
-                targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf));
+                targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf), 0, (n) => { return page.DocumentNumber; }));
                 // наименование заказчика
-                targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 10 * kf, 120 * kf, 15 * kf));
+                targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 10 * kf, 120 * kf, 15 * kf), 0, (n) => { return page.CustomerName; }));
                 // наименование проекта
-                targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 25 * kf, 70 * kf, 15 * kf));
+                targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 25 * kf, 70 * kf, 15 * kf), 0, (n) => { return page.ProjectName; }));
                 // наименование документа
-                targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 40 * kf, 70 * kf, 15 * kf));
+                targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 40 * kf, 70 * kf, 15 * kf), 0, (n) => { return page.DocumentName; }));
                 // стадия
-                targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 30 * kf, 15 * kf, 10 * kf));
+                targets.Add((new Rectangle(rect.Right - 50 * kf, rect.Top + 30 * kf, 15 * kf, 10 * kf), 0, (n) => { return "P"; }));
                 // наименование исполнителя
-                targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 40 * kf, 50 * kf, 15 * kf));
+                targets.Add((new Rectangle(rect.Right - 50 * kf, rect.Top + 40 * kf, 50 * kf, 15 * kf), 0, (n) => { return page.OrganizationName; }));
                 var bottom = 15;
                 for (var i = 0; i < 4; i++)
                 {
-                    targets.Add(new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
+                    targets.Add((new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf), i, (i) => { return page.Changes[i].ChangeNumber; }));
+                    targets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i) => { return page.Changes[i].PartCount; }));
+                    targets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i => { return page.Changes[i].MakePage; })));
+                    targets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (i) => { return page.Changes[i].DocNumber; }));
+                    targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (i) => { return ""; /*page.Changes[i].Signature;*/ }));
+                    targets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i) => { return page.Changes[i].Date; }));
                     bottom -= 5;
                 }
                 var top = 25;
                 for (var i = 0; i < 6; i++)
                 {
-                    targets.Add(new Rectangle(rect.Left, rect.Top + top * kf, 17 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 17 * kf, rect.Top + top * kf, 23 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 40 * kf, rect.Top + top * kf, 15 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 55 * kf, rect.Top + top * kf, 10 * kf, 5 * kf));
+                    targets.Add((new Rectangle(rect.Left, rect.Top + top * kf, 17 * kf, 5 * kf), i, (i) => { return page.Signatures[i].Position; }));
+                    targets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + top * kf, 23 * kf, 5 * kf), i, (i) => { return page.Signatures[i].Name; }));
+                    targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + top * kf, 15 * kf, 5 * kf), i, (i) => { return ""; /*page.Signatures[i].Signature;*/ }));
+                    targets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + top * kf, 10 * kf, 5 * kf), i, (i) => { return page.Signatures[i].Date; }));
                     top += 5;
                 }
             }
-            else
+            else if (page.Number > 1)
             {
+                var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 15 * kf, 185 * kf, 15 * kf);
+                rect.Offset(-5 * kf, -5 * kf);
                 // номер проекта
-                targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 110 * kf, 15 * kf));
+                targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top, 110 * kf, 15 * kf), 0, (n) => { return page.DocumentNumber; }));
                 // изменения: изм колуч лист №док подпись дата
                 var bottom = 5;
                 for (var i = 0; i < 2; i++)
                 {
-                    targets.Add(new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf));
-                    targets.Add(new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf));
+                    targets.Add((new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf), i, (i) => { return page.Changes[i].ChangeNumber; }));
+                    targets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i) => { return page.Changes[i].PartCount; }));
+                    targets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i) => { return page.Changes[i].MakePage; }));
+                    targets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (i) => { return page.Changes[i].DocNumber; }));
+                    targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (i) => { return ""; /*page.Changes[i].Signature;*/ }));
+                    targets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (i) => { return page.Changes[i].Date; }));
                     bottom -= 5;
                 }
             }
@@ -86,8 +88,8 @@ namespace PluginSupport.Assistants
             if (page == null) return;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
             rect.Offset(-5 * kf, -5 * kf);
-            List<(Rectangle, int, Func<int, string?>)> atargets = [];
-            List<(Rectangle, int, Func<int, string?>, StringAlignment)> btargets = [];
+            List<(Rectangle, int, Func<int, object?>)> atargets = [];
+            List<(Rectangle, int, Func<int, object?>, StringAlignment)> btargets = [];
             // номер проекта
             atargets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf), -18, (i) => { return page.DocumentNumber; }));
             // наименование заказчика
@@ -133,7 +135,10 @@ namespace PluginSupport.Assistants
                 var index = target.Item2;
                 var value = target.Item3(index);
                 using var stampfont = new Font("Arial Narrow", index < 0 ? Math.Abs(index) : 2f * kf);
-                graphics?.DrawString(value, stampfont, brush, r, sf);
+                if (value is string[] lines)
+                    graphics?.DrawString(string.Join("\r\n", lines), stampfont, brush, r, sf);
+                else
+                    graphics?.DrawString($"{value}", stampfont, brush, r, sf);
             }
             foreach (var target in btargets)
             {
@@ -142,7 +147,10 @@ namespace PluginSupport.Assistants
                 var value = target.Item3(index);
                 sf.Alignment = target.Item4;
                 using var stampfont = new Font("Arial Narrow", index < 0 ? Math.Abs(index) : 2f * kf);
-                graphics?.DrawString(value, stampfont, brush, r, sf);
+                if (value is string[] lines)
+                    graphics?.DrawString(string.Join("\r\n", lines), stampfont, brush, r, sf);
+                else
+                    graphics?.DrawString($"{value}", stampfont, brush, r, sf);
             }
         }
 

@@ -2,6 +2,7 @@ using CodeGenerator.Commands;
 using PluginSupport;
 using PluginSupport.Assistants;
 using System.ComponentModel;
+using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -261,6 +262,27 @@ namespace CodeGenerator
                     SelectLinksForBothSelectedShapes(page);
                 propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
                 propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
+            }
+            else if (page != null && page.StampContain(point))
+            {
+                if (!runEmulate)
+                {
+                    var targets = StamptAssistant.GetStamptTargets(page, 5);
+                    if (targets.Any(x => x.Item1.Contains(point)))
+                    {
+                        (Rectangle rect, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(point));
+                        var value = func(index);
+                        Form frm;
+                        if (value is string[] lines)
+                            frm = new InputValueForm() { LinesValue = lines };
+                        else
+                            frm = new InputValueForm() { StrValue = $"{value}" };
+                        if (frm.ShowDialog() == DialogResult.OK)
+                        {
+
+                        }
+                    }
+                }
             }
             else
             {
@@ -653,6 +675,11 @@ namespace CodeGenerator
             foreach (var page in Pages)
             {
                 DrawInPage(e.Graphics, page);
+                //var targets = StamptAssistant.GetStamptTargets(page, 5);
+                //foreach (var rect in  targets)
+                //{
+                //    e.Graphics?.DrawRectangle(Pens.Yellow, rect);
+                //}
             }
 
             // рисуем перетягиваемую из библиотеки фигуру
