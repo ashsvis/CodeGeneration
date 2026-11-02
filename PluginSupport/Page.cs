@@ -38,11 +38,20 @@ namespace PluginSupport
 
         public void Draw(Graphics? graphics, Color foreground)
         {
-            StampAssistant.DrawPageBorder(graphics, foreground, this);
+            StamptAssistant.DrawPageBorder(graphics, foreground, this);
             if (Number == 1)
-                StampAssistant.DrawBigStampFields(graphics, foreground, this, kf);
+                StamptAssistant.DrawBigStamptFields(graphics, foreground, this, kf);
             else if (Number > 1)
-                StampAssistant.DrawSmallStampFields(graphics, foreground, this, kf);
+                StamptAssistant.DrawSmallStamptFields(graphics, foreground, this, kf);
+        }
+
+        private Rectangle[] foundTargets = [];
+
+        public bool StampContain(Point point)
+        {
+            var targets = StamptAssistant.GetStamptTargets(this, kf);
+            foundTargets = [..targets.Where(x => x.Contains(point))];
+            return foundTargets.Length > 0;
         }
 
         public XElement WriteContent()

@@ -2,7 +2,6 @@ using CodeGenerator.Commands;
 using PluginSupport;
 using PluginSupport.Assistants;
 using System.ComponentModel;
-using System.Data.Common;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -45,13 +44,13 @@ namespace CodeGenerator
             drawPanel.OnDraw += DrawPanel_OnDraw;
             drawPanel.OnPanOrZoom += DrawPanel_OnPanOrZoom;
 
-            drawPanel.MouseEnter += (o, e) => { Cursor.Hide(); };
-            drawPanel.MouseLeave += (o, e) =>
-            {
-                currentPoint = null;
-                drawPanel.Invalidate();
-                Cursor.Show();
-            };
+            //drawPanel.MouseEnter += (o, e) => { Cursor.Hide(); };
+            //drawPanel.MouseLeave += (o, e) =>
+            //{
+            //    currentPoint = null;
+            //    drawPanel.Invalidate();
+            //    Cursor.Show();
+            //};
 
             panCenter.Controls.Add(drawPanel);
 
@@ -127,7 +126,7 @@ namespace CodeGenerator
             {
                 foreach (var shape in ModelAssistant.ShapesFrom(page))
                 {
-                    if (shape.ContainsPoint(startPoint/*, 5f / (float)drawPanel.Zoom*/))
+                    if (shape.ContainsPoint(startPoint))
                     {
                         shape.Click(runEmulate, drawPanel.PointToScreen(e.Location));
                         break;
@@ -169,7 +168,7 @@ namespace CodeGenerator
             var point = drawPanel.GetLocation(drawPanel.PointToScreen(e.Location));
             foreach (var shape in ModelAssistant.ShapesFrom(page))
             {
-                if (shape.ContainsPoint(point/*, 5f / (float)drawPanel.Zoom*/))
+                if (shape.ContainsPoint(point))
                 {
                     var other = ModelAssistant.ShapesFrom(page).Where(x => x.Selected).Contains(shape);
                     if (!other && ModelAssistant.ShapesFrom(page).Count(x => x.Selected) > 1 && !ctrl)
@@ -451,14 +450,18 @@ namespace CodeGenerator
                 {
                     shape.Hover = !runEmulate;
                     if (runEmulate && shape is IAcceptClick accept && accept.CanAcceptClick)
+                    {
                         Cursor = Cursors.Hand;
+                    }
                     found = true;
                     break;
                 }
                 if (firstShape == null && shape.IsOutputTargetsPoint(point) || firstShape == shape)
                 {
                     if (!runEmulate)
+                    {
                         Cursor = Cursors.Cross;
+                    }
                     shape.CanOutputLink = !runEmulate;
                     found = true;
                     break;
@@ -479,8 +482,12 @@ namespace CodeGenerator
             }
             if (!found)
             {
-                if (page != null)
+                if (page != null && page.StampContain(point))
                 {
+                    if (!runEmulate)
+                    {
+                        Cursor = Cursors.Hand;
+                    }
                 }
             }
         }
@@ -672,16 +679,16 @@ namespace CodeGenerator
             }
 
             // рисование курсора при свободном движении указателя мыши
-            if (MouseButtons.HasFlag(MouseButtons.None) && !addShapes && !runEmulate)
-            {
-                if (currentPoint is Point point)
-                {
-                    var cursize = (int)(50f / drawPanel.Zoom);
-                    using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
-                    e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(-cursize, 0)), Point.Add(point, new Size(cursize, 0)));
-                    e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(0, -cursize)), Point.Add(point, new Size(0, cursize)));
-                }
-            }
+            //if (MouseButtons.HasFlag(MouseButtons.None) && !addShapes && !runEmulate)
+            //{
+            //    if (currentPoint is Point point)
+            //    {
+            //        var cursize = (int)(50f / drawPanel.Zoom);
+            //        using var cursorpen = new Pen(SystemColors.ControlDarkDark, 0f);
+            //        e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(-cursize, 0)), Point.Add(point, new Size(cursize, 0)));
+            //        e.Graphics?.DrawLine(cursorpen, Point.Add(point, new Size(0, -cursize)), Point.Add(point, new Size(0, cursize)));
+            //    }
+            //}
 
             // рисуем резиновую связь в момент построения связи
             if (linkBuilding && firstLinkPoint is Point source && currentPoint is Point target)
