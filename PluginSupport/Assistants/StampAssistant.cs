@@ -4,75 +4,134 @@ namespace PluginSupport.Assistants
 {
     public static class StampAssistant
     {
-        public static void DrawPageBorder(Graphics? graphics, Point origin, int width, int height, Color foreground, int pageNumber, int pagesCount)
+        public static void DrawPageBorder(Graphics? graphics, Color foreground, Page page)
         {
             int kf = 5;
             var borderPen = new Pen(foreground, 0);
-            var borderRect = new Rectangle(origin.X * kf - 20 * kf, origin.Y * kf - 5 * kf, width * kf, height * kf);
+            var origin = new Point(page.Column * page.Width, page.Row * page.Height);
+            var borderRect = new Rectangle(origin.X * kf - 20 * kf, origin.Y * kf - 5 * kf, page.Width * kf, page.Height * kf);
             graphics?.DrawRectangle(borderPen, borderRect);
-            var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf,
-                            borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
+            var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf, borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
             graphics?.DrawRectangle(borderPen, outRect);
-            if (pageNumber == 1)
-                DrawBigStamp(graphics, borderPen, outRect, kf, foreground, pageNumber, pagesCount);
+            if (page.Number == 1)
+                DrawBigStamp(graphics, borderPen, outRect, kf, foreground, page);
             else
-                DrawSmallStamp(graphics, borderPen, outRect, kf, foreground, pageNumber);
+                DrawSmallStamp(graphics, borderPen, outRect, kf, foreground, page);
             DrawSideStamp(graphics, borderPen, outRect, kf, foreground);
         }
 
-        public static void DrawBigStampFields(Graphics? graphics, Page? page, int kf)
+        public static void DrawBigStampFields(Graphics? graphics, Color foreground, Page? page, int kf)
         {
             if (page == null) return;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
             rect.Offset(-5 * kf, -5 * kf);
-            List<Rectangle> targets = [];
-            //targets.Add(rect);
+            List<(Rectangle, int, Func<int, string?>)> atargets = [];
+            List<(Rectangle, int, Func<int, string?>, StringAlignment)> btargets = [];
             // номер проекта
-            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf));
+            atargets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top, 120 * kf, 10 * kf), -18, (i) => { return page.DocumentNumber; }));
             // наименование заказчика
-            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 10 * kf, 120 * kf, 15 * kf));
+            atargets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 10 * kf, 120 * kf, 15 * kf), -16, (i) => { return page.CustomerName; }));
             // наименование проекта
-            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 25 * kf, 70 * kf, 15 * kf));
+            atargets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 25 * kf, 70 * kf, 15 * kf), -11, (i) => { return page.ProjectName; }));
             // наименование документа
-            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top + 40 * kf, 70 * kf, 15 * kf));
+            atargets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top + 40 * kf, 70 * kf, 15 * kf), -14, (i) => { return page.DocumentName; }));
             // стадия
-            targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 30 * kf, 15 * kf, 10 * kf));
+            atargets.Add((new Rectangle(rect.Right - 50 * kf, rect.Top + 30 * kf, 15 * kf, 10 * kf), -16, (i) => { return "Р"; }));
             // наименование исполнителя
-            targets.Add(new Rectangle(rect.Right - 50 * kf, rect.Top + 40 * kf, 50 * kf, 15 * kf));
-            foreach (var target in targets)
+            atargets.Add((new Rectangle(rect.Right - 50 * kf, rect.Top + 40 * kf, 50 * kf, 15 * kf), -14, (i) => { return page.OrganizationName; }));
+             // изменения: изм кол лист №док подпись дата
+            var bottom = 15;
+            for (var i = 0; i < 4; i++)
             {
-                graphics?.DrawRectangle(Pens.Yellow, target);
+                atargets.Add((new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf), i, (n) => { return page.Changes[n].ChangeNumber; }));
+                atargets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].PartCount; }));
+                atargets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].MakePage; }));
+                atargets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (n) => { return page.Changes[n].DocNumber; }));
+                atargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Changes[n].Signature;*/ }));
+                atargets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].Date; }));
+                bottom -= 5;
+            }
+           // основные: должность фамилия подпись дата
+            var top = 25;
+            for (var i = 0; i < 6; i++)
+            {
+                btargets.Add((new Rectangle(rect.Left, rect.Top + top * kf, 17 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Position; }, StringAlignment.Near));
+                btargets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + top * kf, 23 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Name; }, StringAlignment.Near));
+                btargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + top * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Signatures[n].Signature;*/ }, StringAlignment.Center));
+                btargets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + top * kf, 10 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Date; }, StringAlignment.Center));
+                top += 5;
+            }
+
+            using var brush = new SolidBrush(foreground);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
+            foreach (var target in atargets)
+            {
+                var r = target.Item1;
+                var index = target.Item2;
+                var value = target.Item3(index);
+                using var stampfont = new Font("Arial Narrow", index < 0 ? Math.Abs(index) : 2f * kf);
+                graphics?.DrawString(value, stampfont, brush, r, sf);
+            }
+            foreach (var target in btargets)
+            {
+                var r = target.Item1;
+                var index = target.Item2;
+                var value = target.Item3(index);
+                sf.Alignment = target.Item4;
+                using var stampfont = new Font("Arial Narrow", index < 0 ? Math.Abs(index) : 2f * kf);
+                graphics?.DrawString(value, stampfont, brush, r, sf);
             }
         }
 
-        public static void DrawSmallStampFields(Graphics? graphics, Page? page, int kf)
+        public static void DrawSmallStampFields(Graphics? graphics, Color foreground, Page? page, int kf)
         {
             if (page == null) return;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 15 * kf, 185 * kf, 15 * kf);
             rect.Offset(-5 * kf, -5 * kf);
-            List<Rectangle> targets = [];
-            //targets.Add(rect);
+            List<(Rectangle, int, Func<int, string?>)> targets = [];
             // номер проекта
-            targets.Add(new Rectangle(rect.Right - 120 * kf, rect.Top, 110 * kf, 15 * kf));
+            targets.Add((new Rectangle(rect.Right - 120 * kf, rect.Top, 110 * kf, 15 * kf), -18, (i) => { return page.DocumentNumber; }));
+            // изменения: изм колуч лист №док подпись дата
+            var bottom = 5;
+            for (var i = 0; i < 2; i++)
+            {
+                targets.Add((new Rectangle(rect.Left, rect.Top + bottom * kf, 7 * kf, 5 * kf), i, (n) => { return page.Changes[n].ChangeNumber; }));
+                targets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].PartCount; }));
+                targets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].MakePage; }));
+                targets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (n) => { return page.Changes[n].DocNumber; }));
+                targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Changes[n].Signature;*/ }));
+                targets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].Date; }));
+                bottom -= 5;
+            }
+            using var brush = new SolidBrush(foreground);
+            using var sf = new StringFormat();
+            sf.Alignment = StringAlignment.Center;
+            sf.LineAlignment = StringAlignment.Center;
             foreach (var target in targets)
             {
-                graphics?.DrawRectangle(Pens.Yellow, target);
+                var r = target.Item1;
+                var index = target.Item2;
+                var value = target.Item3(index);
+                using var stampfont = new Font("Arial Narrow", index < 0 ? Math.Abs(index) : 2f * kf);
+                graphics?.DrawString(value, stampfont, brush, r, sf);
             }
         }
 
-        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber, int pagesCount)
+        public static void DrawBigStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, Page? page)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 55 * kf, 185 * kf, 55 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new PointF(stamptRect.Right, stamptRect.Top));
             //if (Module.Size != PaperSize.A4 || Module.Orientation != PaperOrientation.Portrait)
             graphics?.DrawLine(borderPen, stamptRect.Location, new PointF(stamptRect.Left, stamptRect.Bottom));
 
-            int[] steps = [10 * kf, 10 * kf, 10 * kf, 10 * kf, 15 * kf, 10 * kf];
+            int[] steps = [7 * kf, 10 * kf, 10 * kf, 13 * kf, 15 * kf, 10 * kf];
             string[] names = ["Изм.", "Кол.уч", "Лист", "№ док.", "Подпись", "Дата"];
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
-            using var stampfont = new Font("Arial", 2f * kf);
+            using var stampfont = new Font("Arial Narrow", 2f * kf);
             using var brush = new SolidBrush(foreground);
             var x = 0 * kf;
             for (var i = 0; i < steps.Length; i++)
@@ -89,20 +148,12 @@ namespace PluginSupport.Assistants
                 graphics?.DrawLine(borderPen, new Point(stamptRect.Left, stamptRect.Top + y),
                     new Point(stamptRect.Left + 65 * kf, stamptRect.Top + y));
             }
-            steps = [20 * kf, 20 * kf, 15 * kf, 10 * kf];
-            names = ["Разраб.", "Пров.", "", "", "Н.контр.", "ГИП"];
+            steps = [17 * kf, 23 * kf, 15 * kf, 10 * kf];
             x = 0;
             for (var i = 0; i < steps.Length; i++)
             {
                 x += steps[i];
                 graphics?.DrawLine(borderPen, new Point(stamptRect.Left + x, stamptRect.Top + 25 * kf), new Point(stamptRect.Left + x, stamptRect.Bottom));
-            }
-            sf.Alignment = StringAlignment.Near;
-            y = stamptRect.Top + 23 * kf;
-            for (var i = 0; i < names.Length; i++)
-            {
-                y += 5 * kf;
-                graphics?.DrawString(names[i], stampfont, brush, new Point(stamptRect.Left + 1 * kf, y), sf);
             }
             y = stamptRect.Top + 10 * kf;
             for (var i = 0; i < 3; i++)
@@ -126,28 +177,28 @@ namespace PluginSupport.Assistants
             }
             using var bigfont = new Font(stampfont.Name, 3f * kf);
             var pageNumRect = new Rectangle(stamptRect.Right - 35 * kf, stamptRect.Bottom - 25 * kf, 15 * kf, 10 * kf);
-            graphics?.DrawString($"{pageNumber}", bigfont, brush,
+            graphics?.DrawString($"{page?.Number}", bigfont, brush,
                 new Point(pageNumRect.X + pageNumRect.Width / 2, pageNumRect.Y + pageNumRect.Height / 2), sf);
             var pagesCountRect = new Rectangle(stamptRect.Right - 20 * kf, stamptRect.Bottom - 25 * kf, 20 * kf, 10 * kf);
-            graphics?.DrawString($"{pagesCount}", bigfont, brush,
+            graphics?.DrawString($"{page?.PagesCount}", bigfont, brush,
                 new Point(pagesCountRect.X + pagesCountRect.Width / 2, pagesCountRect.Y + pagesCountRect.Height / 2), sf);
             graphics?.DrawString("Формат A3", stampfont, brush,
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, int pageNumber)
+        public static void DrawSmallStamp(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, Page?page)
         {
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 15 * kf, 185 * kf, 15 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Right, stamptRect.Top));
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Left, stamptRect.Bottom));
-            int[] steps = [7 * kf, 10 * kf, 23 * kf, 15 * kf, 10 * kf, 110 * kf];
-            string[] names = ["Изм.", "Лист", "№ докум.", "Подп.", "Дата", ""];
+            int[] steps = [7 * kf, 10 * kf, 10 * kf, 13 * kf, 15 * kf, 10 * kf, 110 * kf];
+            string[] names = ["Изм.", "Кол.уч.", "Лист", "№ док.", "Подп.", "Дата", ""];
             var sf = new StringFormat
             {
                 Alignment = StringAlignment.Center,
                 LineAlignment = StringAlignment.Center
             };
-            var stampfont = new Font("Arial", 2f * kf);
+            var stampfont = new Font("Arial Narrow", 2f * kf);
             var brush = new SolidBrush(foreground);
             var x = 0 * kf;
             for (var i = 0; i < steps.Length; i++)
@@ -173,7 +224,7 @@ namespace PluginSupport.Assistants
                 new Point(pageRect.X + pageRect.Width / 2, pageRect.Y + pageRect.Height / 2), sf);
             if (true)
             {
-                graphics?.DrawString($"{pageNumber}", bigfont, brush,
+                graphics?.DrawString($"{page?.Number}", bigfont, brush,
                     new Point(pageNumRect.X + pageNumRect.Width / 2, pageNumRect.Y + pageNumRect.Height / 2), sf);
             }
             graphics?.DrawString("Формат A3", stampfont, brush,
@@ -187,7 +238,7 @@ namespace PluginSupport.Assistants
             using var sf = new StringFormat();
             sf.Alignment = StringAlignment.Center;
             sf.LineAlignment = StringAlignment.Center;
-            using var stampfont = new Font("Arial", 3f * kf);
+            using var stampfont = new Font("Arial Narrow", 3f * kf);
             using var brush = new SolidBrush(foreground);
             var y = outRect.Bottom;
             for (var i = 0; i < steps.Length; i++)
