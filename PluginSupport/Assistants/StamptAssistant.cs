@@ -14,15 +14,16 @@ namespace PluginSupport.Assistants
             var outRect = new Rectangle(borderRect.X + 20 * kf, borderRect.Y + 5 * kf, borderRect.Width - 25 * kf, borderRect.Height - 10 * kf);
             graphics?.DrawRectangle(borderPen, outRect);
             if (page.Number == 1)
-                DrawBigStampt(graphics, borderPen, outRect, kf, foreground, page);
+                DrawBigStampt(graphics, borderPen, outRect, foreground, page);
             else
-                DrawSmallStampt(graphics, borderPen, outRect, kf, foreground, page);
-            DrawSideStampt(graphics, borderPen, outRect, kf, foreground);
+                DrawSmallStampt(graphics, borderPen, outRect, foreground, page);
+            DrawSideStampt(graphics, borderPen, outRect, foreground);
         }
 
-        public static (Rectangle, int, Func<int, object?>)[] GetStamptTargets(Page page, int kf)
+        public static (Rectangle, int, Func<int, object?>)[] GetStamptTargets(Page page)
         {
             if (page == null) return [];
+            var kf = Page.Koeff;
             List<(Rectangle, int, Func<int, object?>)> targets = [];
             if (page.Number == 1)
             {
@@ -83,9 +84,10 @@ namespace PluginSupport.Assistants
             return [.. targets];
         }
 
-        public static void DrawBigStamptFields(Graphics? graphics, Color foreground, Page? page, int kf)
+        public static void DrawBigStamptFields(Graphics? graphics, Color foreground, Page? page)
         {
             if (page == null) return;
+            var kf = Page.Koeff;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 55 * kf, 185 * kf, 55 * kf);
             rect.Offset(-5 * kf, -5 * kf);
             List<(Rectangle, int, Func<int, object?>)> atargets = [];
@@ -154,9 +156,10 @@ namespace PluginSupport.Assistants
             }
         }
 
-        public static void DrawSmallStamptFields(Graphics? graphics, Color foreground, Page? page, int kf)
+        public static void DrawSmallStamptFields(Graphics? graphics, Color foreground, Page? page)
         {
             if (page == null) return;
+            var kf = Page.Koeff;
             var rect = new Rectangle(page.Bounds.Right - 185 * kf, page.Bounds.Bottom - 15 * kf, 185 * kf, 15 * kf);
             rect.Offset(-5 * kf, -5 * kf);
             List<(Rectangle, int, Func<int, string?>)> targets = [];
@@ -188,8 +191,9 @@ namespace PluginSupport.Assistants
             }
         }
 
-        public static void DrawBigStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, Page? page)
+        public static void DrawBigStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, Color foreground, Page? page)
         {
+            var kf = Page.Koeff;
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 55 * kf, 185 * kf, 55 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new PointF(stamptRect.Right, stamptRect.Top));
             //if (Module.Size != PaperSize.A4 || Module.Orientation != PaperOrientation.Portrait)
@@ -255,8 +259,9 @@ namespace PluginSupport.Assistants
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSmallStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground, Page?page)
+        public static void DrawSmallStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, Color foreground, Page? page)
         {
+            var kf = Page.Koeff;
             var stamptRect = new Rectangle(outRect.Right - 185 * kf, outRect.Bottom - 15 * kf, 185 * kf, 15 * kf);
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Right, stamptRect.Top));
             graphics?.DrawLine(borderPen, stamptRect.Location, new Point(stamptRect.Left, stamptRect.Bottom));
@@ -300,8 +305,9 @@ namespace PluginSupport.Assistants
                 new Point(outRect.Right - 25 * kf, outRect.Bottom + 2 * kf), sf);
         }
 
-        public static void DrawSideStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, int kf, Color foreground)
+        public static void DrawSideStampt(Graphics? graphics, Pen borderPen, Rectangle outRect, Color foreground)
         {
+            var kf = Page.Koeff;
             int[] steps = [25 * kf, 35 * kf, 25 * kf];
             string[] names = ["Инв.№ подл.", "Подп. и дата", "Взам. инв. №"];
             using var sf = new StringFormat();

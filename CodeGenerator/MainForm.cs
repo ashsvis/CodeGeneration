@@ -267,7 +267,7 @@ namespace CodeGenerator
             {
                 if (!runEmulate)
                 {
-                    var targets = StamptAssistant.GetStamptTargets(page, 5);
+                    var targets = StamptAssistant.GetStamptTargets(page);
                     if (targets.Any(x => x.Item1.Contains(point)))
                     {
                         (Rectangle rect, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(point));

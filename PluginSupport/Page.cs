@@ -6,6 +6,7 @@ namespace PluginSupport
     public class Page(int number, int width, int height, int row, int column)
     {
         const int kf = 5;
+        public static int Koeff => kf;
         public int Number { get; set; } = number;
         public int PagesCount { get; set; }
         public int Width { get; set; } = width;
@@ -40,16 +41,16 @@ namespace PluginSupport
         {
             StamptAssistant.DrawPageBorder(graphics, foreground, this);
             if (Number == 1)
-                StamptAssistant.DrawBigStamptFields(graphics, foreground, this, kf);
+                StamptAssistant.DrawBigStamptFields(graphics, foreground, this);
             else if (Number > 1)
-                StamptAssistant.DrawSmallStamptFields(graphics, foreground, this, kf);
+                StamptAssistant.DrawSmallStamptFields(graphics, foreground, this);
         }
 
         private Rectangle[] foundTargets = [];
 
         public bool StampContain(Point point)
         {
-            var targets = StamptAssistant.GetStamptTargets(this, kf);
+            var targets = StamptAssistant.GetStamptTargets(this);
             foundTargets = [..targets.Select(x => x.Item1).Where(x => x.Contains(point))];
             return foundTargets.Length > 0;
         }
