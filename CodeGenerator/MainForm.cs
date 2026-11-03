@@ -565,6 +565,7 @@ namespace CodeGenerator
                         {
                             if (!existTypes.Contains(libShape.GetType())) continue;
                             var clone = draged.Shape.DeepClone();
+                            clone.NewGuid();
                             if (clone is IGroupToPlace item)  item.SetPresentFunction(libShape);
                             UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
                                 clone, point, SubscribeShapeEvents, UnsubscribeShapeEvents));

@@ -102,13 +102,13 @@ namespace LogicModel
             var sId = xfunc.Attribute("Id")?.Value;
             if (!string.IsNullOrWhiteSpace(sId) && Guid.TryParse(sId, out Guid objId))
                 id = objId;
-            var sEmbeded = xfunc.Attribute("Embeded")?.Value;
-            if (!string.IsNullOrWhiteSpace(sEmbeded))
+            var sEmbedded = xfunc.Attribute("Embedded")?.Value;
+            if (!string.IsNullOrWhiteSpace(sEmbedded))
             {
                 var pl = new PluginLogic();
-                if (pl.GetTypes().ContainsKey(sEmbeded))
+                if (pl.GetTypes().ContainsKey(sEmbedded))
                 {
-                    func = (Func?)Activator.CreateInstance(pl.GetTypes()[sEmbeded]);
+                    func = (Func?)Activator.CreateInstance(pl.GetTypes()[sEmbedded]);
                 }
             }
             var sLeft = xfunc.Attribute("X")?.Value;
@@ -122,7 +122,7 @@ namespace LogicModel
             var xfunc = new XElement($"{this.GetType().FullName}");
             xfunc.Add(new XAttribute("Id", Id));
             if (func != null)
-                xfunc.Add(new XAttribute("Embeded", $"{func.GetType().FullName}"));
+                xfunc.Add(new XAttribute("Embedded", $"{func.GetType().FullName}"));
             xfunc.Add(new XAttribute("X", Location.X));
             xfunc.Add(new XAttribute("Y", Location.Y));
             return xfunc;
