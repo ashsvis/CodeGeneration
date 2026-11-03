@@ -138,8 +138,8 @@ namespace CodeGenerator
                     var targets = StamptAssistant.GetStamptTargets(page);
                     if (targets.Any(x => x.Item1.Contains(startPoint)))
                     {
-                        (Rectangle rect, string propName, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(startPoint));
-                        var value = func(index);
+                        (Rectangle rect, string propName, object propOwner) = targets.FirstOrDefault(x => x.Item1.Contains(startPoint));
+                        var value = ModelAssistant.GetPropertyValue(propOwner, propName);
                         InputValueForm frm;
                         if (value is string[] lines)
                             frm = new InputValueForm() { LinesValue = lines };
@@ -150,9 +150,9 @@ namespace CodeGenerator
                             try
                             {
                                 if (value is string[] text)
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, text, frm.LinesValue));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new ObjectPropertyChangeCommand(ContextAssistant.Context, propOwner, propName, text, frm.LinesValue));
                                 else
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, value, frm.StrValue));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new ObjectPropertyChangeCommand(ContextAssistant.Context, propOwner, propName, value, frm.StrValue));
                             }
                             catch (Exception ex)
                             {

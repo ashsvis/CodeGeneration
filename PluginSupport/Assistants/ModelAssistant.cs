@@ -631,5 +631,22 @@ namespace PluginSupport.Assistants
             // Изменяем значение
             property.SetValue(obj, value);
         }
+
+        public static object? GetPropertyValue(object obj, string propertyName)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+            if (string.IsNullOrWhiteSpace(propertyName))
+                throw new ArgumentException("Имя свойства не может быть пустым", nameof(propertyName));
+
+            Type type = obj.GetType();
+            PropertyInfo? property = type.GetProperty(propertyName) ?? throw new ArgumentException($"Свойство '{propertyName}' не найдено в типе {type.Name}");
+
+            // Проверяем, доступно ли свойство для чтения
+            if (!property.CanRead)
+                throw new InvalidOperationException($"Свойство '{propertyName}' не имеет геттера");
+
+            // Читаем значение
+            return property.GetValue(obj);
+        }
     }
 }
