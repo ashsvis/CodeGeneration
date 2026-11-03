@@ -1,9 +1,5 @@
 using PluginSupport.Assistants;
-using System;
-using System.Reflection;
 using System.Xml.Linq;
-using static System.Windows.Forms.LinkLabel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace PluginSupport
 {
@@ -15,8 +11,8 @@ namespace PluginSupport
         public int PagesCount { get; set; }
         public int Width { get; set; } = width;
         public int Height { get; set; } = height;
-        public int Row { get; } = row;
-        public int Column { get; } = column;
+        public int Row { get; set; } = row;
+        public int Column { get; set; } = column;
 
         public Rectangle Bounds => new(Column * Width * kf - 100, Row * Height * kf - 25, Width * kf, Height * kf);
 

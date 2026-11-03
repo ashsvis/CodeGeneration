@@ -23,6 +23,7 @@ namespace CodeGenerator
         private readonly string caption = string.Empty;
         private string fileName = string.Empty;
 
+        const int totalPagesInRow = 10;
 
         public MainForm()
         {
@@ -296,20 +297,31 @@ namespace CodeGenerator
                 {
                     if (page == Pages.Last())
                     {
-                        var item = new ToolStripMenuItem("Добавить лист после этого");
-                        contextMenu.Items.Add(item);
-                    }
-                    if (page == Pages.First() && page != Pages.Last())
-                    {
-                        var item = new ToolStripMenuItem("Вставить лист после этого");
+                        var item = new ToolStripMenuItem("Добавить пустой лист после этого") { Tag = page };
+                        item.Click += (o, e) =>
+                        {
+                            AddBlankPage();
+                        };
                         contextMenu.Items.Add(item);
                     }
                     if (page != Pages.First())
                     {
-                        var item = new ToolStripMenuItem("Вставить лист перед этим");
+                        var item = new ToolStripMenuItem("Вставить пустой лист перед этим") { Tag = page };
+                        item.Click += (o, e) =>
+                        {
+                            if (o is ToolStripMenuItem tsmi && tsmi.Tag is Page pg)
+                            {
+                                AddBlankPage();
+                                MovePagesContentToRight(pg);
+                            }
+                        };
                         contextMenu.Items.Add(item);
                         contextMenu.Items.Add(new ToolStripSeparator());
-                        item = new ToolStripMenuItem("Удалить этот лист");
+                        item = new ToolStripMenuItem("Удалить этот лист") { Tag = page };
+                        item.Click += (o, e) =>
+                        {
+
+                        };
                         contextMenu.Items.Add(item);
                     }
                     if (contextMenu.Items.Count > 0)
@@ -327,6 +339,39 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
+        private void MovePagesContentToRight(Page page)
+        {
+            var lastPage = Pages.Last();
+            var dx = lastPage.Bounds.X - page.Bounds.X;
+            var dy = lastPage.Bounds.Y - page.Bounds.Y;
+            foreach (var shape in ModelAssistant.ShapesFrom(page))
+            {
+                shape.Location = Point.Add(shape.Location, new Size(dx, dy));
+                shape.Page = lastPage.Number;
+            }
+            foreach (var link in ModelAssistant.LinksFrom(page))
+            {
+                link.StartPoint = Point.Add(link.StartPoint, new Size(dx, dy));
+                link.EndPoint = Point.Add(link.EndPoint, new Size(dx, dy));
+                var pts = link.GetPoints();
+                for (var i = 0; i < pts.Length; i++)
+                    pts[i] = Point.Add(pts[i], new Size(dx, dy));
+                link.SetPoints(pts);
+                link.Page = lastPage.Number;
+            }
+            ModelAssistant.ClearCache();
+        }
+
+        private static void AddBlankPage()
+        {
+            var p = Pages.Count + 1;
+            var row = (p - 1) / totalPagesInRow;
+            var column = (p - 1) - row * totalPagesInRow;
+            Pages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
+            if (Pages.Count > 0)
+                Pages[0].PagesCount = Pages.Count;
+        }
+
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
@@ -336,6 +381,9 @@ namespace CodeGenerator
             var page = Pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
+
+            Text = $"Page No{currentPage?.Number}";
+
             if (currentPoint is Point point)
             { 
                 HighLight(page, point); 
@@ -1119,7 +1167,6 @@ namespace CodeGenerator
             }
             int p = 1;
             int n = 0;
-            const int totalPagesInRow = 10;
             foreach (var xpage in xcontext.Elements("Page"))
             {
                 var row = (p - 1) / totalPagesInRow;
