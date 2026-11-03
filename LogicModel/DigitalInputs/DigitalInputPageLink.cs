@@ -99,7 +99,6 @@ namespace LogicModel
 
             if (results.Count > 0)
             {
-                items.Add(new ToolStripSeparator());
                 item = new ToolStripMenuItem("Установить связь");
                 foreach (var r in results)
                 {

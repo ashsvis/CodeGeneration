@@ -2,7 +2,6 @@ using CodeGenerator.Commands;
 using PluginSupport;
 using PluginSupport.Assistants;
 using System.ComponentModel;
-using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
 using System.Xml.Linq;
@@ -290,6 +289,32 @@ namespace CodeGenerator
                     SelectLinksForBothSelectedShapes(page);
                 propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
                 propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
+            }
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (page != null && !page.StampContain(startPoint) && !runEmulate)
+                {
+                    if (page == Pages.Last())
+                    {
+                        var item = new ToolStripMenuItem("Добавить лист после этого");
+                        contextMenu.Items.Add(item);
+                    }
+                    if (page == Pages.First() && page != Pages.Last())
+                    {
+                        var item = new ToolStripMenuItem("Вставить лист после этого");
+                        contextMenu.Items.Add(item);
+                    }
+                    if (page != Pages.First())
+                    {
+                        var item = new ToolStripMenuItem("Вставить лист перед этим");
+                        contextMenu.Items.Add(item);
+                        contextMenu.Items.Add(new ToolStripSeparator());
+                        item = new ToolStripMenuItem("Удалить этот лист");
+                        contextMenu.Items.Add(item);
+                    }
+                    if (contextMenu.Items.Count > 0)
+                        contextMenu.Show(drawPanel, e.Location);
+                }
             }
             else
             {
@@ -676,6 +701,7 @@ namespace CodeGenerator
         private void DrawPanel_OnPanOrZoom(object? sender, PanOrZoomEventArgs e)
         {
             modelChanged = true;
+            contextMenu.Close();
         }
 
         private void DrawPanel_OnDraw(object? sender, DrawEventArgs e)
