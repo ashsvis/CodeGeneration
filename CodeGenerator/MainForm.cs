@@ -135,7 +135,7 @@ namespace CodeGenerator
                 }
                 if (page != null && page.StampContain(startPoint))
                 {
-                    var targets = StamptAssistant.GetStamptTargets(page);
+                    var targets = StampAssistant.GetStampTargets(page);
                     if (targets.Any(x => x.Item1.Contains(startPoint)))
                     {
                         (Rectangle rect, string propName, object propOwner) = targets.FirstOrDefault(x => x.Item1.Contains(startPoint));
@@ -682,7 +682,7 @@ namespace CodeGenerator
             foreach (var page in Pages)
             {
                 DrawInPage(e.Graphics, page);
-                //var targets = StamptAssistant.GetStamptTargets(page, 5);
+                //var targets = StampAssistant.GetStampTargets(page, 5);
                 //foreach (var rect in  targets)
                 //{
                 //    e.Graphics?.DrawRectangle(Pens.Yellow, rect);
@@ -1104,15 +1104,7 @@ namespace CodeGenerator
                 {
                     var number = ParseHelper.ParseInteger(xnumber, 0);
                     var page = Pages.FirstOrDefault(x => x.Number == number);
-                    if (page != null)
-                    {
-                        var xwidth = xpage.Attribute("Width")?.Value;
-                        if (!string.IsNullOrWhiteSpace(xwidth))
-                            page.Width = ParseHelper.ParseInteger(xwidth, 420);
-                        var xheight = xpage.Attribute("Height")?.Value;
-                        if (!string.IsNullOrWhiteSpace(xheight))
-                            page.Height = ParseHelper.ParseInteger(xheight, 297);
-                    }
+                    page?.ReadContent(xpage);
                 }
                 n = ModelAssistant.ReadElements(n, xpage, SubscribeShapeEvents);
                 p++;

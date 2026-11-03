@@ -29,7 +29,6 @@ namespace PluginSupport
             MouseWheel += DrawPanel_MouseWheel;
             MouseDown += DrawPanel_MouseDown;
             MouseMove += DrawPanel_MouseMove;
-            MouseDoubleClick += DrawPanel_MouseDoubleClick;
             Paint += DrawPanel_Paint;
             // Utilize double buffer to smooth out flickering when re-painting
             this.SetStyle(
@@ -37,19 +36,6 @@ namespace PluginSupport
                 ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.OptimizedDoubleBuffer,
                 true);
-        }
-
-        private void DrawPanel_MouseDoubleClick(object? sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Middle && e.Clicks > 1)
-            {
-                Reset();
-                OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
-                {
-                    Zoom = zoomScale,
-                    Origin = origin
-                });
-            }
         }
 
         /// <summary>
@@ -159,6 +145,16 @@ namespace PluginSupport
             var mouseX = e.Location.X;
             var mouseY = e.Location.Y;
             LastMousePosition = new PointF(mouseX, mouseY);
+
+            if (e.Button == MouseButtons.Middle && e.Clicks > 1)
+            {
+                Reset();
+                OnPanOrZoom?.Invoke(this, new PanOrZoomEventArgs()
+                {
+                    Zoom = zoomScale,
+                    Origin = origin
+                });
+            }
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
