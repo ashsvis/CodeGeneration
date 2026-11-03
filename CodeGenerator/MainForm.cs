@@ -130,7 +130,35 @@ namespace CodeGenerator
                     if (shape.ContainsPoint(startPoint))
                     {
                         shape.Click(runEmulate, drawPanel.PointToScreen(e.Location));
-                        break;
+                        return;
+                    }
+                }
+                if (page != null && page.StampContain(startPoint))
+                {
+                    var targets = StamptAssistant.GetStamptTargets(page);
+                    if (targets.Any(x => x.Item1.Contains(startPoint)))
+                    {
+                        (Rectangle rect, string propName, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(startPoint));
+                        var value = func(index);
+                        InputValueForm frm;
+                        if (value is string[] lines)
+                            frm = new InputValueForm() { LinesValue = lines };
+                        else
+                            frm = new InputValueForm() { StrValue = $"{value}" };
+                        if (frm.ShowDialog() == DialogResult.OK)
+                        {
+                            try
+                            {
+                                if (value is string[] text)
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, text, frm.LinesValue));
+                                else
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, value, frm.StrValue));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Ошибка при записи изменённых данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
                     }
                 }
                 return;
@@ -262,37 +290,6 @@ namespace CodeGenerator
                     SelectLinksForBothSelectedShapes(page);
                 propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
                 propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
-            }
-            else if (page != null && page.StampContain(point))
-            {
-                if (!runEmulate)
-                {
-                    var targets = StamptAssistant.GetStamptTargets(page);
-                    if (targets.Any(x => x.Item1.Contains(point)))
-                    {
-                        (Rectangle rect, string propName, int index, Func<int, object?> func) = targets.FirstOrDefault(x => x.Item1.Contains(point));
-                        var value = func(index);
-                        InputValueForm frm;
-                        if (value is string[] lines)
-                            frm = new InputValueForm() { LinesValue = lines };
-                        else
-                            frm = new InputValueForm() { StrValue = $"{value}" };
-                        if (frm.ShowDialog() == DialogResult.OK)
-                        {
-                            try
-                            {
-                                if (value is string[] text)
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, text, frm.LinesValue));
-                                else
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, value, frm.StrValue));
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message, "Ошибка при записи изменённых данных", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                    }
-                }
             }
             else
             {
