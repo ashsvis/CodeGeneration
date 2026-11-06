@@ -300,7 +300,9 @@ namespace CodeGenerator
                         var item = new ToolStripMenuItem("Добавить пустой лист после этого") { Tag = page };
                         item.Click += (o, e) =>
                         {
-                            AddBlankPage();
+                            //AddBlankPage();
+                            UndoRedoAssistant.UndoRedoManager.Execute(
+                                new AddBlankPageCommand(ContextAssistant.Context, totalPagesInRow));
                         };
                         contextMenu.Items.Add(item);
                     }
@@ -311,7 +313,8 @@ namespace CodeGenerator
                         {
                             if (o is ToolStripMenuItem tsmi && tsmi.Tag is Page pg)
                             {
-                                InsertBlankPage(pg.Number);
+                                UndoRedoAssistant.UndoRedoManager.Execute(
+                                    new InsertBlankPageCommand(ContextAssistant.Context, pg.Number, totalPagesInRow, SubscribeShapeEvents));
                             }
                         };
                         contextMenu.Items.Add(item);
@@ -357,56 +360,6 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void InsertBlankPage(int beforePageNumber)
-        {
-            RightShiftDrawPositionForShapesAndLinks(beforePageNumber);
-            foreach (var page in Pages
-                .Where(x => x.Number >= beforePageNumber)
-                .OrderBy(x => x.Number).ToList())
-            {
-                page.Number++;
-                page.Row = (page.Number - 1) / totalPagesInRow;
-                page.Column = (page.Number - 1) - page.Row * totalPagesInRow;
-            }
-            var p = beforePageNumber;
-            var row = (p - 1) / totalPagesInRow;
-            var column = (p - 1) - row * totalPagesInRow;
-            Pages.Insert(beforePageNumber - 1, new Page(p, 420, 297, row, column) { PagesCount = p });
-            if (Pages.Count > 0) Pages[0].PagesCount = Pages.Count;
-            ModelAssistant.SortAndAssignToPages();
-            drawPanel.Invalidate();
-        }
-
-        private static void RightShiftDrawPositionForShapesAndLinks(int pageNumber)
-        {
-            var dx = 420 * Page.Koeff;
-            var dy = 297 * Page.Koeff;
-            foreach (var shape in Shapes
-                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
-                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
-            {
-                var p = ModelAssistant.GetPageNumber(shape);
-                var row = (p - 1) / totalPagesInRow;
-                var column = (p - 1) - row * totalPagesInRow;
-                if (column == totalPagesInRow - 1)
-                    shape.Shift(-dx * (totalPagesInRow - 1), dy);
-                else
-                    shape.Shift(dx, 0);
-            }
-            foreach (var link in Links
-                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
-                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
-            {
-                var p = ModelAssistant.GetPageNumber(link);
-                var row = (p - 1) / totalPagesInRow;
-                var column = (p - 1) - row * totalPagesInRow;
-                if (column == totalPagesInRow - 1)
-                    link.Shift(-dx * (totalPagesInRow - 1), dy);
-                else
-                    link.Shift(dx, 0);
-            }
-        }
-
         private static void LeftShiftDrawPositionForShapesAndLinks(int pageNumber)
         {
             var dx = 420 * Page.Koeff;
@@ -437,16 +390,6 @@ namespace CodeGenerator
             }
         }
 
-        private void AddBlankPage()
-        {
-            var p = Pages.Count + 1;
-            var row = (p - 1) / totalPagesInRow;
-            var column = (p - 1) - row * totalPagesInRow;
-            Pages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
-            if (Pages.Count > 0) Pages[0].PagesCount = Pages.Count;
-            drawPanel.Invalidate();
-        }
-
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
         {
             // передача положения текущего положения курсора
@@ -456,8 +399,6 @@ namespace CodeGenerator
             var page = Pages.FirstOrDefault(x => x.Bounds.Contains((Point)currentPoint));
             if (page != null && page != currentPage || page == null)
                 currentPage = page;
-
-            Text = $"Page No{currentPage?.Number}";
 
             if (currentPoint is Point point)
             { 

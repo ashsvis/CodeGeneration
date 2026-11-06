@@ -12,7 +12,7 @@ namespace CodeGenerator.Commands
         private readonly Action<Shape> subscribeAction = subscribeAction;
         private readonly Action<Shape> unsubscribeAction = unsubscribeAction;
 
-        public string Name => "Удалить указанную фигуру";
+        public string Name => "Удалить указанные фигуры (по списку)";
 
         public void Execute()
         {
