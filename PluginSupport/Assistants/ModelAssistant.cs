@@ -1,6 +1,5 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -60,11 +59,9 @@ namespace PluginSupport.Assistants
                 if (cacheShapes.TryGetValue(page, out List<Shape>? value) && value.Count > 0)
                     return value;
             }
-            //var result = ContextAssistant.ContextShapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
             var result = page != null 
                 ? ContextAssistant.ContextShapes.Where(x => x.Bounds.IntersectsWith(page.Bounds)).Reverse()
                 : ContextAssistant.ContextShapes.Where(x => !ContextAssistant.ContextPages.Any(y => y.Bounds.IntersectsWith(x.Bounds))).Reverse();
-            //result.Reverse();
             if (page == null)
                 cacheNoPageShapes.AddRange(result);
             else
@@ -81,7 +78,6 @@ namespace PluginSupport.Assistants
             var result = page != null
                 ? ContextAssistant.ContextLinks.Where(x => x.Bounds.IntersectsWith(page.Bounds))
                 : ContextAssistant.ContextLinks.Where(x => !ContextAssistant.ContextPages.Any(y => y.Bounds.IntersectsWith(x.Bounds)));
-            //return [.. ContextAssistant.ContextLinks.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
             return [.. result];
         }
 
@@ -550,6 +546,7 @@ namespace PluginSupport.Assistants
 
         private static void ReadContextFromXml(XElement? xcontext, Action<Shape> subscribeAction)
         {
+            ContextAssistant.ContextPages.Clear();
             ContextAssistant.ContextShapes.Clear();
             ContextAssistant.ContextLinks.Clear();
             if (xcontext == null) return;
@@ -571,12 +568,18 @@ namespace PluginSupport.Assistants
                     ContextAssistant.ContextEnvironment = new(m11, m12, m21, m22, dx, dy);
                 }
             }
+            int p = 1;
+            const int totalPagesInRow = 10;
             int n = 0;
             foreach (var xpage in xcontext.Elements("Page"))
             {
                 var xnumber = xpage.Attribute("Number")?.Value;
                 if (!string.IsNullOrWhiteSpace(xnumber))
                 {
+                    var row = (p - 1) / totalPagesInRow;
+                    var column = (p - 1) - row * totalPagesInRow;
+                    ContextAssistant.ContextPages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
+
                     var number = ParseHelper.ParseInteger(xnumber, 0);
                     var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == number);
                     if (page != null)
@@ -590,6 +593,7 @@ namespace PluginSupport.Assistants
                     }
                 }
                 n = ReadElements(n, xpage, subscribeAction);
+                p++;
             }
             var xothers = xcontext.Element("OutsidePages");
             if (xothers != null)

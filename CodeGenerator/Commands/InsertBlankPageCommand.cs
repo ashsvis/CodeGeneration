@@ -71,7 +71,6 @@ namespace CodeGenerator.Commands
         {
             var oldcontext = ContextAssistant.Context;
             ContextAssistant.Context = commandContext;
-            ContextAssistant.ContextPages.RemoveAt(ContextAssistant.ContextPages.Count - 1);
             ModelAssistant.LoadUndoXml(xundo, subscribeAction);
             if (ContextAssistant.ContextPages.Count > 0) ContextAssistant.ContextPages[0].PagesCount = ContextAssistant.ContextPages.Count;
             ModelAssistant.SortAndAssignToPages();

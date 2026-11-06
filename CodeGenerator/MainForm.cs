@@ -322,7 +322,10 @@ namespace CodeGenerator
                         item = new ToolStripMenuItem("Удалить этот лист") { Tag = page };
                         item.Click += (o, e) =>
                         {
-                            RemovePage(page);
+                            //RemovePage(page);
+                            UndoRedoAssistant.UndoRedoManager.Execute(
+                                new RemovePageCommand(ContextAssistant.Context, page, totalPagesInRow, 
+                                SubscribeShapeEvents, UnsubscribeShapeEvents));
                         };
                         contextMenu.Items.Add(item);
                     }
