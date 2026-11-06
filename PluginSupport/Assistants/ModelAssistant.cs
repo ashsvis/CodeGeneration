@@ -12,11 +12,15 @@ namespace PluginSupport.Assistants
         private static readonly Dictionary<Page, List<Shape>> cacheShapes = [];
         private static readonly List<Shape> cacheNoPageShapes = [];
         private static readonly Dictionary<string, Type> types = [];
+        private static readonly Dictionary<Shape, int> cacheShapePageNumbers = [];
+        private static readonly Dictionary<Link, int> cacheLinkPageNumbers = [];
 
         public static void ClearCache()
         {
             cacheShapes.Clear();
             cacheNoPageShapes.Clear();
+            cacheShapePageNumbers.Clear();
+            cacheLinkPageNumbers.Clear();
         }
 
         public static void AddType(string key, Type type)
@@ -26,14 +30,22 @@ namespace PluginSupport.Assistants
 
         public static int GetPageNumber(Shape shape)
         {
+            if (cacheShapePageNumbers.TryGetValue(shape, out int value))
+                return value;
             var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
-            return page != null ? page.Number : 0;
+            var number = page != null ? page.Number : 0;
+            cacheShapePageNumbers.Add(shape, number);
+            return number;
         }
 
         public static int GetPageNumber(Link link)
         {
+            if (cacheLinkPageNumbers.TryGetValue(link, out int value))
+                return value;
             var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
-            return page != null ? page.Number : 0;
+            var number = page != null ? page.Number : 0;
+            cacheLinkPageNumbers.Add(link, number);
+            return number;
         }
 
         public static List<Shape> ShapesFrom(Page? page)
@@ -335,34 +347,9 @@ namespace PluginSupport.Assistants
         {
             ClearCache();
 
-            //// сброс номеров страниц
-            //ContextAssistant.ContextShapes.ForEach(shape => shape.Page = 0);
-            //ContextAssistant.ContextLinks.ForEach(link => link.Page = 0);
-
-            //// назначение номеров страниц на основании попадания в область листа
-            //foreach (var page in ContextAssistant.ContextPages)
-            //{
-            //    foreach (var shape in ContextAssistant.ContextShapes.Where(x => x.Page == 0))
-            //    {
-            //        var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
-            //        if (p != null)
-            //        {
-            //            shape.Page = p.Number;
-            //        }
-            //    }
-            //    foreach (var link in ContextAssistant.ContextLinks.Where(x => x.Page == 0))
-            //    {
-            //        var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
-            //        if (p != null)
-            //        {
-            //            link.Page = p.Number;
-            //        }
-            //    }
-            //}
-
             // назначение порядкового индекса для фигур
             var n = 0;
-            foreach (var shape in ContextAssistant.ContextShapes.OrderBy(x => GetPageNumber(x)/*x.Page*/).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
+            foreach (var shape in ContextAssistant.ContextShapes.OrderBy(x => GetPageNumber(x)).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
             {
                 shape.Index = n;    // назначение порядкового индекса
                 n++;
@@ -430,14 +417,14 @@ namespace PluginSupport.Assistants
                 if (source != null && target != null)
                     link.UnlinkToLocation(source, target);
 
-                pageIndexes.Add(ModelAssistant.GetPageNumber(link)/* link.Page*/);
+                pageIndexes.Add(ModelAssistant.GetPageNumber(link));
 
                 // удаляем визуальную ссылку
                 ContextAssistant.ContextLinks.Remove(link);
             }
             // для всех удаляемых элементов
             unsubscribeAction(shape);
-            pageIndexes.Add(GetPageNumber(shape) /*shape.Page*/);
+            pageIndexes.Add(GetPageNumber(shape));
 
             if (shape is IBeforeRemove beforeRemove) beforeRemove.Delete();
             ContextAssistant.ContextShapes.Remove(shape);

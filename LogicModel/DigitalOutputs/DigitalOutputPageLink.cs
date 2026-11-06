@@ -128,10 +128,10 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Near;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = $"—сылка {Number} с листа {ModelAssistant.GetPageNumber(this)/*Page*/} (никуда)";
+            var fname = $"—сылка {Number} с листа {ModelAssistant.GetPageNumber(this)} (никуда)";
             if (Targets.Count > 0)
             {
-                var items = Targets.OrderBy(x => ModelAssistant.GetPageNumber(x)/*x.Page*/).Select(x => ModelAssistant.GetPageNumber(x)/*x.Page*/).Distinct().ToArray();
+                var items = Targets.OrderBy(x => ModelAssistant.GetPageNumber(x)).Select(x => ModelAssistant.GetPageNumber(x)).Distinct().ToArray();
                 if (items.Length == 1)
                     fname = $"—сылка {Number} на лист {items[0]}";
                 else

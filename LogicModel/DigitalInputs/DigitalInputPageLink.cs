@@ -67,7 +67,7 @@ namespace LogicModel
             sf.Alignment = StringAlignment.Far;
             sf.LineAlignment = StringAlignment.Center;
             var path = new GraphicsPath();
-            var fname = SourcePageLink != null ? $"—сылка {SourcePageLink.Number} с листа {ModelAssistant.GetPageNumber(SourcePageLink)/*SourcePageLink.Page*/}" : "—сылка с листа (ниоткуда)";
+            var fname = SourcePageLink != null ? $"—сылка {SourcePageLink.Number} с листа {ModelAssistant.GetPageNumber(SourcePageLink)}" : "—сылка с листа (ниоткуда)";
             var pinPoint = GetOutputPinPoint(0) ?? Point.Empty;
             path.AddString(fname, fontFunc.FontFamily, (int)FontStyle.Regular,
                 fontFunc.Size, Point.Add(pinPoint, new Size(-24, 0)), sf);
@@ -104,7 +104,7 @@ namespace LogicModel
                 {
                     if (r is DigitalOutputPageLink digital)
                     {
-                        var dropItem = new ToolStripMenuItem() { Text = $"—сылка {digital.Number} с листа {ModelAssistant.GetPageNumber(digital)/*digital.Page*/}" };
+                        var dropItem = new ToolStripMenuItem() { Text = $"—сылка {digital.Number} с листа {ModelAssistant.GetPageNumber(digital)}" };
                         dropItem.Click += (s, e) =>
                         {
                             SourcePageLink?.Targets.Remove(this);

@@ -354,12 +354,11 @@ namespace CodeGenerator
         {
             var dx = 420 * Page.Koeff;
             var dy = 0;
-            foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x)/* x.Page*/ >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)/* x.Page*/).ToList())
+            foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x) >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)).ToList())
             {
-                //shape.Page++;
                 shape.Location = Point.Add(shape.Location, new Size(dx, dy));
             }
-            foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x)/* x.Page*/ >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)/* x.Page*/).ToList())
+            foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)).ToList())
             {
                 link.StartPoint = Point.Add(link.StartPoint, new Size(dx, dy));
                 link.EndPoint = Point.Add(link.EndPoint, new Size(dx, dy));
@@ -492,14 +491,14 @@ namespace CodeGenerator
                                 shape.IsInputTargetsPoint(point, out int targetIndex) && !shape.IsLinked(targetIndex) &&
                                 firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(targetIndex))
                             {
-                                if (ModelAssistant.GetPageNumber(linked)/* linked.Page*/ == 0 || ModelAssistant.GetPageNumber(shape) /*shape.Page*/ == 0)
+                                if (ModelAssistant.GetPageNumber(linked) == 0 || ModelAssistant.GetPageNumber(shape) == 0)
                                 {
                                     MessageBox.Show("Для создания связи" +
                                         "\nразмещайте соединяемые фигуры" +
                                         "\nв пределах одного листа.",
                                         "Создание связи", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 }
-                                else if (ModelAssistant.GetPageNumber(linked)/*linked.Page*/ == ModelAssistant.GetPageNumber(shape)/*shape.Page*/)
+                                else if (ModelAssistant.GetPageNumber(linked) == ModelAssistant.GetPageNumber(shape))
                                 {
                                     UndoRedoAssistant.UndoRedoManager.Execute(
                                         new BuildLinkCommand(ContextAssistant.Context, page, firstShape, firstShapeOutputIndex, shape, targetIndex));
@@ -595,7 +594,7 @@ namespace CodeGenerator
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
                         shape.CanInputLink = !runEmulate &&
-                            ModelAssistant.GetPageNumber(firstShape)/*firstShape.Page*/ == ModelAssistant.GetPageNumber(shape)/*shape.Page*/ &&
+                            ModelAssistant.GetPageNumber(firstShape) == ModelAssistant.GetPageNumber(shape) &&
                             firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(index);
                     else
                         shape.CanInputLink = false;
@@ -860,7 +859,7 @@ namespace CodeGenerator
             var hoverbrush = new SolidBrush(Color.Teal);
             var selectbrush = new SolidBrush(Color.Teal);
             var selecthoverbrush = new SolidBrush(Color.CadetBlue);
-            foreach (var shape in Shapes.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page */== page.Number || ModelAssistant.GetPageNumber(x)/* x.Page*/ == 0))
+            foreach (var shape in Shapes.Where(x => page != null && ModelAssistant.GetPageNumber(x) == page.Number || ModelAssistant.GetPageNumber(x) == 0))
             {
                 Pen pen;
                 Brush brush;
@@ -901,7 +900,7 @@ namespace CodeGenerator
                 }
             }
             // рисуем связи фигур из списка
-            foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page*/ == page.Number || ModelAssistant.GetPageNumber(x) /*x.Page*/ == 0))
+            foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x) == page.Number || ModelAssistant.GetPageNumber(x) == 0))
             {
                 Pen pen;
                 using var defaultpen = new Pen(link.Foreground);
@@ -930,7 +929,7 @@ namespace CodeGenerator
             if (!dragShapes)
             {
                 // рисуем присоединения связей фигур из списка
-                foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page*/ == page.Number || ModelAssistant.GetPageNumber(x) /*x.Page*/ == 0))
+                foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x) == page.Number || ModelAssistant.GetPageNumber(x) == 0))
                 {
                     Brush brush;
                     using var defaultbrush = new SolidBrush(link.Foreground);
@@ -1355,11 +1354,11 @@ namespace CodeGenerator
                 e.Graphics?.TranslateTransform(dx, dy);
                 e.Graphics?.ScaleTransform((float)(1.0 / kfY), (float)(1.0 / kfY));
                 page?.Draw(e.Graphics, Color.Black);
-                foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
+                foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x) == number))
                     shape.Draw(e.Graphics, Pens.Black, Brushes.White);
-                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
+                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) == number))
                     link.DrawLines(e.Graphics, Pens.Black);
-                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
+                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) == number))
                     link.DrawDots(e.Graphics, Brushes.Black);
                 e.Graphics?.ScaleTransform((float)kfY, (float)kfY);
                 e.Graphics?.TranslateTransform(-dx, -dy);
@@ -1464,7 +1463,7 @@ namespace CodeGenerator
         {
             if (ContextAssistant.Context != ContextKind.Model)
             {
-                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation/*, drawPanel.Origin, drawPanel.Zoom*/);
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation);
                 ContextAssistant.Context = ContextKind.Model;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5]);
@@ -1476,7 +1475,7 @@ namespace CodeGenerator
         {
             if (ContextAssistant.Context != ContextKind.Field)
             {
-                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation/*, drawPanel.Origin, drawPanel.Zoom*/);
+                ModelAssistant.UpdateContextEnvironment(drawPanel.Transformation);
                 ContextAssistant.Context = ContextKind.Field;
                 var env = ContextAssistant.ContextEnvironment;
                 drawPanel.RestoreWheelData(env.Matrix[0], env.Matrix[1], env.Matrix[2], env.Matrix[3], env.Matrix[4], env.Matrix[5]);

@@ -111,7 +111,7 @@ namespace PluginSupport.Assistants
                 atargets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].PartCount; }));
                 atargets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].MakePage; }));
                 atargets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (n) => { return page.Changes[n].DocNumber; }));
-                atargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Changes[n].Signature;*/ }));
+                atargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; }));
                 atargets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].Date; }));
                 bottom -= 5;
             }
@@ -121,7 +121,7 @@ namespace PluginSupport.Assistants
             {
                 btargets.Add((new Rectangle(rect.Left, rect.Top + top * kf, 17 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Position; }, StringAlignment.Near));
                 btargets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + top * kf, 23 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Name; }, StringAlignment.Near));
-                btargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + top * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Signatures[n].Signature;*/ }, StringAlignment.Center));
+                btargets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + top * kf, 15 * kf, 5 * kf), i, (n) => { return ""; }, StringAlignment.Center));
                 btargets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + top * kf, 10 * kf, 5 * kf), i, (n) => { return page.Signatures[n].Date; }, StringAlignment.Center));
                 top += 5;
             }
@@ -172,7 +172,7 @@ namespace PluginSupport.Assistants
                 targets.Add((new Rectangle(rect.Left + 7 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].PartCount; }));
                 targets.Add((new Rectangle(rect.Left + 17 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].MakePage; }));
                 targets.Add((new Rectangle(rect.Left + 27 * kf, rect.Top + bottom * kf, 13 * kf, 5 * kf), i, (n) => { return page.Changes[n].DocNumber; }));
-                targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; /*page.Changes[n].Signature;*/ }));
+                targets.Add((new Rectangle(rect.Left + 40 * kf, rect.Top + bottom * kf, 15 * kf, 5 * kf), i, (n) => { return ""; }));
                 targets.Add((new Rectangle(rect.Left + 55 * kf, rect.Top + bottom * kf, 10 * kf, 5 * kf), i, (n) => { return page.Changes[n].Date; }));
                 bottom -= 5;
             }

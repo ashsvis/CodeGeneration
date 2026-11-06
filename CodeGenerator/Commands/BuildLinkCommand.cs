@@ -71,7 +71,7 @@ namespace CodeGenerator.Commands
                     plink.RemoveTargetFromOutput(target, link.TargetPinIndex);
                 // удаляем визуальную ссылку
                 ContextAssistant.ContextLinks.Remove(link);
-                var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == ModelAssistant.GetPageNumber(link)/* link.Page*/);
+                var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Number == ModelAssistant.GetPageNumber(link));
                 ModelAssistant.UpdateLinkOnPage(page, link);
             }
 
