@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace PluginSupport
 {
@@ -26,11 +27,13 @@ namespace PluginSupport
             id = guid;
         }
 
-        //[Category("Common"), DisplayName("Page"), ReadOnly(true)]
-        //public int Page { get; set; }
-
         [Browsable(false)]
         public Point Location { get; set; }
+
+        public void Shift(int dx, int dy)
+        {
+            Location =  Point.Add(Location, new Size(dx, dy));
+        }
 
         [Browsable(false)]
         public virtual int Width { get; set; }

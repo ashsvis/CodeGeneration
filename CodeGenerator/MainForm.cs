@@ -312,7 +312,6 @@ namespace CodeGenerator
                             if (o is ToolStripMenuItem tsmi && tsmi.Tag is Page pg)
                             {
                                 InsertBlankPage(pg.Number);
-                                //MovePagesContentToRight(pg);
                             }
                         };
                         contextMenu.Items.Add(item);
@@ -339,40 +338,36 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void RemovePage(Page page)
+        private void RemovePage(Page removedPage)
         {
-            foreach (var shape in ModelAssistant.ShapesFrom(page))
+            foreach (var shape in ModelAssistant.ShapesFrom(removedPage))
                 ModelAssistant.RemoveShape(shape, UnsubscribeShapeEvents);
-            Pages.Remove(page);
-            if (Pages.Count > 0)
-                Pages[0].PagesCount = Pages.Count;
-            ModelAssistant.ClearCache();
+            LeftShiftDrawPositionForShapesAndLinks(removedPage.Number);
+            foreach (var page in Pages
+                .Where(x => x.Number >= removedPage.Number)
+                .OrderBy(x => x.Number).ToList())
+            {
+                page.Number--;
+                page.Row = (page.Number - 1) / totalPagesInRow;
+                page.Column = (page.Number - 1) - page.Row * totalPagesInRow;
+            }
+            Pages.Remove(removedPage);
+            if (Pages.Count > 0) Pages[0].PagesCount = Pages.Count;
+            ModelAssistant.SortAndAssignToPages();
             drawPanel.Invalidate();
         }
 
         private void InsertBlankPage(int beforePageNumber)
         {
-            var dx = 420 * Page.Koeff;
-            var dy = 0;
-            foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x) >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)).ToList())
-            {
-                shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-            }
-            foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)).ToList())
-            {
-                link.StartPoint = Point.Add(link.StartPoint, new Size(dx, dy));
-                link.EndPoint = Point.Add(link.EndPoint, new Size(dx, dy));
-                var pts = link.GetPoints();
-                for (int j = 0; j < pts.Length; j++)
-                    pts[j] = Point.Add(pts[j], new Size(dx, dy));
-                link.SetPoints(pts);
-            }
-            foreach (var page in Pages.Where(x => x.Number >= beforePageNumber).OrderBy(x => x.Number).ToList())
+            RightShiftDrawPositionForShapesAndLinks(beforePageNumber);
+            foreach (var page in Pages
+                .Where(x => x.Number >= beforePageNumber)
+                .OrderBy(x => x.Number).ToList())
             {
                 page.Number++;
-                page.Column++;
+                page.Row = (page.Number - 1) / totalPagesInRow;
+                page.Column = (page.Number - 1) - page.Row * totalPagesInRow;
             }
-
             var p = beforePageNumber;
             var row = (p - 1) / totalPagesInRow;
             var column = (p - 1) - row * totalPagesInRow;
@@ -382,14 +377,73 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
+        private static void RightShiftDrawPositionForShapesAndLinks(int pageNumber)
+        {
+            var dx = 420 * Page.Koeff;
+            var dy = 297 * Page.Koeff;
+            foreach (var shape in Shapes
+                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
+                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
+            {
+                var p = ModelAssistant.GetPageNumber(shape);
+                var row = (p - 1) / totalPagesInRow;
+                var column = (p - 1) - row * totalPagesInRow;
+                if (column == totalPagesInRow - 1)
+                    shape.Shift(-dx * (totalPagesInRow - 1), dy);
+                else
+                    shape.Shift(dx, 0);
+            }
+            foreach (var link in Links
+                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
+                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
+            {
+                var p = ModelAssistant.GetPageNumber(link);
+                var row = (p - 1) / totalPagesInRow;
+                var column = (p - 1) - row * totalPagesInRow;
+                if (column == totalPagesInRow - 1)
+                    link.Shift(-dx * (totalPagesInRow - 1), dy);
+                else
+                    link.Shift(dx, 0);
+            }
+        }
+
+        private static void LeftShiftDrawPositionForShapesAndLinks(int pageNumber)
+        {
+            var dx = 420 * Page.Koeff;
+            var dy = 297 * Page.Koeff;
+            foreach (var shape in Shapes
+                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
+                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
+            {
+                var p = ModelAssistant.GetPageNumber(shape);
+                var row = (p - 1) / totalPagesInRow;
+                var column = (p - 1) - row * totalPagesInRow;
+                if (column == 0)
+                    shape.Shift(dx * (totalPagesInRow - 1), -dy);
+                else
+                    shape.Shift(-dx, 0);
+            }
+            foreach (var link in Links
+                .Where(x => ModelAssistant.GetPageNumber(x) >= pageNumber)
+                .OrderByDescending(ModelAssistant.GetPageNumber).ToList())
+            {
+                var p = ModelAssistant.GetPageNumber(link);
+                var row = (p - 1) / totalPagesInRow;
+                var column = (p - 1) - row * totalPagesInRow;
+                if (column == 0)
+                    link.Shift(dx * (totalPagesInRow - 1), -dy);
+                else
+                    link.Shift(-dx, 0);
+            }
+        }
+
         private void AddBlankPage()
         {
             var p = Pages.Count + 1;
             var row = (p - 1) / totalPagesInRow;
             var column = (p - 1) - row * totalPagesInRow;
             Pages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
-            if (Pages.Count > 0)
-                Pages[0].PagesCount = Pages.Count;
+            if (Pages.Count > 0) Pages[0].PagesCount = Pages.Count;
             drawPanel.Invalidate();
         }
 

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Drawing.Drawing2D;
 using System.Xml.Linq;
+using static System.Windows.Forms.LinkLabel;
 
 namespace PluginSupport
 {
@@ -36,6 +37,15 @@ namespace PluginSupport
         public bool IsShort { get; set; }
 
         public abstract Link DeepClone();
+        public void Shift(int dx, int dy)
+        {
+            StartPoint = Point.Add(StartPoint, new Size(dx, dy));
+            EndPoint = Point.Add(EndPoint, new Size(dx, dy));
+            var pts = GetPoints();
+            for (int i = 0; i < pts.Length; i++)
+                pts[i] = Point.Add(pts[i], new Size(dx, dy));
+            SetPoints(pts);
+        }
 
         public abstract GraphicsPath[] GetLinesPaths();
         public abstract GraphicsPath[] GetDotsPaths();
