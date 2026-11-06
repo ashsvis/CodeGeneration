@@ -1,5 +1,6 @@
 ﻿using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
 
@@ -23,6 +24,18 @@ namespace PluginSupport.Assistants
             types.TryAdd(key, type);
         }
 
+        public static int GetPageNumber(Shape shape)
+        {
+            var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
+            return page != null ? page.Number : 0;
+        }
+
+        public static int GetPageNumber(Link link)
+        {
+            var page = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
+            return page != null ? page.Number : 0;
+        }
+
         public static List<Shape> ShapesFrom(Page? page)
         {
             if (page == null)
@@ -35,8 +48,11 @@ namespace PluginSupport.Assistants
                 if (cacheShapes.TryGetValue(page, out List<Shape>? value) && value.Count > 0)
                     return value;
             }
-            var result = ContextAssistant.ContextShapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
-            result.Reverse();
+            //var result = ContextAssistant.ContextShapes.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number).ToList();
+            var result = page != null 
+                ? ContextAssistant.ContextShapes.Where(x => x.Bounds.IntersectsWith(page.Bounds)).Reverse()
+                : ContextAssistant.ContextShapes.Where(x => !ContextAssistant.ContextPages.Any(y => y.Bounds.IntersectsWith(x.Bounds))).Reverse();
+            //result.Reverse();
             if (page == null)
                 cacheNoPageShapes.AddRange(result);
             else
@@ -45,12 +61,16 @@ namespace PluginSupport.Assistants
                     cacheShapes.Add(page, []);
                 cacheShapes[page].AddRange(result);
             }
-            return result;
+            return [.. result];
         }
 
         public static List<Link> LinksFrom(Page? page)
         {
-            return [.. ContextAssistant.ContextLinks.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+            var result = page != null
+                ? ContextAssistant.ContextLinks.Where(x => x.Bounds.IntersectsWith(page.Bounds))
+                : ContextAssistant.ContextLinks.Where(x => !ContextAssistant.ContextPages.Any(y => y.Bounds.IntersectsWith(x.Bounds)));
+            //return [.. ContextAssistant.ContextLinks.Where(x => page == null && x.Page == 0 || page != null && x.Page == page.Number)];
+            return [.. result];
         }
 
         public static void SelectAllOnPage(Page? page)
@@ -315,28 +335,34 @@ namespace PluginSupport.Assistants
         {
             ClearCache();
 
-            // сброс номеров страниц
-            ContextAssistant.ContextShapes.ForEach(shape => shape.Page = 0);
-            ContextAssistant.ContextLinks.ForEach(link => link.Page = 0);
+            //// сброс номеров страниц
+            //ContextAssistant.ContextShapes.ForEach(shape => shape.Page = 0);
+            //ContextAssistant.ContextLinks.ForEach(link => link.Page = 0);
 
-            // назначение номеров страниц на основании попадания в область листа
-            foreach (var page in ContextAssistant.ContextPages)
-            {
-                foreach (var shape in ContextAssistant.ContextShapes.Where(x => x.Page == 0))
-                {
-                    var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
-                    if (p != null) shape.Page = p.Number;
-                }
-                foreach (var link in ContextAssistant.ContextLinks.Where(x => x.Page == 0))
-                {
-                    var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
-                    if (p != null) link.Page = p.Number;
-                }
-            }
+            //// назначение номеров страниц на основании попадания в область листа
+            //foreach (var page in ContextAssistant.ContextPages)
+            //{
+            //    foreach (var shape in ContextAssistant.ContextShapes.Where(x => x.Page == 0))
+            //    {
+            //        var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(shape.Bounds));
+            //        if (p != null)
+            //        {
+            //            shape.Page = p.Number;
+            //        }
+            //    }
+            //    foreach (var link in ContextAssistant.ContextLinks.Where(x => x.Page == 0))
+            //    {
+            //        var p = ContextAssistant.ContextPages.FirstOrDefault(x => x.Bounds.IntersectsWith(link.Bounds));
+            //        if (p != null)
+            //        {
+            //            link.Page = p.Number;
+            //        }
+            //    }
+            //}
 
             // назначение порядкового индекса для фигур
             var n = 0;
-            foreach (var shape in ContextAssistant.ContextShapes.OrderBy(x => x.Page).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
+            foreach (var shape in ContextAssistant.ContextShapes.OrderBy(x => GetPageNumber(x)/*x.Page*/).ThenBy(x => x.Location.X).ThenBy(x => x.Location.Y))
             {
                 shape.Index = n;    // назначение порядкового индекса
                 n++;
@@ -404,14 +430,14 @@ namespace PluginSupport.Assistants
                 if (source != null && target != null)
                     link.UnlinkToLocation(source, target);
 
-                pageIndexes.Add(link.Page);
+                pageIndexes.Add(ModelAssistant.GetPageNumber(link)/* link.Page*/);
 
                 // удаляем визуальную ссылку
                 ContextAssistant.ContextLinks.Remove(link);
             }
             // для всех удаляемых элементов
             unsubscribeAction(shape);
-            pageIndexes.Add(shape.Page);
+            pageIndexes.Add(GetPageNumber(shape) /*shape.Page*/);
 
             if (shape is IBeforeRemove beforeRemove) beforeRemove.Delete();
             ContextAssistant.ContextShapes.Remove(shape);

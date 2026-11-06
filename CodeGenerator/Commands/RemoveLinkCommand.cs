@@ -39,7 +39,7 @@ namespace CodeGenerator.Commands
                     plink.RemoveTargetFromOutput(target, link.TargetPinIndex);
                 // удаляем визуальную ссылку
                 ContextAssistant.ContextLinks.Remove(link);
-                pageIndexes.Add(link.Page);
+                pageIndexes.Add(ModelAssistant.GetPageNumber(link)/* link.Page*/);
             }
             foreach (var index in pageIndexes.Distinct())
             {

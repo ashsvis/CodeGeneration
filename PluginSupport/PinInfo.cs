@@ -7,20 +7,20 @@ namespace PluginSupport
         [Category("Owner"), DisplayName("Function")]
         public Shape? Owner { get; set; } = owner;
 
-        [Category("Owner"), DisplayName("Page")]
-        public string OwnerPage => Owner == null ? "" : $"{Owner.Page}";
+        //[Category("Owner"), DisplayName("Page")]
+        //public string OwnerPage => Owner == null ? "" : $"{Owner.Page}";
 
-        [Category("Owner"), DisplayName("Label")]
-        public string OwnerLabel => Owner == null ? "" : $"L{Owner.Index + 1}";
+        //[Category("Owner"), DisplayName("Label")]
+        //public string OwnerLabel => Owner == null ? "" : $"L{Owner.Index + 1}";
 
-        [Category("Owner"), DisplayName("Id")]
-        public string OwnerId => Owner == null ? "" : $"{Owner.Id}";
+        //[Category("Owner"), DisplayName("Id")]
+        //public string OwnerId => Owner == null ? "" : $"{Owner.Id}";
 
         [Browsable(false)]
         public bool IsOutput { get; set; } = isOutput;
 
-        [Category("Pin Info"), DisplayName("Direction")]
-        public string PinDirect => IsOutput ? "Output" : "Input";
+        //[Category("Pin Info"), DisplayName("Direction")]
+        //public string PinDirect => IsOutput ? "Output" : "Input";
 
 
         [Category("Pin Info"), DisplayName("Index"), ReadOnly(true)]
@@ -32,8 +32,8 @@ namespace PluginSupport
         [Browsable(false)]
         public Guid LinkId { get; set; } = linkId;
 
-        [Category("Linked To"), DisplayName("Id")]
-        public string LinkInfo => LinkId == Guid.Empty ? "" : LinkId.ToString();
+        //[Category("Linked To"), DisplayName("Id")]
+        //public string LinkInfo => LinkId == Guid.Empty ? "" : LinkId.ToString();
     }
 
 }

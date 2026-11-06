@@ -26,8 +26,8 @@ namespace PluginSupport
             id = guid;
         }
 
-        [Category("Common"), DisplayName("Page"), ReadOnly(true)]
-        public int Page { get; set; }
+        //[Category("Common"), DisplayName("Page"), ReadOnly(true)]
+        //public int Page { get; set; }
 
         [Browsable(false)]
         public Point Location { get; set; }

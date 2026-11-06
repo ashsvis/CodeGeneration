@@ -16,6 +16,11 @@ namespace PluginSupport
 
         public Rectangle Bounds => new(Column * Width * kf - 100, Row * Height * kf - 25, Width * kf, Height * kf);
 
+        public override string ToString()
+        {
+            return $"Page #{Number} Bounds={Bounds} Row={Row} Column={Column}";
+        }
+
         public string? DocumentNumber { get; set; }
         public string? CustomerName { get; set; }
         public string[] ProjectName { get; set; } = [];

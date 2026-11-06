@@ -311,8 +311,8 @@ namespace CodeGenerator
                         {
                             if (o is ToolStripMenuItem tsmi && tsmi.Tag is Page pg)
                             {
-                                AddBlankPage();
-                                MovePagesContentToRight(pg);
+                                InsertBlankPage(pg.Number);
+                                //MovePagesContentToRight(pg);
                             }
                         };
                         contextMenu.Items.Add(item);
@@ -320,7 +320,7 @@ namespace CodeGenerator
                         item = new ToolStripMenuItem("Удалить этот лист") { Tag = page };
                         item.Click += (o, e) =>
                         {
-
+                            RemovePage(page);
                         };
                         contextMenu.Items.Add(item);
                     }
@@ -339,30 +339,51 @@ namespace CodeGenerator
             drawPanel.Invalidate();
         }
 
-        private void MovePagesContentToRight(Page page)
+        private void RemovePage(Page page)
         {
-            var lastPage = Pages.Last();
-            var dx = lastPage.Bounds.X - page.Bounds.X;
-            var dy = lastPage.Bounds.Y - page.Bounds.Y;
             foreach (var shape in ModelAssistant.ShapesFrom(page))
+                ModelAssistant.RemoveShape(shape, UnsubscribeShapeEvents);
+            Pages.Remove(page);
+            if (Pages.Count > 0)
+                Pages[0].PagesCount = Pages.Count;
+            ModelAssistant.ClearCache();
+            drawPanel.Invalidate();
+        }
+
+        private void InsertBlankPage(int beforePageNumber)
+        {
+            var dx = 420 * Page.Koeff;
+            var dy = 0;
+            foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x)/* x.Page*/ >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)/* x.Page*/).ToList())
             {
+                //shape.Page++;
                 shape.Location = Point.Add(shape.Location, new Size(dx, dy));
-                shape.Page = lastPage.Number;
             }
-            foreach (var link in ModelAssistant.LinksFrom(page))
+            foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x)/* x.Page*/ >= beforePageNumber).OrderByDescending(x => ModelAssistant.GetPageNumber(x)/* x.Page*/).ToList())
             {
                 link.StartPoint = Point.Add(link.StartPoint, new Size(dx, dy));
                 link.EndPoint = Point.Add(link.EndPoint, new Size(dx, dy));
                 var pts = link.GetPoints();
-                for (var i = 0; i < pts.Length; i++)
-                    pts[i] = Point.Add(pts[i], new Size(dx, dy));
+                for (int j = 0; j < pts.Length; j++)
+                    pts[j] = Point.Add(pts[j], new Size(dx, dy));
                 link.SetPoints(pts);
-                link.Page = lastPage.Number;
             }
-            ModelAssistant.ClearCache();
+            foreach (var page in Pages.Where(x => x.Number >= beforePageNumber).OrderBy(x => x.Number).ToList())
+            {
+                page.Number++;
+                page.Column++;
+            }
+
+            var p = beforePageNumber;
+            var row = (p - 1) / totalPagesInRow;
+            var column = (p - 1) - row * totalPagesInRow;
+            Pages.Insert(beforePageNumber - 1, new Page(p, 420, 297, row, column) { PagesCount = p });
+            if (Pages.Count > 0) Pages[0].PagesCount = Pages.Count;
+            ModelAssistant.SortAndAssignToPages();
+            drawPanel.Invalidate();
         }
 
-        private static void AddBlankPage()
+        private void AddBlankPage()
         {
             var p = Pages.Count + 1;
             var row = (p - 1) / totalPagesInRow;
@@ -370,6 +391,7 @@ namespace CodeGenerator
             Pages.Add(new Page(p, 420, 297, row, column) { PagesCount = p });
             if (Pages.Count > 0)
                 Pages[0].PagesCount = Pages.Count;
+            drawPanel.Invalidate();
         }
 
         private void DrawPanel_MouseMove(object? sender, MouseEventArgs e)
@@ -470,14 +492,14 @@ namespace CodeGenerator
                                 shape.IsInputTargetsPoint(point, out int targetIndex) && !shape.IsLinked(targetIndex) &&
                                 firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(targetIndex))
                             {
-                                if (linked.Page == 0 || shape.Page == 0)
+                                if (ModelAssistant.GetPageNumber(linked)/* linked.Page*/ == 0 || ModelAssistant.GetPageNumber(shape) /*shape.Page*/ == 0)
                                 {
                                     MessageBox.Show("Для создания связи" +
                                         "\nразмещайте соединяемые фигуры" +
                                         "\nв пределах одного листа.",
                                         "Создание связи", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 }
-                                else if (linked.Page == shape.Page)
+                                else if (ModelAssistant.GetPageNumber(linked)/*linked.Page*/ == ModelAssistant.GetPageNumber(shape)/*shape.Page*/)
                                 {
                                     UndoRedoAssistant.UndoRedoManager.Execute(
                                         new BuildLinkCommand(ContextAssistant.Context, page, firstShape, firstShapeOutputIndex, shape, targetIndex));
@@ -573,7 +595,7 @@ namespace CodeGenerator
                     Cursor = shape.IsLinked(index) ? Cursors.Arrow : linkBuilding ? Cursors.Cross : Cursors.Hand;
                     if (linkBuilding && !shape.IsLinked(index) && firstShape != null)
                         shape.CanInputLink = !runEmulate &&
-                            firstShape.Page == shape.Page &&
+                            ModelAssistant.GetPageNumber(firstShape)/*firstShape.Page*/ == ModelAssistant.GetPageNumber(shape)/*shape.Page*/ &&
                             firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(index);
                     else
                         shape.CanInputLink = false;
@@ -838,7 +860,7 @@ namespace CodeGenerator
             var hoverbrush = new SolidBrush(Color.Teal);
             var selectbrush = new SolidBrush(Color.Teal);
             var selecthoverbrush = new SolidBrush(Color.CadetBlue);
-            foreach (var shape in Shapes.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+            foreach (var shape in Shapes.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page */== page.Number || ModelAssistant.GetPageNumber(x)/* x.Page*/ == 0))
             {
                 Pen pen;
                 Brush brush;
@@ -879,7 +901,7 @@ namespace CodeGenerator
                 }
             }
             // рисуем связи фигур из списка
-            foreach (var link in Links.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+            foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page*/ == page.Number || ModelAssistant.GetPageNumber(x) /*x.Page*/ == 0))
             {
                 Pen pen;
                 using var defaultpen = new Pen(link.Foreground);
@@ -908,7 +930,7 @@ namespace CodeGenerator
             if (!dragShapes)
             {
                 // рисуем присоединения связей фигур из списка
-                foreach (var link in Links.Where(x => page != null && x.Page == page.Number || x.Page == 0))
+                foreach (var link in Links.Where(x => page != null && ModelAssistant.GetPageNumber(x)/* x.Page*/ == page.Number || ModelAssistant.GetPageNumber(x) /*x.Page*/ == 0))
                 {
                     Brush brush;
                     using var defaultbrush = new SolidBrush(link.Foreground);
@@ -1333,11 +1355,11 @@ namespace CodeGenerator
                 e.Graphics?.TranslateTransform(dx, dy);
                 e.Graphics?.ScaleTransform((float)(1.0 / kfY), (float)(1.0 / kfY));
                 page?.Draw(e.Graphics, Color.Black);
-                foreach (var shape in Shapes.Where(x => x.Page == number))
+                foreach (var shape in Shapes.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
                     shape.Draw(e.Graphics, Pens.Black, Brushes.White);
-                foreach (var link in Links.Where(x => x.Page == number))
+                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
                     link.DrawLines(e.Graphics, Pens.Black);
-                foreach (var link in Links.Where(x => x.Page == number))
+                foreach (var link in Links.Where(x => ModelAssistant.GetPageNumber(x) /* x.Page */ == number))
                     link.DrawDots(e.Graphics, Brushes.Black);
                 e.Graphics?.ScaleTransform((float)kfY, (float)kfY);
                 e.Graphics?.TranslateTransform(-dx, -dy);
