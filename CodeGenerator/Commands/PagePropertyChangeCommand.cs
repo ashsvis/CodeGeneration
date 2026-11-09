@@ -1,5 +1,6 @@
 ﻿using PluginSupport;
 using PluginSupport.Assistants;
+using System.Diagnostics;
 
 namespace CodeGenerator.Commands
 {
@@ -21,6 +22,7 @@ namespace CodeGenerator.Commands
             if (founded != null)
                 ModelAssistant.ChangePropertyByName(founded, propertyName, newValue);
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"Execute {Name}");
         }
 
         public void UnExecute()
@@ -31,6 +33,7 @@ namespace CodeGenerator.Commands
             if (founded != null)
                 ModelAssistant.ChangePropertyByName(founded, propertyName, oldValue);
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"UnExecute {Name}");
         }
     }
 }

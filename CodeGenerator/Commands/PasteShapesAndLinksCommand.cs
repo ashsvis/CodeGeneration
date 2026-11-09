@@ -1,5 +1,6 @@
 ﻿using PluginSupport;
 using PluginSupport.Assistants;
+using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace CodeGenerator.Commands
@@ -27,6 +28,7 @@ namespace CodeGenerator.Commands
             ContextAssistant.Context = commandContext;
             ModelAssistant.PasteFromXml(xElementsCopyCuted, point, subscribeAction);
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"Execute {Name}");
         }
 
         public void UnExecute()
@@ -35,6 +37,7 @@ namespace CodeGenerator.Commands
             ContextAssistant.Context = commandContext;
             ModelAssistant.LoadUndoXml(xundo, subscribeAction);
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"UnExecute {Name}");
         }
     }
 }

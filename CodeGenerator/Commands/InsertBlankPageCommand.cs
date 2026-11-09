@@ -1,5 +1,6 @@
 ﻿using PluginSupport;
 using PluginSupport.Assistants;
+using System.Diagnostics;
 using System.Xml.Linq;
 
 namespace CodeGenerator.Commands
@@ -35,6 +36,7 @@ namespace CodeGenerator.Commands
             if (ContextAssistant.ContextPages.Count > 0) ContextAssistant.ContextPages[0].PagesCount = ContextAssistant.ContextPages.Count;
             ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"Execute {Name} {beforePageNumber}");
         }
 
         private static void RightShiftDrawPositionForShapesAndLinks(int pageNumber, int totalPagesInRow)
@@ -75,6 +77,7 @@ namespace CodeGenerator.Commands
             if (ContextAssistant.ContextPages.Count > 0) ContextAssistant.ContextPages[0].PagesCount = ContextAssistant.ContextPages.Count;
             ModelAssistant.SortAndAssignToPages();
             ContextAssistant.Context = oldcontext;
+            Debug.WriteLine($"UnExecute {Name} {beforePageNumber}");
         }
     }
 }

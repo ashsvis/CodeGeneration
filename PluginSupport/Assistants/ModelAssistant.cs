@@ -590,6 +590,7 @@ namespace PluginSupport.Assistants
                         var xheight = xpage.Attribute("Height")?.Value;
                         if (!string.IsNullOrWhiteSpace(xheight))
                             page.Height = ParseHelper.ParseInteger(xheight, 297);
+                        page.ReadContent(xpage);
                     }
                 }
                 n = ReadElements(n, xpage, subscribeAction);

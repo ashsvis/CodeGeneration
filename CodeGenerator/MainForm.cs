@@ -150,9 +150,9 @@ namespace CodeGenerator
                             try
                             {
                                 if (value is string[] text)
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new ObjectPropertyChangeCommand(ContextAssistant.Context, propOwner, propName, text, frm.LinesValue));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, text, frm.LinesValue));
                                 else
-                                    UndoRedoAssistant.UndoRedoManager.Execute(new ObjectPropertyChangeCommand(ContextAssistant.Context, propOwner, propName, value, frm.StrValue));
+                                    UndoRedoAssistant.UndoRedoManager.Execute(new PagePropertyChangeCommand(ContextAssistant.Context, page, propName, value, frm.StrValue));
                             }
                             catch (Exception ex)
                             {
