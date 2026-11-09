@@ -1560,26 +1560,22 @@ namespace CodeGenerator
         {
             tsbRedo.DropDownItems.Clear();
             var n = 0;
-            List<ToolStripMenuItem> items = [];
             foreach (var command in UndoRedoAssistant.UndoRedoManager.RedoHistory)
             {
                 var item = new ToolStripMenuItem(command.Name) { Tag = ++n };
                 item.Click += (s, arg) =>
                 {
-                    if (s is ToolStripMenuItem tsmi && tsmi.Tag is int count)
-                    {
-                        for (int i = 0; i < count; i++)
-                            if (UndoRedoAssistant.UndoRedoManager.RedoPossible())
-                                UndoRedoAssistant.UndoRedoManager.Redo();
-                        modelChanged = true;
-                        drawPanel.Invalidate();
-                    }
+                    //if (s is ToolStripMenuItem tsmi && tsmi.Tag is int count)
+                    //{
+                    //    for (int i = 0; i < count; i++)
+                    //        if (UndoRedoAssistant.UndoRedoManager.RedoPossible())
+                    //            UndoRedoAssistant.UndoRedoManager.Redo();
+                    //    modelChanged = true;
+                    //    drawPanel.Invalidate();
+                    //}
                 };
-                items.Add(item);
-            }
-            items.Reverse();
-            foreach (var item in items)
                 tsbRedo.DropDownItems.Add(item);
+            }
         }
     }
 }
