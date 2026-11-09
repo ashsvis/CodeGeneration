@@ -67,8 +67,8 @@
             tsbSave = new ToolStripButton();
             tsbPrint = new ToolStripButton();
             toolStripSeparator6 = new ToolStripSeparator();
-            tsbUndo = new ToolStripButton();
-            tsbRedo = new ToolStripButton();
+            tsbUndo = new ToolStripSplitButton();
+            tsbRedo = new ToolStripSplitButton();
             toolStripSeparator5 = new ToolStripSeparator();
             tsbCut = new ToolStripButton();
             tsbCopy = new ToolStripButton();
@@ -405,9 +405,10 @@
             tsbUndo.Image = Properties.Resources.undo;
             tsbUndo.ImageTransparentColor = Color.Magenta;
             tsbUndo.Name = "tsbUndo";
-            tsbUndo.Size = new Size(23, 22);
+            tsbUndo.Size = new Size(32, 22);
             tsbUndo.Text = "Отменить";
-            tsbUndo.Click += TsmiUndo_Click;
+            tsbUndo.ButtonClick += TsmiUndo_Click;
+            tsbUndo.DropDownOpening += TsbUndo_DropDownOpening;
             // 
             // tsbRedo
             // 
@@ -416,9 +417,10 @@
             tsbRedo.Image = Properties.Resources.redo;
             tsbRedo.ImageTransparentColor = Color.Magenta;
             tsbRedo.Name = "tsbRedo";
-            tsbRedo.Size = new Size(23, 22);
+            tsbRedo.Size = new Size(32, 22);
             tsbRedo.Text = "Повторить";
-            tsbRedo.Click += TsmiRedo_Click;
+            tsbRedo.ButtonClick += TsmiRedo_Click;
+            tsbRedo.DropDownOpening += TsbRedo_DropDownOpening;
             // 
             // toolStripSeparator5
             // 
@@ -750,10 +752,10 @@
         private ToolStripMenuItem tsmiContext;
         private ToolStripMenuItem tsmiModel;
         private ToolStripMenuItem tsmiField;
-        private ToolStripButton tsbUndo;
-        private ToolStripButton tsbRedo;
         private ToolStripSeparator toolStripSeparator5;
         private SplitContainer splitContainer1;
         private PropertyGrid propGrid;
+        private ToolStripSplitButton tsbUndo;
+        private ToolStripSplitButton tsbRedo;
     }
 }

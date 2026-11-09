@@ -289,7 +289,7 @@ namespace CodeGenerator
                 if (e.Button == MouseButtons.Left)
                     SelectLinksForBothSelectedShapes(page);
                 propGrid.SelectedObject = Shapes.Where(x => x.Selected).FirstOrDefault();
-                propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
+                propGrid.SelectedObjects = [.. Shapes.Where(x => x.Selected)];
             }
             else if (e.Button == MouseButtons.Right)
             {
@@ -324,7 +324,7 @@ namespace CodeGenerator
                         {
                             //RemovePage(page);
                             UndoRedoAssistant.UndoRedoManager.Execute(
-                                new RemovePageCommand(ContextAssistant.Context, page, totalPagesInRow, 
+                                new RemovePageCommand(ContextAssistant.Context, page, totalPagesInRow,
                                 SubscribeShapeEvents, UnsubscribeShapeEvents));
                         };
                         contextMenu.Items.Add(item);
@@ -404,8 +404,8 @@ namespace CodeGenerator
                 currentPage = page;
 
             if (currentPoint is Point point)
-            { 
-                HighLight(page, point); 
+            {
+                HighLight(page, point);
             }
             if (leftPressed)
             {
@@ -485,7 +485,7 @@ namespace CodeGenerator
                         linkBuilding = false;
                         foreach (var shape in ModelAssistant.ShapesFrom(page))
                         {
-                            if (firstShape is Shape linked && 
+                            if (firstShape is Shape linked &&
                                 shape.IsInputTargetsPoint(point, out int targetIndex) && !shape.IsLinked(targetIndex) &&
                                 firstShape.GetOutputValueKind(firstShapeOutputIndex) == shape.GetInputValueKind(targetIndex))
                             {
@@ -658,7 +658,7 @@ namespace CodeGenerator
                             if (!existTypes.Contains(libShape.GetType())) continue;
                             var clone = draged.Shape.DeepClone();
                             clone.NewGuid();
-                            if (clone is IGroupToPlace item)  item.SetPresentFunction(libShape);
+                            if (clone is IGroupToPlace item) item.SetPresentFunction(libShape);
                             UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
                                 clone, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
                             clone.Selected = true;
@@ -685,7 +685,7 @@ namespace CodeGenerator
                             return;
                         }
                     }
-                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context, 
+                    UndoRedoAssistant.UndoRedoManager.Execute(new AddShapeCommand(ContextAssistant.Context,
                     draged.Shape, point, SubscribeShapeEvents, UnsubscribeShapeEvents));
                     propGrid.SelectedObjects = null;
                     propGrid.SelectedObject = null;
@@ -730,7 +730,7 @@ namespace CodeGenerator
             e.Action?.Invoke(MouseButtons, e.Args);
             propGrid.SelectedObjects = null;
             propGrid.SelectedObject = null;
-            propGrid.SelectedObjects = [..Shapes.Where(x => x.Selected)];
+            propGrid.SelectedObjects = [.. Shapes.Where(x => x.Selected)];
             propGrid.SelectedObject = Shapes.FirstOrDefault(x => x.Selected);
         }
 
@@ -1030,7 +1030,7 @@ namespace CodeGenerator
         {
             Cursor = Cursors.WaitCursor;
             Cursor.Show();
-            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context, 
+            UndoRedoAssistant.UndoRedoManager.Execute(new RemoveShapesCommand(ContextAssistant.Context,
                 Shapes.Where(x => x.Selected), SubscribeShapeEvents, UnsubscribeShapeEvents));
             modelChanged = true;
             drawPanel.Invalidate();
@@ -1532,6 +1532,54 @@ namespace CodeGenerator
 
             modelChanged = true;
             drawPanel.Invalidate();
+        }
+
+        private void TsbUndo_DropDownOpening(object sender, EventArgs e)
+        {
+            tsbUndo.DropDownItems.Clear();
+            var n = 0;
+            foreach (var command in UndoRedoAssistant.UndoRedoManager.UndoHistory)
+            {
+                var item = new ToolStripMenuItem(command.Name) { Tag = ++n };
+                item.Click += (s, arg) => 
+                {
+                    if (s is ToolStripMenuItem tsmi && tsmi.Tag is int count)
+                    {
+                        for (int i = 0; i < count; i++)
+                            if (UndoRedoAssistant.UndoRedoManager.UndoPossible())
+                                UndoRedoAssistant.UndoRedoManager.Undo();
+                        modelChanged = true;
+                        drawPanel.Invalidate();
+                    }
+                };
+                tsbUndo.DropDownItems.Add(item);
+            }
+        }
+
+        private void TsbRedo_DropDownOpening(object sender, EventArgs e)
+        {
+            tsbRedo.DropDownItems.Clear();
+            var n = 0;
+            List<ToolStripMenuItem> items = [];
+            foreach (var command in UndoRedoAssistant.UndoRedoManager.RedoHistory)
+            {
+                var item = new ToolStripMenuItem(command.Name) { Tag = ++n };
+                item.Click += (s, arg) =>
+                {
+                    if (s is ToolStripMenuItem tsmi && tsmi.Tag is int count)
+                    {
+                        for (int i = 0; i < count; i++)
+                            if (UndoRedoAssistant.UndoRedoManager.RedoPossible())
+                                UndoRedoAssistant.UndoRedoManager.Redo();
+                        modelChanged = true;
+                        drawPanel.Invalidate();
+                    }
+                };
+                items.Add(item);
+            }
+            items.Reverse();
+            foreach (var item in items)
+                tsbRedo.DropDownItems.Add(item);
         }
     }
 }
